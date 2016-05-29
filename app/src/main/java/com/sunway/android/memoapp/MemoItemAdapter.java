@@ -1,41 +1,47 @@
 package com.sunway.android.memoapp;
 
 import android.app.Activity;
+import android.content.Context;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
-import android.widget.TextView;
 
 import java.util.List;
 
 /**
  * Created by Mr_RexZ on 5/27/2016.
  */
-public class MemoItemAdapter extends ArrayAdapter<MemoItem> {
+public class MemoItemAdapter extends RecyclerView.Adapter<MemoItemViewHolder> {
+
+    private List<MemoItem> itemList;
+    private Context context;
+
 
     public MemoItemAdapter(Activity context, List<MemoItem> listMemo) {
-        super(context, 0, listMemo);
+        this.context=context;
+        this.itemList=listMemo;
     }
 
     @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
-        // Gets the AndroidFlavor object from the ArrayAdapter at the appropriate position
-        MemoItem memoItem = getItem(position);
+    public MemoItemViewHolder onCreateViewHolder(ViewGroup parent, int viewType)
+    {
+        View layoutView = LayoutInflater.from(parent.getContext()).inflate(
+                R.layout.list_item_memo, null);
+        MemoItemViewHolder rcv = new MemoItemViewHolder(layoutView);
+        return rcv;
+    }
 
-        // Adapters recycle views to AdapterViews.
-        // If this is a new View object we're getting, then inflate the layout.
-        // If not, this view already has the layout inflated from a previous call to getView,
-        // and we modify the View widgets as usual.
-        if (convertView == null) {
-            convertView = LayoutInflater.from(getContext()).inflate(R.layout.list_item_memo, parent, false);
-        }
+    @Override
+    public void onBindViewHolder(MemoItemViewHolder holder, int position)
+    {
+        holder.titleName.setText(itemList.get(position).getTitle());
+        holder.contentName.setText(itemList.get(position).getContent());
+    }
 
-        TextView versionNameView = (TextView) convertView.findViewById(R.id.list_item_title);
-        versionNameView.setText(memoItem.title);
-
-        TextView versionNumberView = (TextView) convertView.findViewById(R.id.list_item_content);
-        versionNumberView.setText(memoItem.content);
-        return convertView;
+    @Override
+    public int getItemCount()
+    {
+        return this.itemList.size();
     }
 }

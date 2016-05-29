@@ -5,8 +5,8 @@ package com.sunway.android.memoapp;
  */
 public class MemoItem {
 
-    String title;
-    String content;
+    private String title;
+    private String content;
     int image; // drawable reference id
 
     public MemoItem(String title, String content)
@@ -14,5 +14,23 @@ public class MemoItem {
         this.title = title;
         this.content =content;
     }
+
+    public String getTitle(){
+        return title;
+    }
+
+    public String getContent(){
+        return content;
+    }
+
+    public void setTitle(String title) {
+        this.title=title;
+    }
+
+    public void setContent(String content) {
+
+        this.content=content;
+    }
+
 
 }

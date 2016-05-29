@@ -5,6 +5,8 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -12,11 +14,9 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.GridView;
-import android.widget.Toast;
 
-import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by Mr_RexZ on 5/28/2016.
@@ -24,21 +24,24 @@ import java.util.Arrays;
 public class MainActivityFragment extends Fragment {
 
     private MemoItemAdapter memoItemAdapter;
+    private StaggeredGridLayoutManager _sGridLayoutManager;
 
-    MemoItem[] memoItems = {
+    private List<MemoItem> getListItemData() {
+    List<MemoItem> listViewItems = new ArrayList<MemoItem>();
 
 
 
 
-            new MemoItem("To Do : ", "Revamp the UI design (change color and implement background image and theme). Also rework on the spacing of main screen."),
-            new MemoItem("To Do :"," Replace the icon in both toolbars in every activity"),
-            new MemoItem("To Do:" , "Save the output memo in either File format"),
-            new MemoItem("To Do :"," Think of how to store a good file structure in NoSQL for Firebase implementation and the filesharing logic by using either Real Time Database API or  Storage API or both"),
-            new MemoItem("To Do :"," Implement the Firebase Storage API to upload all content, and the reference for each download link is kept in Firebase NoSQL RealTimeDatabase to the respective users"),
-            new MemoItem("To Do :"," Create account login, account registration feature, and account tagging"),
-            new MemoItem("To Do :"," Create account login, account registration feature, and account tagging"),
-            new MemoItem("To Do :"," Create account login, account registration feature, and account tagging")
-    };
+        listViewItems.add(new MemoItem("Task1 : ", "Revamp the UI design (change color and implement background image and theme)."));
+        listViewItems.add(new MemoItem("Task2 :"," Replace the icon in both toolbars in every activity"));
+        listViewItems.add(new MemoItem("Task3:" , "Save the output memo in either File format"));
+        listViewItems.add(new MemoItem("Task4 :"," Think of how to store a good file structure in NoSQL for Firebase implementation and the filesharing logic by using either Real Time Database API or  Storage API or both"));
+        listViewItems.add(new MemoItem("Task5 :"," Implement the Firebase Storage API to upload all content, and the reference for each download link is kept in Firebase NoSQL RealTimeDatabase to the respective users"));
+        listViewItems.add(new MemoItem("Task6 :"," Create account login, account registration feature, and account tagging"));
+        listViewItems.add( new MemoItem("Task7 :"," Relax!"));
+
+                    return listViewItems;
+    }
 
     public MainActivityFragment() {
     }
@@ -48,6 +51,7 @@ public class MainActivityFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
+
     }
 
     @Override
@@ -67,6 +71,18 @@ public class MainActivityFragment extends Fragment {
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_main, container, false);
 
+        RecyclerView recyclerView = (RecyclerView) rootView.findViewById(R.id.recycler_view);
+        recyclerView.setHasFixedSize(true);
+
+        _sGridLayoutManager = new StaggeredGridLayoutManager(2,
+                StaggeredGridLayoutManager.VERTICAL);
+        recyclerView.setLayoutManager(_sGridLayoutManager);
+
+        List<MemoItem> sList = getListItemData();
+
+        MemoItemAdapter rcAdapter = new MemoItemAdapter(
+                getActivity(), sList);
+        recyclerView.setAdapter(rcAdapter);
 
         Toolbar upper_toolbar = (Toolbar) rootView.findViewById(R.id.toolbar_upper);
         ((AppCompatActivity)getActivity()).setSupportActionBar(upper_toolbar);
@@ -87,17 +103,7 @@ public class MainActivityFragment extends Fragment {
                 return false;
             }
         });
-        memoItemAdapter = new MemoItemAdapter(getActivity(), Arrays.asList(memoItems));
-        GridView gridview = (GridView) rootView.findViewById(R.id.gridview);
-        gridview.setAdapter(memoItemAdapter);
 
-        gridview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            public void onItemClick(AdapterView<?> parent, View v,
-                                    int position, long id) {
-                Toast.makeText(getActivity(), "" + position,
-                        Toast.LENGTH_SHORT).show();
-            }
-        });
         return rootView;
     }
 }
