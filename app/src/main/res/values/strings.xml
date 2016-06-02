@@ -1,3 +1,9 @@
 <resources>
     <string name="app_name">MemoApp</string>
+
+
+    <string name="title_header">Title</string>
+    <string name="details_header">Details</string>
+
+
 </resources>

@@ -19,9 +19,9 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Title"
+        android:text="@string/title_header"
         android:id="@+id/titleText"
-        android:textSize="40dp"
+        android:textSize="40sp"
         android:layout_below="@id/toolbar_upper"/>
 
     <EditText
@@ -33,9 +33,9 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Details"
+        android:text="@string/details_header"
         android:id="@+id/detailsText"
-        android:textSize="40dp"
+        android:textSize="40sp"
         android:layout_below="@id/title_text_input"/>
 
     <EditText
@@ -43,7 +43,7 @@
         android:layout_height="wrap_content"
         android:inputType="textMultiLine"
         android:ems="10"
-        android:id="@+id/content_text_input"
+        android:id="@+id/details_text_input"
         android:layout_below="@id/detailsText"/>
 
     <android.support.v7.widget.Toolbar
