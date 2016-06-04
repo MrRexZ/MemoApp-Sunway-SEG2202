@@ -1,18 +1,20 @@
-package com.sunway.android.memoapp;
+package com.sunway.android.memoapp.model;
 
 /**
  * Created by Mr_RexZ on 5/27/2016.
  */
-public class MemoItem {
+public class MemoTextItem implements MemoItem {
 
     private String title;
     private String content;
+    private int memoid;
     int image; // drawable reference id
 
-    public MemoItem(String title, String content)
+    public MemoTextItem(int memoid, String title, String content)
     {
-        this.title = title;
-        this.content =content;
+        setTitle(title);
+        setContent(content);
+        setMemoID(memoid);
     }
 
     public String getTitle(){
@@ -28,8 +30,16 @@ public class MemoItem {
     }
 
     public void setContent(String content) {
-
         this.content=content;
+    }
+
+    public void setMemoID(int memoid) {
+        this.memoid=memoid;
+
+    }
+
+    public String getMemoID(){
+        return Integer.toString(memoid);
     }
 
 
