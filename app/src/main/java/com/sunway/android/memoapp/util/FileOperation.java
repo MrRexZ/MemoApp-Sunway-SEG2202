@@ -95,7 +95,7 @@ String output=input;
                 }
 
                 for (int counterTextMemo=startIndex;counterTextMemo<=memoTextCountId;counterTextMemo++){
-                    String pattern = DELIMITER_LINE +DELIMITER_UNIT+(counterTextMemo)+DELIMITER_UNIT +"((?:.+?\\s*?)+?)"+DELIMITER_LINE+"(?:\\s*?)((?:.+?\\s*?)+?)"+DELIMITER_LINE;
+                    String pattern = DELIMITER_LINE +DELIMITER_UNIT+(counterTextMemo)+DELIMITER_UNIT +"(?:\\s*?)((?:(?:.+?\\s*?)+?))"+DELIMITER_LINE+"(?:\\s*?)((?:(?:.+?\\s*?)+?))"+DELIMITER_LINE;
 
 
                     System.out.println(pattern);
