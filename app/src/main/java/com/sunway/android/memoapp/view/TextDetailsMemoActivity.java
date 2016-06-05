@@ -51,11 +51,8 @@ public class TextDetailsMemoActivity extends AppCompatActivity {
                     EditText textviewTitle = (EditText) findViewById(R.id.title_text_input);
                     EditText detailsviewTitle = (EditText) findViewById(R.id.details_text_input);
 
-
                     newTitle=textviewTitle.getText().toString();
                     newDetails=detailsviewTitle.getText().toString();
-
-
 
                     Intent showMainActivity = new Intent(TextDetailsMemoActivity.this, MainActivity.class)
                             .putExtra("TITLE",newTitle)
@@ -64,9 +61,10 @@ public class TextDetailsMemoActivity extends AppCompatActivity {
                     if (getIntent().hasExtra("ACTION_MODE") && ACTION_MODE.equals("EDIT")){
                         String memoID=getIntent().getStringExtra("TEXTID");
 
-                        FileOperation.replaceSelected(FileOperation.DELIMITER_UNIT+memoID+FileOperation.DELIMITER_UNIT+FileOperation.LINE_SEPERATOR+oldTitle+oldDetails ,
-                                FileOperation.DELIMITER_UNIT+memoID+FileOperation.DELIMITER_UNIT+FileOperation.LINE_SEPERATOR+newTitle+newDetails);
-
+                        FileOperation.replaceSelected(
+                                FileOperation.DELIMITER_LINE+FileOperation.DELIMITER_UNIT+memoID+FileOperation.DELIMITER_UNIT+oldTitle+FileOperation.DELIMITER_LINE+oldDetails+FileOperation.DELIMITER_LINE,
+                                FileOperation.DELIMITER_LINE+FileOperation.DELIMITER_UNIT+memoID+FileOperation.DELIMITER_UNIT+newTitle+FileOperation.DELIMITER_LINE+ newDetails+FileOperation.DELIMITER_LINE);
+                       // FileOperation.replaceSelected(oldTitle+FileOperation.LINE_SEPERATOR+oldDetails,newTitle+FileOperation.LINE_SEPERATOR+oldDetails);
                         showMainActivity.putExtra("ACTION_MODE","EDIT");
 
 

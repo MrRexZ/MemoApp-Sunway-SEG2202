@@ -26,6 +26,7 @@ public class FileOperation {
     private  static String input_detail=null;
     public final static String DELIMITER_LINE       = Character.toString((char) 30);
     public final static String DELIMITER_UNIT       = Character.toString((char) 31);
+
     public static final String LINE_SEPERATOR  = System.getProperty("line.separator");
     private static Context appContext;
 
@@ -44,11 +45,12 @@ public class FileOperation {
             String line;
             String input = "";
 
-            while ((line = file.readLine()) != null) input += line + LINE_SEPERATOR;
+
+            while ((line = file.readLine()) != null) input += line + FileOperation.LINE_SEPERATOR;
             file.close();
             System.out.println("HERE ARE THE REPLACED TEXT: " + input); // check that it's inputted right
             input = input.replace(beforeReplace,afterReplace);
-
+String output=input;
             FileOutputStream fOut = appContext.openFileOutput("u_"+userID+".txt", Context.MODE_PRIVATE);
             OutputStreamWriter outputStreamWriter = new OutputStreamWriter(fOut);
             outputStreamWriter.write(input);
@@ -93,13 +95,16 @@ public class FileOperation {
                 }
 
                 for (int counterTextMemo=startIndex;counterTextMemo<=memoTextCountId;counterTextMemo++){
-                    String pattern = DELIMITER_LINE +DELIMITER_UNIT+(counterTextMemo)+DELIMITER_UNIT +"\\s(.*)\\s((?:.*\\s)+?)\\s"+DELIMITER_LINE;
+                    String pattern = DELIMITER_LINE +DELIMITER_UNIT+(counterTextMemo)+DELIMITER_UNIT +"((?:.+?\\s*?)+?)"+DELIMITER_LINE+"(?:\\s*?)((?:.+?\\s*?)+?)"+DELIMITER_LINE;
 
 
                     System.out.println(pattern);
                     Pattern r = Pattern.compile(pattern, Pattern.MULTILINE);
                     m = r.matcher(processedString);
+
+
                     if (m.find( ) && mode.equals("ADD")) {
+                        System.out.println("REGEX : "+ m.group(1) + "and"+ m.group(2));
                         ListOperation.addToList(new MemoTextItem(counterTextMemo,m.group(1),m.group(2)));
                     } else {
                         System.out.println("NO MATCH");
@@ -126,20 +131,15 @@ public class FileOperation {
             outputStreamWriter.append(DELIMITER_LINE);
             outputStreamWriter.append("counter=0");
             outputStreamWriter.append(DELIMITER_LINE);
-            outputStreamWriter.append(LINE_SEPERATOR);
-            outputStreamWriter.append(LINE_SEPERATOR);
         }
 
         outputStreamWriter.append(DELIMITER_LINE);
         outputStreamWriter.append(DELIMITER_UNIT);
         outputStreamWriter.append(String.valueOf(identifierTextMemo));
         outputStreamWriter.append(DELIMITER_UNIT);
-        outputStreamWriter.append(LINE_SEPERATOR);
         outputStreamWriter.append(input_title);
-        outputStreamWriter.append(LINE_SEPERATOR);
+        outputStreamWriter.append(DELIMITER_LINE);
         outputStreamWriter.append(input_detail);
-        outputStreamWriter.append(LINE_SEPERATOR);
-        outputStreamWriter.append(LINE_SEPERATOR);
         outputStreamWriter.append(DELIMITER_LINE);
         outputStreamWriter.close();
 

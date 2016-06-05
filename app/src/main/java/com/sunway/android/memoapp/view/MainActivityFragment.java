@@ -8,6 +8,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.support.v7.widget.Toolbar;
+import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -33,6 +34,8 @@ public class MainActivityFragment extends Fragment {
     private String input_details=null;
     private String mode=null;
     private View rootView;
+    private RecyclerView recyclerView;
+    private MemoItemAdapter rcAdapter;
 
     public MainActivityFragment() {
     }
@@ -122,13 +125,21 @@ public class MainActivityFragment extends Fragment {
                 } catch (Exception e) {
                     System.err.println("Cannot write to file: " + e.getMessage());
                 }
-            }
-            FileOperation.replaceSelected( FileOperation.DELIMITER_LINE+"counter="+ ((FileOperation.getMemoTextCountId()) - 1) +FileOperation.DELIMITER_LINE,
-                                          FileOperation.DELIMITER_LINE+"counter="+ ((FileOperation.getMemoTextCountId())) +FileOperation.DELIMITER_LINE);
 
+
+                FileOperation.replaceSelected( FileOperation.DELIMITER_LINE+"counter="+ ((FileOperation.getMemoTextCountId()) - 1) +FileOperation.DELIMITER_LINE,
+                        FileOperation.DELIMITER_LINE+"counter="+ ((FileOperation.getMemoTextCountId())) +FileOperation.DELIMITER_LINE);
+
+            }
           // if (mode.equals("ADD")) FileOperation.readFile("u_"+FileOperation.userID+".txt",FileOperation.getMemoTextCountId());
 
-         FileOperation.readFile(mode,"u_"+FileOperation.userID+".txt", (FileOperation.getMemoTextCountId() - 1));
+            if (mode.equals("ADD") || mode.equals("EDIT"))
+                FileOperation.readFile(mode,"u_"+FileOperation.userID+".txt", (FileOperation.getMemoTextCountId() - 1));
+             else if (mode.equals("DELETE")) {
+
+                ListOperation.clearListView();
+                FileOperation.readFile(mode,"u_"+FileOperation.userID+".txt", 0);
+            }
              inflateLayout();
 
         }
@@ -137,19 +148,47 @@ public class MainActivityFragment extends Fragment {
 
     private void inflateLayout() {
 
-        RecyclerView recyclerView = (RecyclerView) rootView.findViewById(R.id.recycler_view);
+        recyclerView = (RecyclerView) rootView.findViewById(R.id.recycler_view);
         recyclerView.setHasFixedSize(true);
         _sGridLayoutManager = new StaggeredGridLayoutManager( 3 , StaggeredGridLayoutManager.VERTICAL );
         recyclerView.setLayoutManager( _sGridLayoutManager );
 
         List<MemoItem> sList;
-
         sList = ListOperation.getListViewItems();
 
-        MemoItemAdapter rcAdapter = new MemoItemAdapter(
+        rcAdapter = new MemoItemAdapter(
                 getActivity(), sList);
         recyclerView.setAdapter(rcAdapter);
+
     }
 
+    @Override
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        registerForContextMenu(recyclerView);
+    }
 
+    @Override
+    public void onCreateContextMenu(ContextMenu menu, View v,
+                                    ContextMenu.ContextMenuInfo menuInfo) {
+        MenuInflater inflater = getActivity().getMenuInflater();
+        inflater.inflate(R.menu.floating_context_memoitem_long_click, menu);
+
+    }
+
+    @Override
+    public boolean onContextItemSelected(MenuItem item) {
+
+
+        int position =rcAdapter.getPosition();
+        System.out.println("THE POSITION IS : " + position);
+        System.out.println(item.getItemId());
+        switch (item.getItemId()) {
+            case (R.id.action_delete_memo): {
+           //     FileOperation.deleteMemo();
+            }
+
+        }
+        return super.onContextItemSelected(item);
+    }
 }
