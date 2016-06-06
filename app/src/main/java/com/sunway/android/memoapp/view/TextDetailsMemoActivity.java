@@ -28,6 +28,7 @@ public class TextDetailsMemoActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.memo_details);
         ACTION_MODE=getIntent().getStringExtra("ACTION_MODE");
+
         if (getIntent().hasExtra("ACTION_MODE") && ACTION_MODE.equals("EDIT")) {
             EditText textviewTitle = (EditText) findViewById(R.id.title_text_input);
             EditText detailsviewTitle = (EditText) findViewById(R.id.details_text_input);

@@ -8,8 +8,8 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.sunway.android.memoapp.R;
+import com.sunway.android.memoapp.util.ListOperation;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -17,14 +17,11 @@ import java.util.List;
  */
 public class MemoItemAdapter extends RecyclerView.Adapter<MemoItemViewHolder> {
 
-    public static List<MemoItem> itemList;
     private Context context;
     private int position;
-    private ArrayList<MemoItemViewHolder> holderArray;
 
     public MemoItemAdapter(Activity context, List<MemoItem> listMemo) {
         this.context=context;
-        this.itemList=listMemo;
 
     }
 
@@ -35,14 +32,7 @@ public class MemoItemAdapter extends RecyclerView.Adapter<MemoItemViewHolder> {
     {
         View layoutView = LayoutInflater.from(parent.getContext()).inflate(
                 R.layout.list_item_text_memo, null);
-       final MemoItemViewHolder rcv = new MemoItemViewHolder(layoutView,context);
-        rcv.itemView.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View v) {
-                setPosition(rcv.pos());
-                return false;
-            }
-        });
+        final MemoItemViewHolder rcv = new MemoItemViewHolder(layoutView, context, this);
 
 
         return rcv;
@@ -51,9 +41,9 @@ public class MemoItemAdapter extends RecyclerView.Adapter<MemoItemViewHolder> {
     @Override
     public void onBindViewHolder(MemoItemViewHolder holder, int position)
     {
-        holder.titleName.setText(itemList.get(position).getTitle());
-        holder.contentName.setText(itemList.get(position).getContent());
-        holder.memoID=itemList.get(position).getMemoID();
+        holder.titleName.setText(ListOperation.getListViewItems().get(position).getTitle());
+        holder.contentName.setText(ListOperation.getListViewItems().get(position).getContent());
+        holder.memoID = ListOperation.getListViewItems().get(position).getMemoID();
 
 
     }
@@ -61,21 +51,15 @@ public class MemoItemAdapter extends RecyclerView.Adapter<MemoItemViewHolder> {
     @Override
     public int getItemCount()
     {
-        return this.itemList.size();
-    }
-
-
-    public void setPosition(int clickedposition) {
-        this.position=clickedposition;
+        return ListOperation.getListViewItems().size();
     }
 
     public int getPosition() {
         return position;
     }
 
- /*   public void setOnItemLongClickListener(MemoItemViewHolder.OnItemLongClickListener listener){
-
-        holderObject.listener.setonItemLongClickListener(listener);
-    }*/
+    public void setPosition(int clickedposition) {
+        this.position=clickedposition;
+    }
 
 }

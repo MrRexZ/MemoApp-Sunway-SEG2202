@@ -38,9 +38,29 @@ public class ListOperation {
         }
     }
 
+    public static void deleteList(String textid, String oldTitle, String oldDetails) {
+
+        for (int counter = 0; counter < listViewItems.size(); counter++) {
+
+
+            MemoItem memoItem = listViewItems.get(counter);
+            if (memoItem instanceof MemoTextItem) {
+
+                if (memoItem.getTitle().equals(oldTitle) && memoItem.getContent().equals(oldDetails) && memoItem.getMemoID().equals(textid)) {
+                    listViewItems.remove(counter);
+                }
+            }
+        }
+    }
+
+
 
     public static List<MemoItem> getListViewItems() {
         return listViewItems;
+    }
+
+    public static MemoItem getIndividualMemoItem(int index) {
+        return listViewItems.get(index);
     }
 
 }

@@ -5,7 +5,6 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 
 import com.sunway.android.memoapp.R;
-import com.sunway.android.memoapp.util.FileOperation;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -22,6 +21,6 @@ public class MainActivity extends AppCompatActivity {
         mainActivityFragment.passInformation(intent.getExtras().getString("TITLE"),
                                             intent.getExtras().getString("DETAILS"),
                                             intent.getExtras().getString("ACTION_MODE"));
-        FileOperation.passToFileOp(intent.getExtras().getString("TITLE"),intent.getExtras().getString("DETAILS"));
+        // FileOperation.passToFileOp(intent.getExtras().getString("TITLE"),intent.getExtras().getString("DETAILS"));
     }
 }

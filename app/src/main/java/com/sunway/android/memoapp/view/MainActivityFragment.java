@@ -46,15 +46,9 @@ public class MainActivityFragment extends Fragment {
         setHasOptionsMenu(true);
         if (savedInstanceState==null) {
             //writeFile();
-
-
             FileOperation.passAppContext(getActivity().getApplicationContext());
-
-
-          //  FileOperation.readFile("output.txt", 0);
-            //replace the second argument to 0 when starting the app with no precustomised file
             ListOperation.clearListView();
-            FileOperation.readFile("ADD","u_"+FileOperation.userID+".txt",0);
+            FileOperation.readFile("START", "u_" + FileOperation.userID + ".txt");
 
 
         }
@@ -114,16 +108,16 @@ public class MainActivityFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        if ((input_details!=null && input_title!=null) && (!input_details.isEmpty() || !input_title.isEmpty())) {
+        if (((input_details != null && input_title != null) && (!input_details.isEmpty() || !input_title.isEmpty()))
+                || (mode != null && input_details.isEmpty() && input_title.isEmpty() && mode.equals("EDIT"))) {
 
-            input_title="";
-            input_details="";
 
             if (mode.equals("ADD")) {
                 try {
-                    FileOperation.writeUserFile(FileOperation.getMemoTextCountId());
+                    FileOperation.writeUserTextMemoFile(input_title, input_details);
+
                 } catch (Exception e) {
-                    System.err.println("Cannot write to file: " + e.getMessage());
+                    System.err.println("can write NOT " + e.getMessage());
                 }
 
 
@@ -131,16 +125,14 @@ public class MainActivityFragment extends Fragment {
                         FileOperation.DELIMITER_LINE+"counter="+ ((FileOperation.getMemoTextCountId())) +FileOperation.DELIMITER_LINE);
 
             }
-          // if (mode.equals("ADD")) FileOperation.readFile("u_"+FileOperation.userID+".txt",FileOperation.getMemoTextCountId());
 
-            if (mode.equals("ADD") || mode.equals("EDIT"))
-                FileOperation.readFile(mode,"u_"+FileOperation.userID+".txt", (FileOperation.getMemoTextCountId() - 1));
-             else if (mode.equals("DELETE")) {
+            FileOperation.readFile(mode, "u_" + FileOperation.userID + ".txt");
 
-                ListOperation.clearListView();
-                FileOperation.readFile(mode,"u_"+FileOperation.userID+".txt", 0);
-            }
              inflateLayout();
+
+            input_title = "";
+            input_details = "";
+
 
         }
 
@@ -182,10 +174,15 @@ public class MainActivityFragment extends Fragment {
 
         int position =rcAdapter.getPosition();
         System.out.println("THE POSITION IS : " + position);
-        System.out.println(item.getItemId());
+        MemoItem memoItem = ListOperation.getIndividualMemoItem(position);
         switch (item.getItemId()) {
             case (R.id.action_delete_memo): {
-           //     FileOperation.deleteMemo();
+
+                FileOperation.deleteTextMemo(memoItem.getMemoID(), memoItem.getTitle(), memoItem.getContent());
+                ListOperation.deleteList(memoItem.getMemoID(), memoItem.getTitle(), memoItem.getContent());
+                mode = "DELETE";
+                FileOperation.readFile(mode, "u_" + FileOperation.userID + ".txt");
+                inflateLayout();
             }
 
         }

@@ -20,14 +20,11 @@ import java.util.regex.Pattern;
  */
 public class FileOperation {
 
-    public  static int userID=1;
-    private  static int memoTextCountId=0;
-    private static String input_title=null;
-    private  static String input_detail=null;
     public final static String DELIMITER_LINE       = Character.toString((char) 30);
     public final static String DELIMITER_UNIT       = Character.toString((char) 31);
-
     public static final String LINE_SEPERATOR  = System.getProperty("line.separator");
+    public static int userID = 1;
+    private static int memoTextCountId = 0;
     private static Context appContext;
 
 
@@ -48,7 +45,6 @@ public class FileOperation {
 
             while ((line = file.readLine()) != null) input += line + FileOperation.LINE_SEPERATOR;
             file.close();
-            System.out.println("HERE ARE THE REPLACED TEXT: " + input); // check that it's inputted right
             input = input.replace(beforeReplace,afterReplace);
 String output=input;
             FileOutputStream fOut = appContext.openFileOutput("u_"+userID+".txt", Context.MODE_PRIVATE);
@@ -62,10 +58,9 @@ String output=input;
         }
     }
 
-    public static void readFile(String mode, String fileName,int startIndex) {
+    public static void readFile(String mode, String fileName) {
         String processedString;
         Matcher m;
-
 
         try {
             InputStream inputStream = appContext.openFileInput(fileName);
@@ -90,20 +85,24 @@ String output=input;
                     m = r.matcher(processedString);
                     if (m.find()) {
                         memoTextCountId=Integer.parseInt(m.group(1));
-                        System.out.println("Found : " + m.group(1));
                     }
                 }
 
+                int startIndex = 0;
+                if (mode.equals("START")) startIndex = 0;
+                else if (mode.equals("ADD")) startIndex = (memoTextCountId - 1);
+                else if (mode.equals("EDIT") || mode.equals("DELETE")) startIndex = memoTextCountId;
+
                 for (int counterTextMemo=startIndex;counterTextMemo<=memoTextCountId;counterTextMemo++){
-                    String pattern = DELIMITER_LINE +DELIMITER_UNIT+(counterTextMemo)+DELIMITER_UNIT +"(?:\\s*?)((?:(?:.+?\\s*?)+?))"+DELIMITER_LINE+"(?:\\s*?)((?:(?:.+?\\s*?)+?))"+DELIMITER_LINE;
+                    String pattern = DELIMITER_LINE + DELIMITER_UNIT + (counterTextMemo) + DELIMITER_UNIT + "((?:.)*?)" + DELIMITER_LINE + "((?:.)*?)" + DELIMITER_LINE;
 
 
                     System.out.println(pattern);
-                    Pattern r = Pattern.compile(pattern, Pattern.MULTILINE);
+                    Pattern r = Pattern.compile(pattern, Pattern.DOTALL);
                     m = r.matcher(processedString);
 
 
-                    if (m.find( ) && mode.equals("ADD")) {
+                    if (m.find()) {
                         System.out.println("REGEX : "+ m.group(1) + "and"+ m.group(2));
                         ListOperation.addToList(new MemoTextItem(counterTextMemo,m.group(1),m.group(2)));
                     } else {
@@ -122,7 +121,8 @@ String output=input;
     }
 
 
-    public static void writeUserFile(int identifierTextMemo) throws IOException {
+    public static void writeUserTextMemoFile(String input_title, String input_detail) throws IOException {
+
 
         FileOutputStream fOut = appContext.openFileOutput("u_"+userID+".txt", Context.MODE_APPEND);
         OutputStreamWriter outputStreamWriter = new OutputStreamWriter(fOut);
@@ -135,7 +135,7 @@ String output=input;
 
         outputStreamWriter.append(DELIMITER_LINE);
         outputStreamWriter.append(DELIMITER_UNIT);
-        outputStreamWriter.append(String.valueOf(identifierTextMemo));
+        outputStreamWriter.append(String.valueOf(memoTextCountId));
         outputStreamWriter.append(DELIMITER_UNIT);
         outputStreamWriter.append(input_title);
         outputStreamWriter.append(DELIMITER_LINE);
@@ -147,20 +147,15 @@ String output=input;
 
     }
 
-    public static void passToFileOp(String ipt_title,String ipt_details) {
-        input_title=ipt_title;
-        input_detail=ipt_details;
-    }
+    public static void deleteTextMemo(String memoID, String input_title, String input_details) {
+        replaceSelected(FileOperation.DELIMITER_LINE + FileOperation.DELIMITER_UNIT + memoID + FileOperation.DELIMITER_UNIT + input_title + FileOperation.DELIMITER_LINE + input_details + FileOperation.DELIMITER_LINE,
+                "");
 
-    public String getInput_title(){
-        return input_title;
-    }
 
-    public String getInput_detail(){
-        return input_detail;
     }
 
     public static int getMemoTextCountId() {
         return memoTextCountId;
     }
+
 }
