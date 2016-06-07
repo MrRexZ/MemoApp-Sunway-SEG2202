@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.sunway.android.memoapp.R;
+import com.sunway.android.memoapp.util.FileOperation;
 import com.sunway.android.memoapp.util.ListOperation;
 
 import java.util.List;
@@ -18,10 +19,12 @@ import java.util.List;
 public class MemoItemAdapter extends RecyclerView.Adapter<MemoItemViewHolder> {
 
     private Context context;
+    private Activity activity;
     private int position;
 
     public MemoItemAdapter(Activity context, List<MemoItem> listMemo) {
         this.context=context;
+        this.activity = context;
 
     }
 
@@ -32,7 +35,7 @@ public class MemoItemAdapter extends RecyclerView.Adapter<MemoItemViewHolder> {
     {
         View layoutView = LayoutInflater.from(parent.getContext()).inflate(
                 R.layout.list_item_text_memo, null);
-        final MemoItemViewHolder rcv = new MemoItemViewHolder(layoutView, context, this);
+        MemoItemViewHolder rcv = new MemoItemViewHolder(layoutView, context, this);
 
 
         return rcv;
@@ -44,7 +47,13 @@ public class MemoItemAdapter extends RecyclerView.Adapter<MemoItemViewHolder> {
         holder.titleName.setText(ListOperation.getListViewItems().get(position).getTitle());
         holder.contentName.setText(ListOperation.getListViewItems().get(position).getContent());
         holder.memoID = ListOperation.getListViewItems().get(position).getMemoID();
+        holder.photosCount = ListOperation.getListViewItems().get(position).getPhotosCount();
 
+        int start = 0;
+        while (start <= holder.photosCount) {
+            FileOperation.loadImageFromStorage(context.getFilesDir().getPath().toString(), "u_" + FileOperation.userID + "_img_" + holder.memoID + "_" + (start++) + ".jpg", holder.photosHolder, 100, activity);
+        }
+        
 
     }
 

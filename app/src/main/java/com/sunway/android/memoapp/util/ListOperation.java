@@ -22,7 +22,7 @@ public class ListOperation {
         listViewItems.add(memoType);
     }
 
-    public static void modifyList(String textid,String oldTitle, String oldDetails,String newTitle, String newDetails) {
+    public static void modifyTextList(String textid, int photosCount, String oldTitle, String oldDetails, String newTitle, String newDetails) {
 
         for (int counter=0;counter<listViewItems.size();counter++) {
 
@@ -33,6 +33,7 @@ public class ListOperation {
                 if (memoItem.getTitle().equals(oldTitle) && memoItem.getContent().equals(oldDetails) && memoItem.getMemoID().equals(textid)){
                 memoItem.setTitle(newTitle);
                 memoItem.setContent(newDetails);
+                    memoItem.setPhotosCount(photosCount);
             }
             }
         }

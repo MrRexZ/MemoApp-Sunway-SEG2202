@@ -1,11 +1,18 @@
 package com.sunway.android.memoapp.util;
 
+import android.app.Activity;
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.util.Log;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 
 import com.sunway.android.memoapp.model.MemoTextItem;
 
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -85,31 +92,18 @@ String output=input;
                     m = r.matcher(processedString);
                     if (m.find()) {
                         memoTextCountId=Integer.parseInt(m.group(1));
+
                     }
                 }
+
 
                 int startIndex = 0;
                 if (mode.equals("START")) startIndex = 0;
                 else if (mode.equals("ADD")) startIndex = (memoTextCountId - 1);
                 else if (mode.equals("EDIT") || mode.equals("DELETE")) startIndex = memoTextCountId;
 
-                for (int counterTextMemo=startIndex;counterTextMemo<=memoTextCountId;counterTextMemo++){
-                    String pattern = DELIMITER_LINE + DELIMITER_UNIT + (counterTextMemo) + DELIMITER_UNIT + "((?:.)*?)" + DELIMITER_LINE + "((?:.)*?)" + DELIMITER_LINE;
+                searchAndAdd(startIndex, processedString);
 
-
-                    System.out.println(pattern);
-                    Pattern r = Pattern.compile(pattern, Pattern.DOTALL);
-                    m = r.matcher(processedString);
-
-
-                    if (m.find()) {
-                        System.out.println("REGEX : "+ m.group(1) + "and"+ m.group(2));
-                        ListOperation.addToList(new MemoTextItem(counterTextMemo,m.group(1),m.group(2)));
-                    } else {
-                        System.out.println("NO MATCH");
-                    }
-
-                }
             }
         }
         catch (FileNotFoundException e) {
@@ -120,8 +114,27 @@ String output=input;
 
     }
 
+    private static void searchAndAdd(int startIndex, String processedString) {
+        for (int counterTextMemo = startIndex; counterTextMemo <= memoTextCountId; counterTextMemo++) {
+            String pattern = DELIMITER_LINE + DELIMITER_UNIT + (counterTextMemo) + DELIMITER_UNIT + DELIMITER_LINE + "photos=(\\d+)" + DELIMITER_LINE + "((?:.)*?)" + DELIMITER_LINE + "((?:.)*?)" + DELIMITER_LINE;
 
-    public static void writeUserTextMemoFile(String input_title, String input_detail) throws IOException {
+
+            System.out.println(pattern);
+            Pattern r = Pattern.compile(pattern, Pattern.DOTALL);
+            Matcher m = r.matcher(processedString);
+
+            if (m.find()) {
+                System.out.println("REGEX : " + m.group(2) + "and" + m.group(3));
+                ListOperation.addToList(new MemoTextItem(counterTextMemo, Integer.parseInt(m.group(1)), m.group(2), m.group(3)));
+            } else {
+                System.out.println("NO MATCH");
+            }
+
+        }
+    }
+
+
+    public static void writeUserTextMemoFile(String input_title, String input_detail, int num_of_photos) throws IOException {
 
 
         FileOutputStream fOut = appContext.openFileOutput("u_"+userID+".txt", Context.MODE_APPEND);
@@ -137,6 +150,10 @@ String output=input;
         outputStreamWriter.append(DELIMITER_UNIT);
         outputStreamWriter.append(String.valueOf(memoTextCountId));
         outputStreamWriter.append(DELIMITER_UNIT);
+        outputStreamWriter.append(DELIMITER_LINE);
+        System.out.println("num of photos:" + num_of_photos);
+        outputStreamWriter.append("photos=" + num_of_photos);
+        outputStreamWriter.append(DELIMITER_LINE);
         outputStreamWriter.append(input_title);
         outputStreamWriter.append(DELIMITER_LINE);
         outputStreamWriter.append(input_detail);
@@ -156,6 +173,25 @@ String output=input;
 
     public static int getMemoTextCountId() {
         return memoTextCountId;
+    }
+
+
+    public static void loadImageFromStorage(String path, String filename, LinearLayout linearLayout, int imageSize, Activity activity) {
+
+        try {
+            File f = new File(path, filename);
+            Bitmap b = BitmapFactory.decodeStream(new FileInputStream(f));
+            //   ImageView img=(ImageView)findViewById(R.id.imgPicker);
+            ImageView img = new ImageView(activity);
+            img.setImageBitmap(b);
+            LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(imageSize, imageSize);
+            img.setLayoutParams(layoutParams);
+
+            linearLayout.addView(img);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+
     }
 
 }

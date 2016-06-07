@@ -9,11 +9,13 @@ public class MemoTextItem implements MemoItem {
     private String title;
     private String content;
     private int memoid;
+    private int photosCount;
 
-    public MemoTextItem(int memoid, String title, String content) {
+    public MemoTextItem(int memoid, int photosCount, String title, String content) {
         setTitle(title);
         setContent(content);
         setMemoID(memoid);
+        setPhotosCount(photosCount);
     }
 
     public String getTitle() {
@@ -41,5 +43,11 @@ public class MemoTextItem implements MemoItem {
 
     }
 
+    public int getPhotosCount() {
+        return photosCount;
+    }
 
+    public void setPhotosCount(int photosCount) {
+        this.photosCount = photosCount;
+    }
 }

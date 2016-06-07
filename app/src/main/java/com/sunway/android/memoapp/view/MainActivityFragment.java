@@ -33,6 +33,7 @@ public class MainActivityFragment extends Fragment {
     private String input_title=null;
     private String input_details=null;
     private String mode=null;
+    private int photosCount = 0;
     private View rootView;
     private RecyclerView recyclerView;
     private MemoItemAdapter rcAdapter;
@@ -87,7 +88,9 @@ public class MainActivityFragment extends Fragment {
             public boolean onMenuItemClick(MenuItem arg0) {
                 int id = arg0.getItemId();
                 if (id == R.id.action_open_create_text_memo) {
-                    Intent showDetail = new Intent(getActivity(), TextDetailsMemoActivity.class);
+                    Intent showDetail = new Intent(getActivity(), TextDetailsMemoActivity.class)
+                            .putExtra("ACTION_MODE", "ADD")
+                            .putExtra("PHOTOS", 0);
                     startActivity(showDetail);
                     return true;
                 }
@@ -98,10 +101,12 @@ public class MainActivityFragment extends Fragment {
         return rootView;
     }
 
-    public void passInformation(String title, String details,String mode) {
+    public void passInformation(String title, String details, String mode, int photosCount) {
         input_title=title;
         input_details=details;
         this.mode=mode;
+        System.out.println("PHOTOSCOUNT : " + photosCount);
+        this.photosCount = photosCount;
 
     }
 
@@ -114,7 +119,8 @@ public class MainActivityFragment extends Fragment {
 
             if (mode.equals("ADD")) {
                 try {
-                    FileOperation.writeUserTextMemoFile(input_title, input_details);
+
+                    FileOperation.writeUserTextMemoFile(input_title, input_details, photosCount);
 
                 } catch (Exception e) {
                     System.err.println("can write NOT " + e.getMessage());
@@ -128,8 +134,9 @@ public class MainActivityFragment extends Fragment {
 
             FileOperation.readFile(mode, "u_" + FileOperation.userID + ".txt");
 
-             inflateLayout();
 
+//            rcAdapter.notifyDataSetChanged();
+            inflateLayout();
             input_title = "";
             input_details = "";
 
@@ -182,6 +189,8 @@ public class MainActivityFragment extends Fragment {
                 ListOperation.deleteList(memoItem.getMemoID(), memoItem.getTitle(), memoItem.getContent());
                 mode = "DELETE";
                 FileOperation.readFile(mode, "u_" + FileOperation.userID + ".txt");
+
+                //rcAdapter.notifyDataSetChanged();
                 inflateLayout();
             }
 

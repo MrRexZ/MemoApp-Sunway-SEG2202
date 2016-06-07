@@ -17,10 +17,12 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
+        setIntent(intent);
         MainActivityFragment mainActivityFragment= (MainActivityFragment) getSupportFragmentManager().findFragmentById(R.id.fragment);
         mainActivityFragment.passInformation(intent.getExtras().getString("TITLE"),
                                             intent.getExtras().getString("DETAILS"),
-                                            intent.getExtras().getString("ACTION_MODE"));
+                intent.getExtras().getString("ACTION_MODE"),
+                intent.getExtras().getInt("PHOTOS"));
         // FileOperation.passToFileOp(intent.getExtras().getString("TITLE"),intent.getExtras().getString("DETAILS"));
     }
 }

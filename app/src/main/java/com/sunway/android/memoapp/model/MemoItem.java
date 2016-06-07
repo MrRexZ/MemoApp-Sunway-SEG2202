@@ -7,11 +7,17 @@ public interface MemoItem  {
 
 
     String getTitle();
-    String getContent();
-    String getMemoID();
-
 
     void setTitle(String title);
+
+    String getContent();
+
     void setContent(String content);
+
+    String getMemoID();
+
+    int getPhotosCount();
+
+    void setPhotosCount(int photosCount);
     boolean equals(Object object);
 }
