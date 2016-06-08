@@ -164,9 +164,20 @@ String output=input;
 
     }
 
-    public static void deleteTextMemo(String memoID, String input_title, String input_details) {
-        replaceSelected(FileOperation.DELIMITER_LINE + FileOperation.DELIMITER_UNIT + memoID + FileOperation.DELIMITER_UNIT + input_title + FileOperation.DELIMITER_LINE + input_details + FileOperation.DELIMITER_LINE,
+    public static void deleteTextMemo(String memoID, int photosCount, String input_title, String input_details) {
+        replaceSelected(FileOperation.DELIMITER_LINE + FileOperation.DELIMITER_UNIT + memoID + FileOperation.DELIMITER_UNIT + FileOperation.DELIMITER_LINE + "photos=" + photosCount + FileOperation.DELIMITER_LINE + input_title + FileOperation.DELIMITER_LINE + input_details + FileOperation.DELIMITER_LINE,
                 "");
+
+
+    }
+
+    public static void deleteImagesMemo(String memoID, int photosCount) {
+        int start = 0;
+        while (start <= photosCount) {
+            String dir = appContext.getFilesDir().getAbsolutePath();
+            File f0 = new File(dir, "u_" + FileOperation.userID + "_img_" + memoID + "_" + (start++) + ".jpg");
+            f0.delete();
+        }
 
 
     }
@@ -181,12 +192,10 @@ String output=input;
         try {
             File f = new File(path, filename);
             Bitmap b = BitmapFactory.decodeStream(new FileInputStream(f));
-            //   ImageView img=(ImageView)findViewById(R.id.imgPicker);
             ImageView img = new ImageView(activity);
             img.setImageBitmap(b);
             LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(imageSize, imageSize);
             img.setLayoutParams(layoutParams);
-
             linearLayout.addView(img);
         } catch (FileNotFoundException e) {
             e.printStackTrace();

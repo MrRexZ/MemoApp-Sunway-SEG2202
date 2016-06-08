@@ -90,7 +90,8 @@ public class MainActivityFragment extends Fragment {
                 if (id == R.id.action_open_create_text_memo) {
                     Intent showDetail = new Intent(getActivity(), TextDetailsMemoActivity.class)
                             .putExtra("ACTION_MODE", "ADD")
-                            .putExtra("PHOTOS", 0);
+                            .putExtra("PHOTOS", 0)
+                            .putExtra("TEXTID", FileOperation.getMemoTextCountId());
                     startActivity(showDetail);
                     return true;
                 }
@@ -105,7 +106,6 @@ public class MainActivityFragment extends Fragment {
         input_title=title;
         input_details=details;
         this.mode=mode;
-        System.out.println("PHOTOSCOUNT : " + photosCount);
         this.photosCount = photosCount;
 
     }
@@ -115,7 +115,6 @@ public class MainActivityFragment extends Fragment {
         super.onResume();
         if (((input_details != null && input_title != null) && (!input_details.isEmpty() || !input_title.isEmpty()))
                 || (mode != null && input_details.isEmpty() && input_title.isEmpty() && mode.equals("EDIT"))) {
-
 
             if (mode.equals("ADD")) {
                 try {
@@ -135,7 +134,7 @@ public class MainActivityFragment extends Fragment {
             FileOperation.readFile(mode, "u_" + FileOperation.userID + ".txt");
 
 
-//            rcAdapter.notifyDataSetChanged();
+            rcAdapter.notifyDataSetChanged();
             inflateLayout();
             input_title = "";
             input_details = "";
@@ -144,6 +143,7 @@ public class MainActivityFragment extends Fragment {
         }
 
     }
+
 
     private void inflateLayout() {
 
@@ -185,13 +185,14 @@ public class MainActivityFragment extends Fragment {
         switch (item.getItemId()) {
             case (R.id.action_delete_memo): {
 
-                FileOperation.deleteTextMemo(memoItem.getMemoID(), memoItem.getTitle(), memoItem.getContent());
+                FileOperation.deleteTextMemo(memoItem.getMemoID(), memoItem.getPhotosCount(), memoItem.getTitle(), memoItem.getContent());
+                FileOperation.deleteImagesMemo(memoItem.getMemoID(), memoItem.getPhotosCount());
+
                 ListOperation.deleteList(memoItem.getMemoID(), memoItem.getTitle(), memoItem.getContent());
                 mode = "DELETE";
                 FileOperation.readFile(mode, "u_" + FileOperation.userID + ".txt");
 
-                //rcAdapter.notifyDataSetChanged();
-                inflateLayout();
+                rcAdapter.notifyDataSetChanged();
             }
 
         }

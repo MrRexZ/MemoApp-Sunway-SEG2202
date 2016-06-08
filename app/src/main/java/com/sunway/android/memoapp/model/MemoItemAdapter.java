@@ -49,11 +49,15 @@ public class MemoItemAdapter extends RecyclerView.Adapter<MemoItemViewHolder> {
         holder.memoID = ListOperation.getListViewItems().get(position).getMemoID();
         holder.photosCount = ListOperation.getListViewItems().get(position).getPhotosCount();
 
+        if (holder.photosHolder.getChildCount() > 0)
+            holder.photosHolder.removeAllViews();
         int start = 0;
+        int pos = 0;
         while (start <= holder.photosCount) {
-            FileOperation.loadImageFromStorage(context.getFilesDir().getPath().toString(), "u_" + FileOperation.userID + "_img_" + holder.memoID + "_" + (start++) + ".jpg", holder.photosHolder, 100, activity);
+            FileOperation.loadImageFromStorage(context.getFilesDir().getPath().toString(), "u_" + FileOperation.userID + "_img_" + holder.memoID + "_" + (start++) + ".jpg", holder.photosHolder, 400, activity);
+
         }
-        
+
 
     }
 

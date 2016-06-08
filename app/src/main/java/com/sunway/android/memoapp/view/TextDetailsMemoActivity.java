@@ -25,10 +25,10 @@ import com.sunway.android.memoapp.util.FileOperation;
 import com.sunway.android.memoapp.util.ListOperation;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 
 /**
  * Created by Mr_RexZ on 5/28/2016.
@@ -41,10 +41,10 @@ public class TextDetailsMemoActivity extends AppCompatActivity {
     private String newDetails;
     private String ACTION_MODE;
     private int SELECT_PICTURE = 1;
-    private String selectedImagePath;
     private int REQUEST_PERMISSION = 2;
     private String TAG = "SAVING IMAGE";
     private int detail_photosCount = 0;
+    private ArrayList<Bitmap> tempBitmaps = new ArrayList<>();
     private String latestImageName;
 
     @Override
@@ -52,7 +52,7 @@ public class TextDetailsMemoActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.memo_details);
         ACTION_MODE=getIntent().getStringExtra("ACTION_MODE");
-
+        tempBitmaps.clear();
         detail_photosCount = getIntent().getExtras().getInt("PHOTOS");
 
 
@@ -68,7 +68,6 @@ public class TextDetailsMemoActivity extends AppCompatActivity {
             String memoID = getIntent().getExtras().getString("TEXTID");
             int start = 0;
             while (start <= detail_photosCount) {
-
                 FileOperation.loadImageFromStorage(getApplicationContext().getFilesDir().getPath().toString(), "u_" + FileOperation.userID + "_img_" + memoID + "_" + (start++) + ".jpg", (LinearLayout) findViewById(R.id.linearlayout_details), 550, this);
 
             }
@@ -98,10 +97,10 @@ public class TextDetailsMemoActivity extends AppCompatActivity {
                             .putExtra("PHOTOS", detail_photosCount);
 
 
+                    int oldPhotosCount = getIntent().getExtras().getInt("PHOTOS");
                     if (getIntent().hasExtra("ACTION_MODE") && ACTION_MODE.equals("EDIT")){
 
                         String memoID=getIntent().getStringExtra("TEXTID");
-                        int oldPhotosCount = getIntent().getExtras().getInt("PHOTOS");
 
                         FileOperation.replaceSelected(
                                 FileOperation.DELIMITER_LINE + FileOperation.DELIMITER_UNIT + memoID + FileOperation.DELIMITER_UNIT + FileOperation.DELIMITER_LINE + "photos=" + oldPhotosCount + FileOperation.DELIMITER_LINE + oldTitle + FileOperation.DELIMITER_LINE + oldDetails + FileOperation.DELIMITER_LINE,
@@ -113,6 +112,12 @@ public class TextDetailsMemoActivity extends AppCompatActivity {
                     }
                     else
                         showMainActivity.putExtra("ACTION_MODE","ADD");
+
+                    int counter = 0;
+                    while (oldPhotosCount != detail_photosCount) {
+                        storeImage(tempBitmaps.get(counter++), oldPhotosCount);
+                        oldPhotosCount++;
+                    }
 
                     startActivity(showMainActivity);
                     return true;
@@ -157,38 +162,25 @@ public class TextDetailsMemoActivity extends AppCompatActivity {
                 cursor.close();
 
                 Bitmap yourSelectedImage = BitmapFactory.decodeFile(filePath);
+                ImageView img = new ImageView(this);
+                img.setImageBitmap(yourSelectedImage);
+                LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(550, 550);
+                img.setLayoutParams(layoutParams);
+                LinearLayout linearLayout = (LinearLayout) findViewById(R.id.linearlayout_details);
+                linearLayout.addView(img);
 
-                storeImage(yourSelectedImage);
+                tempBitmaps.add(yourSelectedImage);
+                detail_photosCount++;
 
 
                 System.out.println("PATH with : " + getApplicationContext().getFilesDir().getPath().toString() + "and" + latestImageName);
-                FileOperation.loadImageFromStorage(getApplicationContext().getFilesDir().getPath().toString(), latestImageName, (LinearLayout) findViewById(R.id.linearlayout_details), 550, this);
-//loadImageFromStorage(getApplicationContext().getFilesDir().getPath().toString(),latestImageName);
             }
         }
     }
 
-    private void loadImageFromStorage(String path, String filename) {
 
-        try {
-            File f = new File(path, filename);
-            Bitmap b = BitmapFactory.decodeStream(new FileInputStream(f));
-            //   ImageView img=(ImageView)findViewById(R.id.imgPicker);
-            ImageView img = new ImageView(this);
-            img.setImageBitmap(b);
-            LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(550, 550);
-            img.setLayoutParams(layoutParams);
-            LinearLayout linearLayout = (LinearLayout) findViewById(R.id.linearlayout_details);
-
-            linearLayout.addView(img);
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
-
-    }
-
-    private void storeImage(Bitmap image) {
-        File pictureFile = getOutputMediaFile();
+    private void storeImage(Bitmap image, int photoID) {
+        File pictureFile = getOutputMediaFile(photoID);
         if (pictureFile == null) {
             Log.d(TAG,
                     "Error creating media file, check storage permissions: ");// e.getMessage());
@@ -206,14 +198,13 @@ public class TextDetailsMemoActivity extends AppCompatActivity {
     }
 
 
-    private File getOutputMediaFile() {
-        // To be safe, you should check that the SDCard is mounted
-        // using Environment.getExternalStorageState() before doing this.
-        File mediaStorageDir = new File(
+    private File getOutputMediaFile(int photoID) {
+
+       /* File mediaStorageDir = new File(
                 "/data/data/"
                         + getApplicationContext().getPackageName()
                         + "/files");
-
+*/
         //   String timeStamp = new SimpleDateFormat("ddMMyyyy_HHmm").format(new Date());
         File mediaFile;
         String mImageName = null;
@@ -225,17 +216,13 @@ public class TextDetailsMemoActivity extends AppCompatActivity {
             memoID = FileOperation.getMemoTextCountId();
         }
 
-        mImageName = "u_" + FileOperation.userID + "_img_" + memoID + "_" + detail_photosCount++ + ".jpg";
+        mImageName = "u_" + FileOperation.userID + "_img_" + memoID + "_" + photoID + ".jpg";
 
         latestImageName = mImageName;
         mediaFile = new File(getApplicationContext().getFilesDir().getPath().toString() + File.separator + latestImageName);
 
         return mediaFile;
     }
-
-
-
-
 
 
     @Override

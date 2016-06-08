@@ -30,9 +30,11 @@ public class MemoItemViewHolder extends RecyclerView.ViewHolder implements View.
         itemView.setOnClickListener(this);
         itemView.setOnLongClickListener(this);
 
+
         titleName = (TextView) itemView.findViewById(R.id.list_item_title);
         contentName = (TextView) itemView.findViewById(R.id.list_item_content);
         photosHolder = (LinearLayout) itemView.findViewById(R.id.photosHolder);
+        photosHolder.setOnClickListener(this);
         this.context = context;
         this.mAdapter = mAdapter;
 
@@ -46,11 +48,16 @@ public class MemoItemViewHolder extends RecyclerView.ViewHolder implements View.
 
         if (view.getId() == R.id.card_view_list_text) {
             Intent showDetail = new Intent(context, TextDetailsMemoActivity.class)
-                    .putExtra("ACTION_MODE", "EDIT").putExtra("TEXTID", memoitem.getMemoID())
+                    .putExtra("ACTION_MODE", "EDIT")
+                    .putExtra("TEXTID", memoitem.getMemoID())
                     .putExtra("TITLE", memoitem.getTitle())
                     .putExtra("DETAILS", memoitem.getContent())
                     .putExtra("PHOTOS", memoitem.getPhotosCount());
             context.startActivity(showDetail);
+        }
+
+        if (view.getId() == R.id.photosHolder) {
+            System.out.println("IT WORKS!!!");
         }
     }
 
