@@ -47,10 +47,10 @@ public class MainActivityFragment extends Fragment {
         setHasOptionsMenu(true);
         if (savedInstanceState==null) {
             //writeFile();
+
             FileOperation.passAppContext(getActivity().getApplicationContext());
             ListOperation.clearListView();
             FileOperation.readFile("START", "u_" + FileOperation.userID + ".txt");
-
 
         }
 
@@ -64,7 +64,10 @@ public class MainActivityFragment extends Fragment {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-
+        int id = item.getItemId();
+        if (id == R.id.action_delete_temp_file) {
+            FileOperation.deleteTempFile();
+        }
         return false;
     }
 
@@ -94,6 +97,7 @@ public class MainActivityFragment extends Fragment {
                             .putExtra("TEXTID", FileOperation.getMemoTextCountId());
                     startActivity(showDetail);
                     return true;
+                } else if (id == R.id.action_create_drawing_memo) {
                 }
                 return false;
             }
@@ -125,17 +129,19 @@ public class MainActivityFragment extends Fragment {
                     System.err.println("can write NOT " + e.getMessage());
                 }
 
-
-                FileOperation.replaceSelected( FileOperation.DELIMITER_LINE+"counter="+ ((FileOperation.getMemoTextCountId()) - 1) +FileOperation.DELIMITER_LINE,
+                System.out.println("the ID before add :" + ((FileOperation.getMemoTextCountId()) - 1));
+                System.out.println("the ID after add :" + ((FileOperation.getMemoTextCountId())));
+                FileOperation.replaceSelected(
+                        FileOperation.DELIMITER_LINE + "counter=" + ((FileOperation.getMemoTextCountId()) - 1) + FileOperation.DELIMITER_LINE,
                         FileOperation.DELIMITER_LINE+"counter="+ ((FileOperation.getMemoTextCountId())) +FileOperation.DELIMITER_LINE);
-
+                System.out.println("the ID : " + FileOperation.getMemoTextCountId());
             }
 
             FileOperation.readFile(mode, "u_" + FileOperation.userID + ".txt");
-
+            System.out.println("the ID after readfile : " + FileOperation.getMemoTextCountId());
 
             rcAdapter.notifyDataSetChanged();
-            inflateLayout();
+            //inflateLayout();
             input_title = "";
             input_details = "";
 
@@ -192,6 +198,7 @@ public class MainActivityFragment extends Fragment {
                 mode = "DELETE";
                 FileOperation.readFile(mode, "u_" + FileOperation.userID + ".txt");
 
+                //inflateLayout();
                 rcAdapter.notifyDataSetChanged();
             }
 

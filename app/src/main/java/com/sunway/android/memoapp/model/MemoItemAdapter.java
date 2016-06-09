@@ -2,15 +2,22 @@ package com.sunway.android.memoapp.model;
 
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 
 import com.sunway.android.memoapp.R;
 import com.sunway.android.memoapp.util.FileOperation;
 import com.sunway.android.memoapp.util.ListOperation;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.util.List;
 
 /**
@@ -35,7 +42,7 @@ public class MemoItemAdapter extends RecyclerView.Adapter<MemoItemViewHolder> {
     {
         View layoutView = LayoutInflater.from(parent.getContext()).inflate(
                 R.layout.list_item_text_memo, null);
-        MemoItemViewHolder rcv = new MemoItemViewHolder(layoutView, context, this);
+        MemoItemViewHolder rcv = new MemoItemViewHolder(layoutView, context, this, activity);
 
 
         return rcv;
@@ -49,14 +56,31 @@ public class MemoItemAdapter extends RecyclerView.Adapter<MemoItemViewHolder> {
         holder.memoID = ListOperation.getListViewItems().get(position).getMemoID();
         holder.photosCount = ListOperation.getListViewItems().get(position).getPhotosCount();
 
-        if (holder.photosHolder.getChildCount() > 0)
-            holder.photosHolder.removeAllViews();
+        if (holder.photosRecyclerView.getChildCount() > 0) {
+            holder.photosRecyclerView.removeAllViews();
+            holder.imageViewList.clear();
+        }
         int start = 0;
-        int pos = 0;
+
         while (start <= holder.photosCount) {
-            FileOperation.loadImageFromStorage(context.getFilesDir().getPath().toString(), "u_" + FileOperation.userID + "_img_" + holder.memoID + "_" + (start++) + ".jpg", holder.photosHolder, 400, activity);
+
+            File f = new File(FileOperation.appContext.getFilesDir().getPath().toString(), "u_" + FileOperation.userID + "_img_" + holder.memoID + "_" + (start++) + ".jpg");
+
+            Bitmap b = null;
+            try {
+                b = BitmapFactory.decodeStream(new FileInputStream(f));
+                ImageView img = new ImageView(holder.itemView.getContext());
+                img.setImageBitmap(b);
+                LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(150, 150);
+                img.setLayoutParams(layoutParams);
+                img.requestLayout();
+                holder.addPhotosToList(img);
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            }
 
         }
+        holder.setPhotosAdapter();
 
 
     }

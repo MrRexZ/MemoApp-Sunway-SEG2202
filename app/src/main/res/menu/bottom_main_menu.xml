@@ -5,14 +5,14 @@
     <item
         android:id="@+id/action_open_create_text_memo"
         android:orderInCategory="100"
-        app:showAsAction="ifRoom"
-        android:title="Text"/>
+        android:title="Text"
+        app:showAsAction="ifRoom" />
 
     <item
         android:id="@+id/action_create_drawing_memo"
         android:orderInCategory="100"
-        app:showAsAction="ifRoom"
-        android:title="Draw"/>
+        android:title="Delete TempFile"
+        app:showAsAction="ifRoom" />
 
 
 </menu>

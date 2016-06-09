@@ -7,6 +7,7 @@ import android.graphics.BitmapFactory;
 import android.util.Log;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 
 import com.sunway.android.memoapp.model.MemoTextItem;
 
@@ -31,15 +32,12 @@ public class FileOperation {
     public final static String DELIMITER_UNIT       = Character.toString((char) 31);
     public static final String LINE_SEPERATOR  = System.getProperty("line.separator");
     public static int userID = 1;
+    public static Context appContext;
     private static int memoTextCountId = 0;
-    private static Context appContext;
-
 
     public static void passAppContext(Context context) {
-        appContext=context;
-
+        appContext = context;
     }
-
 
     public static void replaceSelected(String beforeReplace, String afterReplace) {
         try {
@@ -49,11 +47,10 @@ public class FileOperation {
             String line;
             String input = "";
 
-
+            System.out.println("called!");
             while ((line = file.readLine()) != null) input += line + FileOperation.LINE_SEPERATOR;
             file.close();
             input = input.replace(beforeReplace,afterReplace);
-String output=input;
             FileOutputStream fOut = appContext.openFileOutput("u_"+userID+".txt", Context.MODE_PRIVATE);
             OutputStreamWriter outputStreamWriter = new OutputStreamWriter(fOut);
             outputStreamWriter.write(input);
@@ -92,6 +89,7 @@ String output=input;
                     m = r.matcher(processedString);
                     if (m.find()) {
                         memoTextCountId=Integer.parseInt(m.group(1));
+                        System.out.println("the ID IN FIND : " + m.group(1));
 
                     }
                 }
@@ -124,7 +122,6 @@ String output=input;
             Matcher m = r.matcher(processedString);
 
             if (m.find()) {
-                System.out.println("REGEX : " + m.group(2) + "and" + m.group(3));
                 ListOperation.addToList(new MemoTextItem(counterTextMemo, Integer.parseInt(m.group(1)), m.group(2), m.group(3)));
             } else {
                 System.out.println("NO MATCH");
@@ -151,7 +148,6 @@ String output=input;
         outputStreamWriter.append(String.valueOf(memoTextCountId));
         outputStreamWriter.append(DELIMITER_UNIT);
         outputStreamWriter.append(DELIMITER_LINE);
-        System.out.println("num of photos:" + num_of_photos);
         outputStreamWriter.append("photos=" + num_of_photos);
         outputStreamWriter.append(DELIMITER_LINE);
         outputStreamWriter.append(input_title);
@@ -160,7 +156,11 @@ String output=input;
         outputStreamWriter.append(DELIMITER_LINE);
         outputStreamWriter.close();
 
-        memoTextCountId++;
+
+        System.out.println("the ID before : " + memoTextCountId);
+        memoTextCountId = memoTextCountId + 1;
+
+        System.out.println("the ID after : " + memoTextCountId);
 
     }
 
@@ -178,6 +178,25 @@ String output=input;
             File f0 = new File(dir, "u_" + FileOperation.userID + "_img_" + memoID + "_" + (start++) + ".jpg");
             f0.delete();
         }
+
+
+    }
+
+    public static void deleteTempFile() {
+        String dir = appContext.getFilesDir().getAbsolutePath();
+
+        int start = 0;
+        while (start < memoTextCountId) {
+
+            deleteImagesMemo(Integer.toString(start), ListOperation.getIndividualMemoItem(start).getPhotosCount());
+            start++;
+        }
+        File f0 = new File(dir, "u_" + FileOperation.userID + ".txt");
+
+        f0.delete();
+
+        Toast.makeText(appContext, "Temp file deleted",
+                Toast.LENGTH_LONG).show();
 
 
     }
