@@ -42,7 +42,7 @@ public class MemoItemAdapter extends RecyclerView.Adapter<MemoItemViewHolder> {
     {
         View layoutView = LayoutInflater.from(parent.getContext()).inflate(
                 R.layout.list_item_text_memo, null);
-        MemoItemViewHolder rcv = new MemoItemViewHolder(layoutView, context, this, activity);
+        MemoItemViewHolder rcv = new MemoItemViewHolder(layoutView, this, activity);
 
 
         return rcv;
@@ -60,11 +60,31 @@ public class MemoItemAdapter extends RecyclerView.Adapter<MemoItemViewHolder> {
             holder.photosRecyclerView.removeAllViews();
             holder.imageViewList.clear();
         }
-        int start = 0;
+        int count = 0;
 
+
+        while (count < holder.photosCount) {
+            String filePath = "u_" + FileOperation.userID + "_img_" + holder.memoID + "_" + (count++) + ".jpg";
+            File file = new File(MyApplication.getAppContext().getFilesDir().getPath().toString(), filePath);
+            if (file.exists()) {
+                Bitmap b = null;
+                try {
+                    b = BitmapFactory.decodeStream(new FileInputStream(file));
+                    ImageView img = new ImageView(holder.itemView.getContext());
+                    img.setImageBitmap(b);
+                    LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(150, 150);
+                    img.setLayoutParams(layoutParams);
+                    holder.addPhotosToList(img);
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                }
+
+            }
+        }
+/*
         while (start <= holder.photosCount) {
 
-            File f = new File(FileOperation.appContext.getFilesDir().getPath().toString(), "u_" + FileOperation.userID + "_img_" + holder.memoID + "_" + (start++) + ".jpg");
+         //   File f = new File(MyApplication.getAppContext().getFilesDir().getPath().toString(), "u_" + FileOperation.userID + "_img_" + holder.memoID + "_" + (start++) + ".jpg");
 
             Bitmap b = null;
             try {
@@ -73,13 +93,13 @@ public class MemoItemAdapter extends RecyclerView.Adapter<MemoItemViewHolder> {
                 img.setImageBitmap(b);
                 LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(150, 150);
                 img.setLayoutParams(layoutParams);
-                img.requestLayout();
                 holder.addPhotosToList(img);
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
             }
 
         }
+        */
         holder.setPhotosAdapter();
 
 
@@ -92,6 +112,7 @@ public class MemoItemAdapter extends RecyclerView.Adapter<MemoItemViewHolder> {
     }
 
     public int getPosition() {
+
         return position;
     }
 

@@ -12,15 +12,22 @@ import android.provider.MediaStore;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.ContextMenu;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
 import com.sunway.android.memoapp.R;
+import com.sunway.android.memoapp.model.MemoPhotosAdapter;
+import com.sunway.android.memoapp.util.DataConstant;
 import com.sunway.android.memoapp.util.FileOperation;
 import com.sunway.android.memoapp.util.ListOperation;
 
@@ -29,6 +36,8 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * Created by Mr_RexZ on 5/28/2016.
@@ -46,17 +55,34 @@ public class TextDetailsMemoActivity extends AppCompatActivity {
     private int detail_photosCount = 0;
     private ArrayList<Bitmap> tempBitmaps = new ArrayList<>();
     private String latestImageName;
+    private List<ImageView> imageViewArrayListDetails = new ArrayList<>();
+    private MemoPhotosAdapter memoPhotosAdapter;
+    private String memoID;
+    private ArrayList<String> filePathList = new ArrayList<>();
 
+
+    private List<ImageView> getImageViewList() {
+        return imageViewArrayListDetails;
+    }
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.memo_details);
-        ACTION_MODE=getIntent().getStringExtra("ACTION_MODE");
+        ACTION_MODE = getIntent().getStringExtra(DataConstant.ACTION_MODE);
         tempBitmaps.clear();
-        detail_photosCount = getIntent().getExtras().getInt("PHOTOS");
+        detail_photosCount = getIntent().getExtras().getInt(DataConstant.PHOTOS);
 
+        RecyclerView photosRecyclerView = (RecyclerView) findViewById(R.id.recycler_view_details);
+        memoID = getIntent().getStringExtra(DataConstant.TEXT_ID);
 
-        if (getIntent().hasExtra("ACTION_MODE") && ACTION_MODE.equals("EDIT")) {
+        StaggeredGridLayoutManager photosGridLayoutManager = new StaggeredGridLayoutManager(3, StaggeredGridLayoutManager.VERTICAL);
+        photosRecyclerView.setLayoutManager(photosGridLayoutManager);
+        memoPhotosAdapter = new MemoPhotosAdapter(this, imageViewArrayListDetails, memoID);
+        photosRecyclerView.setAdapter(memoPhotosAdapter);
+
+        registerForContextMenu(photosRecyclerView);
+
+        if (ACTION_MODE.equals("EDIT")) {
             EditText textviewTitle = (EditText) findViewById(R.id.title_text_input);
             EditText detailsviewTitle = (EditText) findViewById(R.id.details_text_input);
 
@@ -65,12 +91,16 @@ public class TextDetailsMemoActivity extends AppCompatActivity {
             textviewTitle.setText(oldTitle);
             detailsviewTitle.setText(oldDetails);
 
-            String memoID = getIntent().getExtras().getString("TEXTID");
-            int start = 0;
-            while (start <= detail_photosCount) {
-                FileOperation.loadImageFromStorage(getApplicationContext().getFilesDir().getPath().toString(), "u_" + FileOperation.userID + "_img_" + memoID + "_" + (start++) + ".jpg", (LinearLayout) findViewById(R.id.linearlayout_details), 550, this);
-
+            int count = 0;
+            while (count < detail_photosCount) {
+                String filePath = "u_" + FileOperation.userID + "_img_" + memoID + "_" + (count++) + ".jpg";
+                File file = new File(getApplicationContext().getFilesDir().getPath().toString(), filePath);
+                if (file.exists()) {
+                    imageViewArrayListDetails.add(FileOperation.loadImageFromStorage(getApplicationContext().getFilesDir().getPath().toString(), filePath, 550, this));
+                    filePathList.add(filePath);
+                }
             }
+
 
         }
 
@@ -98,9 +128,9 @@ public class TextDetailsMemoActivity extends AppCompatActivity {
 
 
                     int oldPhotosCount = getIntent().getExtras().getInt("PHOTOS");
-                    if (getIntent().hasExtra("ACTION_MODE") && ACTION_MODE.equals("EDIT")){
+                    if (ACTION_MODE.equals("EDIT")) {
 
-                        String memoID=getIntent().getStringExtra("TEXTID");
+                        String memoID = getIntent().getStringExtra(DataConstant.TEXT_ID);
 
                         FileOperation.replaceSelected(
                                 FileOperation.DELIMITER_LINE + FileOperation.DELIMITER_UNIT + memoID + FileOperation.DELIMITER_UNIT + FileOperation.DELIMITER_LINE + "photos=" + oldPhotosCount + FileOperation.DELIMITER_LINE + oldTitle + FileOperation.DELIMITER_LINE + oldDetails + FileOperation.DELIMITER_LINE,
@@ -113,9 +143,10 @@ public class TextDetailsMemoActivity extends AppCompatActivity {
                     else
                         showMainActivity.putExtra("ACTION_MODE","ADD");
 
-                    int counter = 0;
-                    while (oldPhotosCount != detail_photosCount) {
-                        storeImage(tempBitmaps.get(counter++), oldPhotosCount);
+                    Iterator iteratorBitmap = tempBitmaps.iterator();
+
+                    while (iteratorBitmap.hasNext()) {
+                        storeImage((Bitmap) iteratorBitmap.next(), oldPhotosCount);
                         oldPhotosCount++;
                     }
 
@@ -166,14 +197,11 @@ public class TextDetailsMemoActivity extends AppCompatActivity {
                 img.setImageBitmap(yourSelectedImage);
                 LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(550, 550);
                 img.setLayoutParams(layoutParams);
-                LinearLayout linearLayout = (LinearLayout) findViewById(R.id.linearlayout_details);
-                linearLayout.addView(img);
+                imageViewArrayListDetails.add(img);
+                memoPhotosAdapter.notifyDataSetChanged();
 
                 tempBitmaps.add(yourSelectedImage);
                 detail_photosCount++;
-
-
-                System.out.println("PATH with : " + getApplicationContext().getFilesDir().getPath().toString() + "and" + latestImageName);
             }
         }
     }
@@ -200,19 +228,15 @@ public class TextDetailsMemoActivity extends AppCompatActivity {
 
     private File getOutputMediaFile(int photoID) {
 
-       /* File mediaStorageDir = new File(
-                "/data/data/"
-                        + getApplicationContext().getPackageName()
-                        + "/files");
-*/
+
         //   String timeStamp = new SimpleDateFormat("ddMMyyyy_HHmm").format(new Date());
         File mediaFile;
         String mImageName = null;
 
         int memoID = 0;
-        if (getIntent().hasExtra("ACTION_MODE") && ACTION_MODE.equals("EDIT")) {
-            memoID = Integer.parseInt(getIntent().getStringExtra("TEXTID"));
-        } else if (getIntent().hasExtra("ACTION_MODE") && ACTION_MODE.equals("ADD")) {
+        if (getIntent().hasExtra("ACTION_MODE") && ACTION_MODE.equals(DataConstant.EDIT)) {
+            memoID = Integer.parseInt(getIntent().getStringExtra(DataConstant.TEXT_ID));
+        } else if (getIntent().hasExtra("ACTION_MODE") && ACTION_MODE.equals(DataConstant.ADD)) {
             memoID = FileOperation.getMemoTextCountId();
         }
 
@@ -229,6 +253,32 @@ public class TextDetailsMemoActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.upper_textdetailsmemo_menu, menu);
         return true;
+    }
+
+
+    @Override
+    public void onCreateContextMenu(ContextMenu menu, View v,
+                                    ContextMenu.ContextMenuInfo menuInfo) {
+
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.floating_context_memoitem_long_click, menu);
+
+
+    }
+
+    @Override
+    public boolean onContextItemSelected(MenuItem item) {
+
+        int position = memoPhotosAdapter.getPosition();
+        FileOperation.deleteIndividualPhotosMemo(filePathList.get(position));
+        filePathList.remove(position);
+        imageViewArrayListDetails.remove(position);
+        String mode = "DELETE";
+
+        FileOperation.readFile(mode, "u_" + FileOperation.userID + ".txt");
+        memoPhotosAdapter.notifyDataSetChanged();
+
+        return super.onContextItemSelected(item);
     }
 
 }

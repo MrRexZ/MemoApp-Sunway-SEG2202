@@ -11,24 +11,31 @@ import com.sunway.android.memoapp.R;
 /**
  * Created by Mr_RexZ on 6/8/2016.
  */
-public class MemoPhotosHolder extends RecyclerView.ViewHolder {
+public class MemoPhotosHolder extends RecyclerView.ViewHolder implements View.OnLongClickListener {
 
-    public MemoItemAdapter photosAdapter;
+    public MemoItemAdapter memoItemAdapter;
     public LinearLayout linearLayout;
+    private MemoPhotosAdapter memoPhotosAdapter;
     private Context context;
     private Activity activity;
     private int position;
 
 
-    public MemoPhotosHolder(View itemView, Context context, MemoItemAdapter mAdapter, Activity activity, String position) {
+    public MemoPhotosHolder(View itemView, Context context, Activity activity, String position, MemoItemAdapter memoItemAdapter, MemoPhotosAdapter memoPhotosAdapter) {
         super(itemView);
         this.context = context;
-        this.photosAdapter = mAdapter;
+        this.memoItemAdapter = memoItemAdapter;
         this.activity = activity;
         linearLayout = (LinearLayout) itemView.findViewById(R.id.linearlayout_list_item_photos_memo);
-
+        this.memoPhotosAdapter = memoPhotosAdapter;
         this.position = Integer.parseInt(position);
+        linearLayout.setOnLongClickListener(this);
     }
 
 
+    @Override
+    public boolean onLongClick(View v) {
+        memoPhotosAdapter.setPosition(getAdapterPosition());
+        return false;
+    }
 }

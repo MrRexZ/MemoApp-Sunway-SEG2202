@@ -6,13 +6,16 @@ import android.support.v7.app.AppCompatActivity;
 
 import com.sunway.android.memoapp.R;
 
+import java.io.Serializable;
 
-public class MainActivity extends AppCompatActivity {
+
+public class MainActivity extends AppCompatActivity implements Serializable {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
     }
+
 
     @Override
     protected void onNewIntent(Intent intent) {

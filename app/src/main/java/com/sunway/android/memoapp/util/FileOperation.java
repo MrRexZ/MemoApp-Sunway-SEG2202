@@ -10,6 +10,7 @@ import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.sunway.android.memoapp.model.MemoTextItem;
+import com.sunway.android.memoapp.model.MyApplication;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -32,26 +33,20 @@ public class FileOperation {
     public final static String DELIMITER_UNIT       = Character.toString((char) 31);
     public static final String LINE_SEPERATOR  = System.getProperty("line.separator");
     public static int userID = 1;
-    public static Context appContext;
     private static int memoTextCountId = 0;
-
-    public static void passAppContext(Context context) {
-        appContext = context;
-    }
 
     public static void replaceSelected(String beforeReplace, String afterReplace) {
         try {
-            InputStream inputStream = appContext.openFileInput("u_"+userID+".txt");
+            InputStream inputStream = MyApplication.getAppContext().openFileInput("u_" + userID + ".txt");
             InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
             BufferedReader file = new BufferedReader(inputStreamReader);
             String line;
             String input = "";
 
-            System.out.println("called!");
             while ((line = file.readLine()) != null) input += line + FileOperation.LINE_SEPERATOR;
             file.close();
             input = input.replace(beforeReplace,afterReplace);
-            FileOutputStream fOut = appContext.openFileOutput("u_"+userID+".txt", Context.MODE_PRIVATE);
+            FileOutputStream fOut = MyApplication.getAppContext().openFileOutput("u_" + userID + ".txt", Context.MODE_PRIVATE);
             OutputStreamWriter outputStreamWriter = new OutputStreamWriter(fOut);
             outputStreamWriter.write(input);
             outputStreamWriter.flush();
@@ -67,7 +62,7 @@ public class FileOperation {
         Matcher m;
 
         try {
-            InputStream inputStream = appContext.openFileInput(fileName);
+            InputStream inputStream = MyApplication.getAppContext().openFileInput(fileName);
 
             if ( inputStream != null ) {
                 InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
@@ -89,8 +84,6 @@ public class FileOperation {
                     m = r.matcher(processedString);
                     if (m.find()) {
                         memoTextCountId=Integer.parseInt(m.group(1));
-                        System.out.println("the ID IN FIND : " + m.group(1));
-
                     }
                 }
 
@@ -117,7 +110,6 @@ public class FileOperation {
             String pattern = DELIMITER_LINE + DELIMITER_UNIT + (counterTextMemo) + DELIMITER_UNIT + DELIMITER_LINE + "photos=(\\d+)" + DELIMITER_LINE + "((?:.)*?)" + DELIMITER_LINE + "((?:.)*?)" + DELIMITER_LINE;
 
 
-            System.out.println(pattern);
             Pattern r = Pattern.compile(pattern, Pattern.DOTALL);
             Matcher m = r.matcher(processedString);
 
@@ -134,7 +126,7 @@ public class FileOperation {
     public static void writeUserTextMemoFile(String input_title, String input_detail, int num_of_photos) throws IOException {
 
 
-        FileOutputStream fOut = appContext.openFileOutput("u_"+userID+".txt", Context.MODE_APPEND);
+        FileOutputStream fOut = MyApplication.getAppContext().openFileOutput("u_" + userID + ".txt", Context.MODE_APPEND);
         OutputStreamWriter outputStreamWriter = new OutputStreamWriter(fOut);
 
         if (memoTextCountId==0) {
@@ -156,12 +148,7 @@ public class FileOperation {
         outputStreamWriter.append(DELIMITER_LINE);
         outputStreamWriter.close();
 
-
-        System.out.println("the ID before : " + memoTextCountId);
         memoTextCountId = memoTextCountId + 1;
-
-        System.out.println("the ID after : " + memoTextCountId);
-
     }
 
     public static void deleteTextMemo(String memoID, int photosCount, String input_title, String input_details) {
@@ -174,7 +161,7 @@ public class FileOperation {
     public static void deleteImagesMemo(String memoID, int photosCount) {
         int start = 0;
         while (start <= photosCount) {
-            String dir = appContext.getFilesDir().getAbsolutePath();
+            String dir = MyApplication.getAppContext().getFilesDir().getAbsolutePath();
             File f0 = new File(dir, "u_" + FileOperation.userID + "_img_" + memoID + "_" + (start++) + ".jpg");
             f0.delete();
         }
@@ -182,11 +169,18 @@ public class FileOperation {
 
     }
 
+    public static void deleteIndividualPhotosMemo(String fileName) {
+        String dir = MyApplication.getAppContext().getFilesDir().getAbsolutePath();
+        File f0 = new File(dir, fileName);
+        f0.delete();
+
+    }
+
     public static void deleteTempFile() {
-        String dir = appContext.getFilesDir().getAbsolutePath();
+        String dir = MyApplication.getAppContext().getFilesDir().getAbsolutePath();
 
         int start = 0;
-        while (start < memoTextCountId) {
+        while (start < ListOperation.getListViewItems().size()) {
 
             deleteImagesMemo(Integer.toString(start), ListOperation.getIndividualMemoItem(start).getPhotosCount());
             start++;
@@ -195,7 +189,7 @@ public class FileOperation {
 
         f0.delete();
 
-        Toast.makeText(appContext, "Temp file deleted",
+        Toast.makeText(MyApplication.getAppContext(), "Temp file deleted",
                 Toast.LENGTH_LONG).show();
 
 
@@ -206,7 +200,7 @@ public class FileOperation {
     }
 
 
-    public static void loadImageFromStorage(String path, String filename, LinearLayout linearLayout, int imageSize, Activity activity) {
+    public static ImageView loadImageFromStorage(String path, String filename, int imageSize, Activity activity) {
 
         try {
             File f = new File(path, filename);
@@ -215,11 +209,11 @@ public class FileOperation {
             img.setImageBitmap(b);
             LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(imageSize, imageSize);
             img.setLayoutParams(layoutParams);
-            linearLayout.addView(img);
+            return img;
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
-
+        return null;
     }
 
 }

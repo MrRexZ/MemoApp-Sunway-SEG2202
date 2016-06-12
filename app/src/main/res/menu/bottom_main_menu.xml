@@ -5,13 +5,13 @@
     <item
         android:id="@+id/action_open_create_text_memo"
         android:orderInCategory="100"
-        android:title="Text"
+        android:title="Create Text"
         app:showAsAction="ifRoom" />
 
     <item
         android:id="@+id/action_create_drawing_memo"
         android:orderInCategory="100"
-        android:title="Delete TempFile"
+        android:title="Draw Memo"
         app:showAsAction="ifRoom" />
 
 

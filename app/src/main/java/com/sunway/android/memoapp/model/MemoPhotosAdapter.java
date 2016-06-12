@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import com.sunway.android.memoapp.R;
+import com.sunway.android.memoapp.util.DataConstant;
 
 import java.util.List;
 
@@ -20,28 +21,38 @@ public class MemoPhotosAdapter extends RecyclerView.Adapter<MemoPhotosHolder> {
     private Context context;
     private Activity activity;
     private List<ImageView> imageViewList;
-    private String position;
+    private String memoID;
+    private int adapterPosition;
     private MemoItemAdapter memoItemAdapter;
+    private int flag;
+
+
+    public MemoPhotosAdapter(Activity activity, List<ImageView> imageViewList, String memoID) {
+        this.context = activity;
+        this.activity = activity;
+        this.imageViewList = imageViewList;
+        this.memoID = memoID;
+        this.flag = DataConstant.TEXT_DETAILS_MEMO_RECYCLERVIEWADAPTER;
+    }
 
     public MemoPhotosAdapter(Activity activity, List<ImageView> imageViewList, String memoID, MemoItemAdapter memoItemAdapter) {
         this.context = activity;
         this.activity = activity;
         this.imageViewList = imageViewList;
-        this.position = memoID;
+        this.memoID = memoID;
         this.memoItemAdapter = memoItemAdapter;
+        this.flag = DataConstant.NESTED_TEXT_MEMO_RECYCLERVIEWADAPTER;
     }
 
     @Override
     public MemoPhotosHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View layoutView = LayoutInflater.from(parent.getContext()).inflate(
                 R.layout.list_item_photos_memo, parent, false);
-        MemoPhotosHolder photosHolder = new MemoPhotosHolder(layoutView, context, memoItemAdapter, activity, position);
-        layoutView.setOnLongClickListener(new View.OnLongClickListener() {
+        MemoPhotosHolder photosHolder = new MemoPhotosHolder(layoutView, context, activity, memoID, memoItemAdapter, this);
+        layoutView.setOnClickListener(new View.OnClickListener() {
             @Override
-            public boolean onLongClick(View v) {
-                int pos = Integer.parseInt(position);
-                memoItemAdapter.setPosition(pos);
-                return false;
+            public void onClick(View v) {
+                System.out.println("MEH");
             }
         });
 
@@ -53,17 +64,34 @@ public class MemoPhotosAdapter extends RecyclerView.Adapter<MemoPhotosHolder> {
     @Override
     public void onBindViewHolder(MemoPhotosHolder holder, int position) {
 
-        if (imageViewList.get(position).getParent() != null)
-            ((ViewGroup) imageViewList.get(position).getParent()).removeView(imageViewList.get(position));
-        holder.linearLayout.addView(imageViewList.get(position));
+        if (holder.linearLayout.getChildCount() > 0) {
+            holder.linearLayout.removeAllViews();
+        }
+
+        if (imageViewList.get(position) != null) {
+            if (imageViewList.get(position).getParent() != null)
+                ((ViewGroup) imageViewList.get(position).getParent()).removeView(imageViewList.get(position));
+            holder.linearLayout.addView(imageViewList.get(position));
+        }
 
     }
 
-    public void setPosition(String position) {
-        this.position = position;
-        memoItemAdapter.setPosition(Integer.parseInt(position));
+    public int getPosition() {
+        return adapterPosition;
     }
 
+    public void setPosition(int adapterPosition) {
+        this.adapterPosition = adapterPosition;
+        // memoItemAdapter.setPosition(Integer.parseInt(position));
+    }
+
+    public List<ImageView> getImagesList() {
+        return imageViewList;
+    }
+
+    public void removeImagesList(int index) {
+        imageViewList.remove(index);
+    }
     @Override
     public int getItemCount() {
         return imageViewList.size();

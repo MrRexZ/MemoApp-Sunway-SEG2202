@@ -9,16 +9,21 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.support.v7.widget.Toolbar;
 import android.view.ContextMenu;
+import android.view.GestureDetector;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.sunway.android.memoapp.R;
 import com.sunway.android.memoapp.model.MemoItem;
 import com.sunway.android.memoapp.model.MemoItemAdapter;
+import com.sunway.android.memoapp.model.MyApplication;
+import com.sunway.android.memoapp.util.DataConstant;
 import com.sunway.android.memoapp.util.FileOperation;
 import com.sunway.android.memoapp.util.ListOperation;
 
@@ -37,7 +42,8 @@ public class MainActivityFragment extends Fragment {
     private View rootView;
     private RecyclerView recyclerView;
     private MemoItemAdapter rcAdapter;
-
+    private View child;
+    private RecyclerView viewRecycle;
     public MainActivityFragment() {
     }
 
@@ -46,9 +52,6 @@ public class MainActivityFragment extends Fragment {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
         if (savedInstanceState==null) {
-            //writeFile();
-
-            FileOperation.passAppContext(getActivity().getApplicationContext());
             ListOperation.clearListView();
             FileOperation.readFile("START", "u_" + FileOperation.userID + ".txt");
 
@@ -92,9 +95,9 @@ public class MainActivityFragment extends Fragment {
                 int id = arg0.getItemId();
                 if (id == R.id.action_open_create_text_memo) {
                     Intent showDetail = new Intent(getActivity(), TextDetailsMemoActivity.class)
-                            .putExtra("ACTION_MODE", "ADD")
-                            .putExtra("PHOTOS", 0)
-                            .putExtra("TEXTID", FileOperation.getMemoTextCountId());
+                            .putExtra(DataConstant.ACTION_MODE, DataConstant.ADD)
+                            .putExtra(DataConstant.PHOTOS, 0)
+                            .putExtra(DataConstant.TEXT_ID, Integer.toString(FileOperation.getMemoTextCountId()));
                     startActivity(showDetail);
                     return true;
                 } else if (id == R.id.action_create_drawing_memo) {
@@ -129,19 +132,16 @@ public class MainActivityFragment extends Fragment {
                     System.err.println("can write NOT " + e.getMessage());
                 }
 
-                System.out.println("the ID before add :" + ((FileOperation.getMemoTextCountId()) - 1));
-                System.out.println("the ID after add :" + ((FileOperation.getMemoTextCountId())));
+
                 FileOperation.replaceSelected(
                         FileOperation.DELIMITER_LINE + "counter=" + ((FileOperation.getMemoTextCountId()) - 1) + FileOperation.DELIMITER_LINE,
                         FileOperation.DELIMITER_LINE+"counter="+ ((FileOperation.getMemoTextCountId())) +FileOperation.DELIMITER_LINE);
-                System.out.println("the ID : " + FileOperation.getMemoTextCountId());
+
             }
 
             FileOperation.readFile(mode, "u_" + FileOperation.userID + ".txt");
-            System.out.println("the ID after readfile : " + FileOperation.getMemoTextCountId());
 
             rcAdapter.notifyDataSetChanged();
-            //inflateLayout();
             input_title = "";
             input_details = "";
 
@@ -165,6 +165,64 @@ public class MainActivityFragment extends Fragment {
                 getActivity(), sList);
         recyclerView.setAdapter(rcAdapter);
 
+
+        recyclerView.addOnItemTouchListener(new RecyclerView.OnItemTouchListener() {
+            GestureDetector gestureDetector = new GestureDetector(MyApplication.getAppContext(), new GestureDetector.SimpleOnGestureListener() {
+
+                @Override
+                public boolean onSingleTapUp(MotionEvent e) {
+                    if (child != null) {
+                        int position = viewRecycle.getChildAdapterPosition(child);
+                        MemoItem memoitem = ListOperation.getIndividualMemoItem(position);
+                        Intent showDetail = new Intent(getActivity(), TextDetailsMemoActivity.class)
+                                .putExtra("ACTION_MODE", "EDIT")
+                                .putExtra(DataConstant.TEXT_ID, memoitem.getMemoID())
+                                .putExtra("TITLE", memoitem.getTitle())
+                                .putExtra("DETAILS", memoitem.getContent())
+                                .putExtra("PHOTOS", memoitem.getPhotosCount());
+                        startActivity(showDetail);
+                    }
+
+
+                    return true;
+                }
+
+                @Override
+                public void onLongPress(MotionEvent e) {
+                    if (child != null) {
+                        int position = viewRecycle.getChildAdapterPosition(child);
+                        rcAdapter.setPosition(position);
+                        registerForContextMenu(viewRecycle);
+                        getActivity().openContextMenu(viewRecycle);
+                        Toast.makeText(MyApplication.getAppContext(), "WAH" + position, Toast.LENGTH_SHORT).show();
+
+
+                    }
+                }
+            });
+
+            @Override
+            public boolean onInterceptTouchEvent(RecyclerView rv, MotionEvent e) {
+
+                child = rv.findChildViewUnder(e.getX(), e.getY());
+                viewRecycle = rv;
+
+                return child != null && gestureDetector.onTouchEvent(e);
+
+            }
+
+            @Override
+            public void onTouchEvent(RecyclerView rv, MotionEvent e) {
+
+            }
+
+
+            @Override
+            public void onRequestDisallowInterceptTouchEvent(boolean disallowIntercept) {
+
+            }
+        });
+
     }
 
     @Override
@@ -179,6 +237,7 @@ public class MainActivityFragment extends Fragment {
         MenuInflater inflater = getActivity().getMenuInflater();
         inflater.inflate(R.menu.floating_context_memoitem_long_click, menu);
 
+
     }
 
     @Override
@@ -186,10 +245,7 @@ public class MainActivityFragment extends Fragment {
 
 
         int position =rcAdapter.getPosition();
-        System.out.println("THE POSITION IS : " + position);
         MemoItem memoItem = ListOperation.getIndividualMemoItem(position);
-        switch (item.getItemId()) {
-            case (R.id.action_delete_memo): {
 
                 FileOperation.deleteTextMemo(memoItem.getMemoID(), memoItem.getPhotosCount(), memoItem.getTitle(), memoItem.getContent());
                 FileOperation.deleteImagesMemo(memoItem.getMemoID(), memoItem.getPhotosCount());
@@ -200,9 +256,9 @@ public class MainActivityFragment extends Fragment {
 
                 //inflateLayout();
                 rcAdapter.notifyDataSetChanged();
-            }
 
-        }
         return super.onContextItemSelected(item);
     }
+
+
 }

@@ -4,9 +4,8 @@
     android:id="@+id/card_view_list_text"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    card_view:cardUseCompatPadding="true"
-
->
+    android:foreground="?android:attr/selectableItemBackground"
+    card_view:cardUseCompatPadding="true">
 
     <LinearLayout
         android:id="@+id/linearlayout_list_item_text_memo"
@@ -15,37 +14,30 @@
         android:background="@color/yellow"
         android:orientation="vertical">
 
-        <LinearLayout
-            android:id="@+id/linearlayout_photos_recyclerview_container"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="@color/yellow"
-            android:clickable="true"
-            android:orientation="vertical">
+
 
             <android.support.v7.widget.RecyclerView
                 android:id="@+id/recycler_view_photos_memo"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:duplicateParentState="true"
+                android:layout_height="match_parent"
                 android:foregroundGravity="center"
                 android:scrollbars="vertical" />
-        </LinearLayout>
+
 
         <TextView
-        android:id="@+id/list_item_title"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Feel The Light"
-        android:textColor="#000000"
-        android:textSize="23dp" />
+            android:id="@+id/list_item_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Feel The Light"
+            android:textColor="#000000"
+            android:textSize="23dp" />
 
 
-    <TextView
-        android:id="@+id/list_item_content"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Home" />
+        <TextView
+            android:id="@+id/list_item_content"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Home" />
 
 
     </LinearLayout>
