@@ -91,7 +91,8 @@ public class FileOperation {
                 int startIndex = 0;
                 if (mode.equals("START")) startIndex = 0;
                 else if (mode.equals("ADD")) startIndex = (memoTextCountId - 1);
-                else if (mode.equals("EDIT") || mode.equals("DELETE")) startIndex = memoTextCountId;
+                else if (mode.equals("EDIT") || mode.equals("DELETE") || mode.equals("BACK"))
+                    startIndex = memoTextCountId;
 
                 searchAndAdd(startIndex, processedString);
 

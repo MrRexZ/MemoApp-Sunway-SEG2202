@@ -51,6 +51,8 @@ public class MemoItemAdapter extends RecyclerView.Adapter<MemoItemViewHolder> {
     @Override
     public void onBindViewHolder(MemoItemViewHolder holder, int position)
     {
+
+        System.out.println("the pos is :" + position);
         holder.titleName.setText(ListOperation.getListViewItems().get(position).getTitle());
         holder.contentName.setText(ListOperation.getListViewItems().get(position).getContent());
         holder.memoID = ListOperation.getListViewItems().get(position).getMemoID();

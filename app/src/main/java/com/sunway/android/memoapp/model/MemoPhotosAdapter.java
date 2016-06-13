@@ -49,13 +49,6 @@ public class MemoPhotosAdapter extends RecyclerView.Adapter<MemoPhotosHolder> {
         View layoutView = LayoutInflater.from(parent.getContext()).inflate(
                 R.layout.list_item_photos_memo, parent, false);
         MemoPhotosHolder photosHolder = new MemoPhotosHolder(layoutView, context, activity, memoID, memoItemAdapter, this);
-        layoutView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                System.out.println("MEH");
-            }
-        });
-
 
         return photosHolder;
     }
@@ -82,7 +75,6 @@ public class MemoPhotosAdapter extends RecyclerView.Adapter<MemoPhotosHolder> {
 
     public void setPosition(int adapterPosition) {
         this.adapterPosition = adapterPosition;
-        // memoItemAdapter.setPosition(Integer.parseInt(position));
     }
 
     public List<ImageView> getImagesList() {

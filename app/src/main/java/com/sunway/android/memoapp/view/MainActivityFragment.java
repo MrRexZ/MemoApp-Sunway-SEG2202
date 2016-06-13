@@ -9,25 +9,23 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.support.v7.widget.Toolbar;
 import android.view.ContextMenu;
-import android.view.GestureDetector;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import com.sunway.android.memoapp.R;
 import com.sunway.android.memoapp.model.MemoItem;
 import com.sunway.android.memoapp.model.MemoItemAdapter;
-import com.sunway.android.memoapp.model.MyApplication;
 import com.sunway.android.memoapp.util.DataConstant;
 import com.sunway.android.memoapp.util.FileOperation;
 import com.sunway.android.memoapp.util.ListOperation;
 
 import java.util.List;
+
+import controller.MainActivityFragmentTouchListener;
 
 /**
  * Created by Mr_RexZ on 5/28/2016.
@@ -42,8 +40,7 @@ public class MainActivityFragment extends Fragment {
     private View rootView;
     private RecyclerView recyclerView;
     private MemoItemAdapter rcAdapter;
-    private View child;
-    private RecyclerView viewRecycle;
+
     public MainActivityFragment() {
     }
 
@@ -53,6 +50,7 @@ public class MainActivityFragment extends Fragment {
         setHasOptionsMenu(true);
         if (savedInstanceState==null) {
             ListOperation.clearListView();
+            mode = "START";
             FileOperation.readFile("START", "u_" + FileOperation.userID + ".txt");
 
         }
@@ -123,6 +121,8 @@ public class MainActivityFragment extends Fragment {
         if (((input_details != null && input_title != null) && (!input_details.isEmpty() || !input_title.isEmpty()))
                 || (mode != null && input_details.isEmpty() && input_title.isEmpty() && mode.equals("EDIT"))) {
 
+
+            System.out.println("weirdd");
             if (mode.equals("ADD")) {
                 try {
 
@@ -141,7 +141,9 @@ public class MainActivityFragment extends Fragment {
 
             FileOperation.readFile(mode, "u_" + FileOperation.userID + ".txt");
 
+            //  if (!mode.equals("BACK")) {
             rcAdapter.notifyDataSetChanged();
+            // }
             input_title = "";
             input_details = "";
 
@@ -166,62 +168,7 @@ public class MainActivityFragment extends Fragment {
         recyclerView.setAdapter(rcAdapter);
 
 
-        recyclerView.addOnItemTouchListener(new RecyclerView.OnItemTouchListener() {
-            GestureDetector gestureDetector = new GestureDetector(MyApplication.getAppContext(), new GestureDetector.SimpleOnGestureListener() {
-
-                @Override
-                public boolean onSingleTapUp(MotionEvent e) {
-                    if (child != null) {
-                        int position = viewRecycle.getChildAdapterPosition(child);
-                        MemoItem memoitem = ListOperation.getIndividualMemoItem(position);
-                        Intent showDetail = new Intent(getActivity(), TextDetailsMemoActivity.class)
-                                .putExtra("ACTION_MODE", "EDIT")
-                                .putExtra(DataConstant.TEXT_ID, memoitem.getMemoID())
-                                .putExtra("TITLE", memoitem.getTitle())
-                                .putExtra("DETAILS", memoitem.getContent())
-                                .putExtra("PHOTOS", memoitem.getPhotosCount());
-                        startActivity(showDetail);
-                    }
-
-
-                    return true;
-                }
-
-                @Override
-                public void onLongPress(MotionEvent e) {
-                    if (child != null) {
-                        int position = viewRecycle.getChildAdapterPosition(child);
-                        rcAdapter.setPosition(position);
-                        registerForContextMenu(viewRecycle);
-                        getActivity().openContextMenu(viewRecycle);
-                        Toast.makeText(MyApplication.getAppContext(), "WAH" + position, Toast.LENGTH_SHORT).show();
-
-
-                    }
-                }
-            });
-
-            @Override
-            public boolean onInterceptTouchEvent(RecyclerView rv, MotionEvent e) {
-
-                child = rv.findChildViewUnder(e.getX(), e.getY());
-                viewRecycle = rv;
-
-                return child != null && gestureDetector.onTouchEvent(e);
-
-            }
-
-            @Override
-            public void onTouchEvent(RecyclerView rv, MotionEvent e) {
-
-            }
-
-
-            @Override
-            public void onRequestDisallowInterceptTouchEvent(boolean disallowIntercept) {
-
-            }
-        });
+        recyclerView.addOnItemTouchListener(new MainActivityFragmentTouchListener(this, rcAdapter));
 
     }
 
