@@ -21,14 +21,14 @@ public class MemoPhotosHolder extends RecyclerView.ViewHolder implements View.On
     private int position;
 
 
-    public MemoPhotosHolder(View itemView, Context context, Activity activity, String position, MemoItemAdapter memoItemAdapter, MemoPhotosAdapter memoPhotosAdapter) {
+    public MemoPhotosHolder(View itemView, Context context, Activity activity, int position, MemoItemAdapter memoItemAdapter, MemoPhotosAdapter memoPhotosAdapter) {
         super(itemView);
         this.context = context;
         this.memoItemAdapter = memoItemAdapter;
         this.activity = activity;
         linearLayout = (LinearLayout) itemView.findViewById(R.id.linearlayout_list_item_photos_memo);
         this.memoPhotosAdapter = memoPhotosAdapter;
-        this.position = Integer.parseInt(position);
+        this.position = position;
         linearLayout.setOnLongClickListener(this);
     }
 

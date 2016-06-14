@@ -34,8 +34,8 @@ public class MemoTextItem implements MemoItem {
         this.content = content;
     }
 
-    public String getMemoID() {
-        return Integer.toString(memoid);
+    public int getMemoID() {
+        return memoid;
     }
 
     public void setMemoID(int memoid) {

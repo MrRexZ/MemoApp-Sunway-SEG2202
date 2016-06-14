@@ -8,6 +8,9 @@ public class DataConstant {
     public static final String PHOTOS = "PHOTOS";
     public static final String TEXT_ID = "TEXT_ID";
     public static final String ADD = "ADD";
+
+    public static final String ADDDRAWING = "ADDDRAWING";
+    public static final String EDITDRAWING = "EDITDRAWING";
     public static final String EDIT = "EDIT";
 
 

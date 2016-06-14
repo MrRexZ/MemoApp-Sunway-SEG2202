@@ -9,6 +9,8 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
+import com.sunway.android.memoapp.model.MemoDrawingItem;
+import com.sunway.android.memoapp.model.MemoItem;
 import com.sunway.android.memoapp.model.MemoTextItem;
 import com.sunway.android.memoapp.model.MyApplication;
 
@@ -33,7 +35,8 @@ public class FileOperation {
     public final static String DELIMITER_UNIT       = Character.toString((char) 31);
     public static final String LINE_SEPERATOR  = System.getProperty("line.separator");
     public static int userID = 1;
-    private static int memoTextCountId = 0;
+    private static int memoCountId = 0;
+
 
     public static void replaceSelected(String beforeReplace, String afterReplace) {
         try {
@@ -83,16 +86,17 @@ public class FileOperation {
                     Pattern r=Pattern.compile(pattern);
                     m = r.matcher(processedString);
                     if (m.find()) {
-                        memoTextCountId=Integer.parseInt(m.group(1));
+                        memoCountId = Integer.parseInt(m.group(1));
                     }
                 }
 
 
                 int startIndex = 0;
                 if (mode.equals("START")) startIndex = 0;
-                else if (mode.equals("ADD")) startIndex = (memoTextCountId - 1);
-                else if (mode.equals("EDIT") || mode.equals("DELETE") || mode.equals("BACK"))
-                    startIndex = memoTextCountId;
+                else if (mode.equals("ADD") || mode.equals(DataConstant.ADDDRAWING))
+                    startIndex = (memoCountId - 1);
+                else if (mode.equals("EDIT") || mode.equals(DataConstant.EDITDRAWING) || mode.equals("DELETE") || mode.equals("BACK"))
+                    startIndex = memoCountId;
 
                 searchAndAdd(startIndex, processedString);
 
@@ -106,10 +110,10 @@ public class FileOperation {
 
     }
 
-    private static void searchAndAdd(int startIndex, String processedString) {
-        for (int counterTextMemo = startIndex; counterTextMemo <= memoTextCountId; counterTextMemo++) {
-            String pattern = DELIMITER_LINE + DELIMITER_UNIT + (counterTextMemo) + DELIMITER_UNIT + DELIMITER_LINE + "photos=(\\d+)" + DELIMITER_LINE + "((?:.)*?)" + DELIMITER_LINE + "((?:.)*?)" + DELIMITER_LINE;
 
+    private static void searchAndAdd(int startIndex, String processedString) {
+        for (int counterTextMemo = startIndex; counterTextMemo <= memoCountId; counterTextMemo++) {
+            String pattern = DELIMITER_LINE + DELIMITER_UNIT + (counterTextMemo) + DELIMITER_UNIT + DELIMITER_LINE + "photos=(\\d+)" + DELIMITER_LINE + "((?:.)*?)" + DELIMITER_LINE + "((?:.)*?)" + DELIMITER_LINE;
 
             Pattern r = Pattern.compile(pattern, Pattern.DOTALL);
             Matcher m = r.matcher(processedString);
@@ -117,7 +121,11 @@ public class FileOperation {
             if (m.find()) {
                 ListOperation.addToList(new MemoTextItem(counterTextMemo, Integer.parseInt(m.group(1)), m.group(2), m.group(3)));
             } else {
-                System.out.println("NO MATCH");
+
+                pattern = DELIMITER_LINE + DELIMITER_UNIT + (counterTextMemo) + DELIMITER_UNIT + DELIMITER_LINE + "Drawing";
+                r = Pattern.compile(pattern, Pattern.DOTALL);
+                m = r.matcher(processedString);
+                if (m.find()) ListOperation.addToList(new MemoDrawingItem(counterTextMemo));
             }
 
         }
@@ -130,7 +138,7 @@ public class FileOperation {
         FileOutputStream fOut = MyApplication.getAppContext().openFileOutput("u_" + userID + ".txt", Context.MODE_APPEND);
         OutputStreamWriter outputStreamWriter = new OutputStreamWriter(fOut);
 
-        if (memoTextCountId==0) {
+        if (memoCountId == 0) {
             outputStreamWriter.append(DELIMITER_LINE);
             outputStreamWriter.append("counter=0");
             outputStreamWriter.append(DELIMITER_LINE);
@@ -138,7 +146,7 @@ public class FileOperation {
 
         outputStreamWriter.append(DELIMITER_LINE);
         outputStreamWriter.append(DELIMITER_UNIT);
-        outputStreamWriter.append(String.valueOf(memoTextCountId));
+        outputStreamWriter.append(String.valueOf(memoCountId++));
         outputStreamWriter.append(DELIMITER_UNIT);
         outputStreamWriter.append(DELIMITER_LINE);
         outputStreamWriter.append("photos=" + num_of_photos);
@@ -149,17 +157,39 @@ public class FileOperation {
         outputStreamWriter.append(DELIMITER_LINE);
         outputStreamWriter.close();
 
-        memoTextCountId = memoTextCountId + 1;
     }
 
-    public static void deleteTextMemo(String memoID, int photosCount, String input_title, String input_details) {
+    public static void writeDrawingMemo() throws IOException {
+
+        FileOutputStream fOut = MyApplication.getAppContext().openFileOutput("u_" + userID + ".txt", Context.MODE_APPEND);
+        OutputStreamWriter outputStreamWriter = new OutputStreamWriter(fOut);
+
+
+        if (memoCountId == 0) {
+            outputStreamWriter.append(DELIMITER_LINE);
+            outputStreamWriter.append("counter=0");
+            outputStreamWriter.append(DELIMITER_LINE);
+        }
+
+        outputStreamWriter.append(DELIMITER_LINE);
+        outputStreamWriter.append(DELIMITER_UNIT);
+        outputStreamWriter.append(String.valueOf(memoCountId++));
+        outputStreamWriter.append(DELIMITER_UNIT);
+        outputStreamWriter.append(DELIMITER_LINE);
+        outputStreamWriter.append("Drawing");
+        outputStreamWriter.close();
+
+
+    }
+
+    public static void deleteTextMemo(int memoID, int photosCount, String input_title, String input_details) {
         replaceSelected(FileOperation.DELIMITER_LINE + FileOperation.DELIMITER_UNIT + memoID + FileOperation.DELIMITER_UNIT + FileOperation.DELIMITER_LINE + "photos=" + photosCount + FileOperation.DELIMITER_LINE + input_title + FileOperation.DELIMITER_LINE + input_details + FileOperation.DELIMITER_LINE,
                 "");
 
 
     }
 
-    public static void deleteImagesMemo(String memoID, int photosCount) {
+    public static void deleteImagesMemo(int memoID, int photosCount) {
         int start = 0;
         while (start <= photosCount) {
             String dir = MyApplication.getAppContext().getFilesDir().getAbsolutePath();
@@ -167,6 +197,11 @@ public class FileOperation {
             f0.delete();
         }
 
+
+    }
+
+    public static void deleteDrawingMemo(int memoid) {
+        replaceSelected(DELIMITER_LINE + DELIMITER_UNIT + (memoid) + DELIMITER_UNIT + DELIMITER_LINE + "Drawing", "");
 
     }
 
@@ -179,11 +214,15 @@ public class FileOperation {
 
     public static void deleteTempFile() {
         String dir = MyApplication.getAppContext().getFilesDir().getAbsolutePath();
-
         int start = 0;
         while (start < ListOperation.getListViewItems().size()) {
 
-            deleteImagesMemo(Integer.toString(start), ListOperation.getIndividualMemoItem(start).getPhotosCount());
+            MemoItem memoItem = ListOperation.getIndividualMemoItem(start);
+            if (memoItem instanceof MemoTextItem) {
+                deleteImagesMemo(start, ((MemoTextItem) memoItem).getPhotosCount());
+            } else if (memoItem instanceof MemoDrawingItem) {
+                deleteDrawingMemo(memoItem.getMemoID());
+            }
             start++;
         }
         File f0 = new File(dir, "u_" + FileOperation.userID + ".txt");
@@ -197,7 +236,7 @@ public class FileOperation {
     }
 
     public static int getMemoTextCountId() {
-        return memoTextCountId;
+        return memoCountId;
     }
 
 

@@ -57,7 +57,7 @@ public class TextDetailsMemoActivity extends AppCompatActivity {
     private String latestImageName;
     private List<ImageView> imageViewArrayListDetails = new ArrayList<>();
     private MemoPhotosAdapter memoPhotosAdapter;
-    private String memoID;
+    private int memoID;
     private ArrayList<String> filePathList = new ArrayList<>();
     private ArrayList<Integer> positionsToBeDeleted = new ArrayList<>();
     private List<Boolean> existingPhotos = new ArrayList<>();
@@ -78,7 +78,7 @@ public class TextDetailsMemoActivity extends AppCompatActivity {
         detail_photosCount = getIntent().getExtras().getInt(DataConstant.PHOTOS);
 
         RecyclerView photosRecyclerView = (RecyclerView) findViewById(R.id.recycler_view_details);
-        memoID = getIntent().getStringExtra(DataConstant.TEXT_ID);
+        memoID = getIntent().getExtras().getInt(DataConstant.TEXT_ID);
 
         StaggeredGridLayoutManager photosGridLayoutManager = new StaggeredGridLayoutManager(3, StaggeredGridLayoutManager.VERTICAL);
         photosRecyclerView.setLayoutManager(photosGridLayoutManager);
@@ -102,11 +102,9 @@ public class TextDetailsMemoActivity extends AppCompatActivity {
                 File file = new File(getApplicationContext().getFilesDir().getPath().toString(), filePath);
                 if (file.exists()) {
 
-                    //NEW PHOTO NOT ADDED HERE :(
                     imageViewArrayListDetails.add(FileOperation.loadImageFromStorage(getApplicationContext().getFilesDir().getPath().toString(), filePath, 550, this));
                     filePathList.add(filePath);
                     existingPhotos.add(true);
-                    //imageViewBooleanHashMap.put(FileOperation.loadImageFromStorage(getApplicationContext().getFilesDir().getPath().toString(), filePath, 550, this),true);
                 }
             }
 
@@ -147,18 +145,9 @@ public class TextDetailsMemoActivity extends AppCompatActivity {
                                 filePathList.remove(position);
                             }
                             existingPhotos.remove(position);
-        /*
-        if (position<filePathList.size()) {
-            File file = new File(getApplicationContext().getFilesDir().getPath().toString(), filePathList.get(position));
-            if (file.exists()) {
-                FileOperation.deleteIndividualPhotosMemo(filePathList.get(position));
-                filePathList.remove(position);
-            }
-            else
-        }
-        else*/
+
                         }
-                        String memoID = getIntent().getStringExtra(DataConstant.TEXT_ID);
+                        int memoID = getIntent().getExtras().getInt(DataConstant.TEXT_ID);
 
                         FileOperation.replaceSelected(
                                 FileOperation.DELIMITER_LINE + FileOperation.DELIMITER_UNIT + memoID + FileOperation.DELIMITER_UNIT + FileOperation.DELIMITER_LINE + "photos=" + oldPhotosCount + FileOperation.DELIMITER_LINE + oldTitle + FileOperation.DELIMITER_LINE + oldDetails + FileOperation.DELIMITER_LINE,
@@ -169,7 +158,7 @@ public class TextDetailsMemoActivity extends AppCompatActivity {
                         ListOperation.modifyTextList(memoID, detail_photosCount, oldTitle, oldDetails, newTitle, newDetails);
                     }
                     else
-                        showMainActivity.putExtra("ACTION_MODE","ADD");
+                        showMainActivity.putExtra(DataConstant.ACTION_MODE, DataConstant.ADD);
 
 
                     Iterator iteratorArrayListImage = imageViewArrayListDetails.iterator();
@@ -204,6 +193,7 @@ public class TextDetailsMemoActivity extends AppCompatActivity {
                     }
 
                     startActivityForResult(i, SELECT_PICTURE);
+                    return true;
 
                 }
                 return false;
@@ -276,9 +266,9 @@ public class TextDetailsMemoActivity extends AppCompatActivity {
         String mImageName = null;
 
         int memoID = 0;
-        if (getIntent().hasExtra("ACTION_MODE") && ACTION_MODE.equals(DataConstant.EDIT)) {
-            memoID = Integer.parseInt(getIntent().getStringExtra(DataConstant.TEXT_ID));
-        } else if (getIntent().hasExtra("ACTION_MODE") && ACTION_MODE.equals(DataConstant.ADD)) {
+        if (getIntent().hasExtra(DataConstant.ACTION_MODE) && ACTION_MODE.equals(DataConstant.EDIT)) {
+            memoID = getIntent().getExtras().getInt(DataConstant.TEXT_ID);
+        } else if (getIntent().hasExtra(DataConstant.ACTION_MODE) && ACTION_MODE.equals(DataConstant.ADD)) {
             memoID = FileOperation.getMemoTextCountId();
         }
 
@@ -317,7 +307,6 @@ public class TextDetailsMemoActivity extends AppCompatActivity {
         positionsToBeDeleted.add(position);
         imageViewArrayListDetails.remove(position);
         //watch out for action_mode compatibility with MainActivityFragment in readFile operation
-        ACTION_MODE = "DELETE";
 
         memoPhotosAdapter.notifyDataSetChanged();
 

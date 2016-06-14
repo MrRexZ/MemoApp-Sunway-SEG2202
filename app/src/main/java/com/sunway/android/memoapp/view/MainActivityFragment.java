@@ -17,15 +17,16 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.sunway.android.memoapp.R;
+import com.sunway.android.memoapp.controller.MainActivityFragmentTouchListener;
+import com.sunway.android.memoapp.model.MemoDrawingItem;
 import com.sunway.android.memoapp.model.MemoItem;
 import com.sunway.android.memoapp.model.MemoItemAdapter;
+import com.sunway.android.memoapp.model.MemoTextItem;
 import com.sunway.android.memoapp.util.DataConstant;
 import com.sunway.android.memoapp.util.FileOperation;
 import com.sunway.android.memoapp.util.ListOperation;
 
 import java.util.List;
-
-import controller.MainActivityFragmentTouchListener;
 
 /**
  * Created by Mr_RexZ on 5/28/2016.
@@ -95,10 +96,15 @@ public class MainActivityFragment extends Fragment {
                     Intent showDetail = new Intent(getActivity(), TextDetailsMemoActivity.class)
                             .putExtra(DataConstant.ACTION_MODE, DataConstant.ADD)
                             .putExtra(DataConstant.PHOTOS, 0)
-                            .putExtra(DataConstant.TEXT_ID, Integer.toString(FileOperation.getMemoTextCountId()));
+                            .putExtra(DataConstant.TEXT_ID, FileOperation.getMemoTextCountId());
                     startActivity(showDetail);
                     return true;
                 } else if (id == R.id.action_create_drawing_memo) {
+                    Intent showDrawing = new Intent(getActivity(), DrawingMemoActivity.class)
+                            .putExtra(DataConstant.ACTION_MODE, DataConstant.ADDDRAWING)
+                            .putExtra(DataConstant.TEXT_ID, FileOperation.getMemoTextCountId());
+                    startActivity(showDrawing);
+                    return true;
                 }
                 return false;
             }
@@ -118,12 +124,16 @@ public class MainActivityFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        if (((input_details != null && input_title != null) && (!input_details.isEmpty() || !input_title.isEmpty()))
-                || (mode != null && input_details.isEmpty() && input_title.isEmpty() && mode.equals("EDIT"))) {
+        boolean inputNotNull = input_details != null && input_title != null;
+        boolean textFieldHasInput = input_details != null && input_title != null && (!input_details.isEmpty() || !input_title.isEmpty());
+        boolean addDrawingMemo = mode.equals(DataConstant.ADDDRAWING);
+        boolean editModeChangeToEmpty = input_details != null && mode != null && input_details.isEmpty() && input_title.isEmpty() && mode.equals(DataConstant.EDIT);
+        boolean editDrawing = mode.equals(DataConstant.EDITDRAWING);
+
+        if (((inputNotNull) && (textFieldHasInput)) || (editModeChangeToEmpty) || addDrawingMemo || editDrawing) {
 
 
-            System.out.println("weirdd");
-            if (mode.equals("ADD")) {
+            if (mode.equals(DataConstant.ADD)) {
                 try {
 
                     FileOperation.writeUserTextMemoFile(input_title, input_details, photosCount);
@@ -137,13 +147,21 @@ public class MainActivityFragment extends Fragment {
                         FileOperation.DELIMITER_LINE + "counter=" + ((FileOperation.getMemoTextCountId()) - 1) + FileOperation.DELIMITER_LINE,
                         FileOperation.DELIMITER_LINE+"counter="+ ((FileOperation.getMemoTextCountId())) +FileOperation.DELIMITER_LINE);
 
+            } else if (mode.equals(DataConstant.ADDDRAWING)) {
+                try {
+                    FileOperation.writeDrawingMemo();
+                } catch (Exception e) {
+                    System.out.println("Error writing to drawing memo:" + e.getMessage());
+                }
+                FileOperation.replaceSelected(
+                        FileOperation.DELIMITER_LINE + "counter=" + ((FileOperation.getMemoTextCountId()) - 1) + FileOperation.DELIMITER_LINE,
+                        FileOperation.DELIMITER_LINE + "counter=" + ((FileOperation.getMemoTextCountId())) + FileOperation.DELIMITER_LINE);
             }
 
             FileOperation.readFile(mode, "u_" + FileOperation.userID + ".txt");
 
-            //  if (!mode.equals("BACK")) {
+            System.out.println(mode);
             rcAdapter.notifyDataSetChanged();
-            // }
             input_title = "";
             input_details = "";
 
@@ -194,16 +212,24 @@ public class MainActivityFragment extends Fragment {
         int position =rcAdapter.getPosition();
         MemoItem memoItem = ListOperation.getIndividualMemoItem(position);
 
-                FileOperation.deleteTextMemo(memoItem.getMemoID(), memoItem.getPhotosCount(), memoItem.getTitle(), memoItem.getContent());
-                FileOperation.deleteImagesMemo(memoItem.getMemoID(), memoItem.getPhotosCount());
+        if (memoItem instanceof MemoTextItem) {
+            MemoTextItem memoTextItem = (MemoTextItem) memoItem;
+            FileOperation.deleteTextMemo(memoTextItem.getMemoID(), memoTextItem.getPhotosCount(), memoTextItem.getTitle(), memoTextItem.getContent());
+            FileOperation.deleteImagesMemo(memoTextItem.getMemoID(), memoTextItem.getPhotosCount());
 
-                ListOperation.deleteList(memoItem.getMemoID(), memoItem.getTitle(), memoItem.getContent());
-                mode = "DELETE";
-                FileOperation.readFile(mode, "u_" + FileOperation.userID + ".txt");
+            ListOperation.deleteList(memoTextItem.getMemoID(), memoTextItem.getTitle(), memoTextItem.getContent());
+            mode = "DELETE";
+            FileOperation.readFile(mode, "u_" + FileOperation.userID + ".txt");
 
-                //inflateLayout();
-                rcAdapter.notifyDataSetChanged();
+        } else if (memoItem instanceof MemoDrawingItem) {
+            MemoDrawingItem memoDrawingItem = (MemoDrawingItem) memoItem;
+            int memoid = memoDrawingItem.getMemoID();
+            FileOperation.deleteDrawingMemo(memoid);
+            ListOperation.deleteDrawingMemoList(position);
+            mode = "DELETEDRAWINGS";
+        }
 
+        rcAdapter.notifyDataSetChanged();
         return super.onContextItemSelected(item);
     }
 

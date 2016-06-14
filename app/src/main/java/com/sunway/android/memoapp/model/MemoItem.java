@@ -6,18 +6,7 @@ package com.sunway.android.memoapp.model;
 public interface MemoItem  {
 
 
-    String getTitle();
+    int getMemoID();
 
-    void setTitle(String title);
-
-    String getContent();
-
-    void setContent(String content);
-
-    String getMemoID();
-
-    int getPhotosCount();
-
-    void setPhotosCount(int photosCount);
-    boolean equals(Object object);
+    void setMemoID(int memoid);
 }

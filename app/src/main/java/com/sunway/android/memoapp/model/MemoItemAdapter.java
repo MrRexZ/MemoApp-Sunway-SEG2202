@@ -23,8 +23,10 @@ import java.util.List;
 /**
  * Created by Mr_RexZ on 5/27/2016.
  */
-public class MemoItemAdapter extends RecyclerView.Adapter<MemoItemViewHolder> {
+public class MemoItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
+    private final static int TEXT = 1;
+    private final static int DRAWING = 2;
     private Context context;
     private Activity activity;
     private int position;
@@ -38,73 +40,58 @@ public class MemoItemAdapter extends RecyclerView.Adapter<MemoItemViewHolder> {
 
 
     @Override
-    public MemoItemViewHolder onCreateViewHolder(ViewGroup parent, int viewType)
+    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType)
     {
-        View layoutView = LayoutInflater.from(parent.getContext()).inflate(
-                R.layout.list_item_text_memo, null);
-        MemoItemViewHolder rcv = new MemoItemViewHolder(layoutView, this, activity);
 
+        RecyclerView.ViewHolder viewHolder;
+        LayoutInflater inflater = LayoutInflater.from(parent.getContext());
+        switch (viewType) {
+            case TEXT:
+                View v1 = inflater.inflate(
+                        R.layout.list_item_text_memo, null);
+                viewHolder = new MemoTextViewHolder(v1, this, activity);
+                break;
+            case DRAWING:
+                View v2 = inflater.inflate(
+                        R.layout.list_item_drawing_memo, null);
+                viewHolder = new MemoDrawingViewHolder(v2, this, activity);
+                break;
+            default:
+                View v3 = inflater.inflate(
+                        R.layout.list_item_text_memo, null);
+                viewHolder = new MemoTextViewHolder(v3, this, activity);
+        }
 
-        return rcv;
+        return viewHolder;
     }
 
     @Override
-    public void onBindViewHolder(MemoItemViewHolder holder, int position)
-    {
+    public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
 
-        System.out.println("the pos is :" + position);
-        holder.titleName.setText(ListOperation.getListViewItems().get(position).getTitle());
-        holder.contentName.setText(ListOperation.getListViewItems().get(position).getContent());
-        holder.memoID = ListOperation.getListViewItems().get(position).getMemoID();
-        holder.photosCount = ListOperation.getListViewItems().get(position).getPhotosCount();
+        MemoItem memoItem = ListOperation.getListViewItems().get(position);
+        switch (holder.getItemViewType()) {
+            case (TEXT):
+                MemoTextViewHolder v1 = (MemoTextViewHolder) holder;
+                configureTextViewHolder(v1, memoItem);
+                break;
+            case DRAWING:
+                MemoDrawingViewHolder v2 = (MemoDrawingViewHolder) holder;
+                configureDrawingViewHolder(v2, memoItem);
+                break;
 
-        if (holder.photosRecyclerView.getChildCount() > 0) {
-            holder.photosRecyclerView.removeAllViews();
-            holder.imageViewList.clear();
-        }
-        int count = 0;
-
-
-        while (count < holder.photosCount) {
-            String filePath = "u_" + FileOperation.userID + "_img_" + holder.memoID + "_" + (count++) + ".jpg";
-            File file = new File(MyApplication.getAppContext().getFilesDir().getPath().toString(), filePath);
-            if (file.exists()) {
-                Bitmap b = null;
-                try {
-                    b = BitmapFactory.decodeStream(new FileInputStream(file));
-                    ImageView img = new ImageView(holder.itemView.getContext());
-                    img.setImageBitmap(b);
-                    LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(150, 150);
-                    img.setLayoutParams(layoutParams);
-                    holder.addPhotosToList(img);
-                } catch (FileNotFoundException e) {
-                    e.printStackTrace();
-                }
-
-            }
-        }
-/*
-        while (start <= holder.photosCount) {
-
-         //   File f = new File(MyApplication.getAppContext().getFilesDir().getPath().toString(), "u_" + FileOperation.userID + "_img_" + holder.memoID + "_" + (start++) + ".jpg");
-
-            Bitmap b = null;
-            try {
-                b = BitmapFactory.decodeStream(new FileInputStream(f));
-                ImageView img = new ImageView(holder.itemView.getContext());
-                img.setImageBitmap(b);
-                LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(150, 150);
-                img.setLayoutParams(layoutParams);
-                holder.addPhotosToList(img);
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-            }
 
         }
-        */
-        holder.setPhotosAdapter();
 
+    }
 
+    @Override
+    public int getItemViewType(int position) {
+        if (ListOperation.getIndividualMemoItem(position) instanceof MemoTextItem)
+            return TEXT;
+        else if (ListOperation.getIndividualMemoItem(position) instanceof MemoDrawingItem)
+            return DRAWING;
+
+        return -1;
     }
 
     @Override
@@ -119,7 +106,71 @@ public class MemoItemAdapter extends RecyclerView.Adapter<MemoItemViewHolder> {
     }
 
     public void setPosition(int clickedposition) {
-        this.position=clickedposition;
+        this.position = clickedposition;
     }
 
-}
+    private void configureTextViewHolder(MemoTextViewHolder hText, MemoItem memoItem) {
+
+        MemoTextItem memoTextItem = (MemoTextItem) memoItem;
+        hText.titleName.setText(memoTextItem.getTitle());
+        hText.contentName.setText(memoTextItem.getContent());
+        hText.memoID = memoTextItem.getMemoID();
+        hText.photosCount = memoTextItem.getPhotosCount();
+
+        if (hText.photosRecyclerView.getChildCount() > 0) {
+            hText.photosRecyclerView.removeAllViews();
+            hText.imageViewList.clear();
+        }
+        int count = 0;
+
+
+        while (count < hText.photosCount) {
+            String filePath = "u_" + FileOperation.userID + "_img_" + hText.memoID + "_" + (count++) + ".jpg";
+            File file = new File(MyApplication.getAppContext().getFilesDir().getPath().toString(), filePath);
+            if (file.exists()) {
+                Bitmap b = null;
+                try {
+                    b = BitmapFactory.decodeStream(new FileInputStream(file));
+                    ImageView img = new ImageView(hText.itemView.getContext());
+                    img.setImageBitmap(b);
+                    LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(150, 150);
+                    img.setLayoutParams(layoutParams);
+                    hText.addPhotosToList(img);
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                }
+
+            }
+        }
+
+        hText.setPhotosAdapter();
+    }
+
+    private void configureDrawingViewHolder(MemoDrawingViewHolder hDrawing, MemoItem memoItem) {
+
+        if (hDrawing.drawingContainer.getChildCount() > 0) {
+            hDrawing.drawingContainer.removeAllViews();
+        }
+        MemoDrawingItem memoDrawingItem = (MemoDrawingItem) memoItem;
+
+
+        String filePath = "u_" + FileOperation.userID + "_drawing_" + memoDrawingItem.getMemoID() + ".jpg";
+        File file = new File(MyApplication.getAppContext().getFilesDir().getPath().toString(), filePath);
+        if (file.exists()) {
+            Bitmap b = null;
+            try {
+                b = BitmapFactory.decodeStream(new FileInputStream(file));
+                ImageView img = new ImageView(hDrawing.itemView.getContext());
+                img.setImageBitmap(b);
+                LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(450, 550);
+                img.setLayoutParams(layoutParams);
+                hDrawing.drawingContainer.addView(img);
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            }
+
+        }
+    }
+    }
+
+

@@ -21,13 +21,13 @@ public class MemoPhotosAdapter extends RecyclerView.Adapter<MemoPhotosHolder> {
     private Context context;
     private Activity activity;
     private List<ImageView> imageViewList;
-    private String memoID;
+    private int memoID;
     private int adapterPosition;
     private MemoItemAdapter memoItemAdapter;
     private int flag;
 
 
-    public MemoPhotosAdapter(Activity activity, List<ImageView> imageViewList, String memoID) {
+    public MemoPhotosAdapter(Activity activity, List<ImageView> imageViewList, int memoID) {
         this.context = activity;
         this.activity = activity;
         this.imageViewList = imageViewList;
@@ -35,7 +35,7 @@ public class MemoPhotosAdapter extends RecyclerView.Adapter<MemoPhotosHolder> {
         this.flag = DataConstant.TEXT_DETAILS_MEMO_RECYCLERVIEWADAPTER;
     }
 
-    public MemoPhotosAdapter(Activity activity, List<ImageView> imageViewList, String memoID, MemoItemAdapter memoItemAdapter) {
+    public MemoPhotosAdapter(Activity activity, List<ImageView> imageViewList, int memoID, MemoItemAdapter memoItemAdapter) {
         this.context = activity;
         this.activity = activity;
         this.imageViewList = imageViewList;

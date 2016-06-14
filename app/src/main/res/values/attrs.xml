@@ -4,4 +4,7 @@
         <attr name="titleText" format="string" localization="suggested" />
         <attr name="valueColor" format="color" />
     </declare-styleable>
+    <declare-styleable name="DrawingView">
+
+    </declare-styleable>
 </resources>
