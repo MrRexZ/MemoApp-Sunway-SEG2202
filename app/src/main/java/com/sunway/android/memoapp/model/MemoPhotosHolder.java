@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 
 import com.sunway.android.memoapp.R;
@@ -15,6 +16,7 @@ public class MemoPhotosHolder extends RecyclerView.ViewHolder implements View.On
 
     public MemoItemAdapter memoItemAdapter;
     public LinearLayout linearLayout;
+    public ImageView imageView;
     private MemoPhotosAdapter memoPhotosAdapter;
     private Context context;
     private Activity activity;
@@ -26,10 +28,11 @@ public class MemoPhotosHolder extends RecyclerView.ViewHolder implements View.On
         this.context = context;
         this.memoItemAdapter = memoItemAdapter;
         this.activity = activity;
-        linearLayout = (LinearLayout) itemView.findViewById(R.id.linearlayout_list_item_photos_memo);
+        //linearLayout = (LinearLayout) itemView.findViewById(R.id.linearlayout_list_item_photos_memo);
+        imageView = (ImageView) itemView.findViewById(R.id.imageview_list_item_photos_memo);
         this.memoPhotosAdapter = memoPhotosAdapter;
         this.position = position;
-        linearLayout.setOnLongClickListener(this);
+        imageView.setOnLongClickListener(this);
     }
 
 

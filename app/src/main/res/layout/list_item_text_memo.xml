@@ -4,7 +4,6 @@
     android:id="@+id/card_view_list_text"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:foreground="?android:attr/selectableItemBackground"
     card_view:cardUseCompatPadding="true">
 
     <LinearLayout
@@ -19,7 +18,7 @@
             <android.support.v7.widget.RecyclerView
                 android:id="@+id/recycler_view_photos_memo"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
                 android:foregroundGravity="center"
                 android:scrollbars="vertical" />
 

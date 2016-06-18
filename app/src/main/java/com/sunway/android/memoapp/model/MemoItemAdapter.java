@@ -12,13 +12,13 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 
 import com.sunway.android.memoapp.R;
+import com.sunway.android.memoapp.util.BitmapOperation;
 import com.sunway.android.memoapp.util.FileOperation;
 import com.sunway.android.memoapp.util.ListOperation;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.util.List;
 
 /**
  * Created by Mr_RexZ on 5/27/2016.
@@ -31,7 +31,7 @@ public class MemoItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     private Activity activity;
     private int position;
 
-    public MemoItemAdapter(Activity context, List<MemoItem> listMemo) {
+    public MemoItemAdapter(Activity context) {
         this.context=context;
         this.activity = context;
 
@@ -126,17 +126,19 @@ public class MemoItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
         while (count < hText.photosCount) {
             String filePath = "u_" + FileOperation.userID + "_img_" + hText.memoID + "_" + (count++) + ".jpg";
-            File file = new File(MyApplication.getAppContext().getFilesDir().getPath().toString(), filePath);
+            File file = new File(FileOperation.mydir, filePath);
             if (file.exists()) {
                 Bitmap b = null;
                 try {
-                    b = BitmapFactory.decodeStream(new FileInputStream(file));
-                    ImageView img = new ImageView(hText.itemView.getContext());
-                    img.setImageBitmap(b);
-                    LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(150, 150);
-                    img.setLayoutParams(layoutParams);
-                    hText.addPhotosToList(img);
-                } catch (FileNotFoundException e) {
+                    b = BitmapOperation.decodeSampledBitmapFromFile(file.toString(), 500, 500);
+
+                    int width = b.getWidth();
+                    int height = b.getHeight();
+                    float aspectRatio = (float) height / width;
+                    float resizedHeight = aspectRatio * 200;
+                    b = BitmapOperation.getResizedBitmap(b, 200, (int) resizedHeight);
+                    hText.addPhotosToList(b);
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
 
@@ -145,6 +147,7 @@ public class MemoItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
         hText.setPhotosAdapter();
     }
+
 
     private void configureDrawingViewHolder(MemoDrawingViewHolder hDrawing, MemoItem memoItem) {
 
@@ -155,7 +158,7 @@ public class MemoItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
 
         String filePath = "u_" + FileOperation.userID + "_drawing_" + memoDrawingItem.getMemoID() + ".jpg";
-        File file = new File(MyApplication.getAppContext().getFilesDir().getPath().toString(), filePath);
+        File file = new File(FileOperation.mydir, filePath);
         if (file.exists()) {
             Bitmap b = null;
             try {

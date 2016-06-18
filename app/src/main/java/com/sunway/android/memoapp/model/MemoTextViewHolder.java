@@ -2,10 +2,10 @@ package com.sunway.android.memoapp.model;
 
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.view.View;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.sunway.android.memoapp.R;
@@ -24,7 +24,7 @@ public class MemoTextViewHolder extends RecyclerView.ViewHolder implements View.
     public RecyclerView photosRecyclerView;
     public int memoID;
     public int photosCount;
-    public List<ImageView> imageViewList = new ArrayList<>();
+    public List<Bitmap> imageViewList = new ArrayList<>();
     public MemoPhotosAdapter memoPhotosAdapter;
     private Context context;
     private MemoItemAdapter memoItemAdapter;
@@ -49,7 +49,7 @@ public class MemoTextViewHolder extends RecyclerView.ViewHolder implements View.
     }
 
 
-    private List<ImageView> getImageViewList() {
+    private List<Bitmap> getImageViewList() {
         return imageViewList;
     }
 
@@ -64,7 +64,8 @@ public class MemoTextViewHolder extends RecyclerView.ViewHolder implements View.
 
 
     }
-    public void addPhotosToList(ImageView newImageView) {
+
+    public void addPhotosToList(Bitmap newImageView) {
         imageViewList.add(newImageView);
     }
 

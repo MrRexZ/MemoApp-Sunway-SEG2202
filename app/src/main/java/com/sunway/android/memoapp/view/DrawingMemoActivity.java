@@ -16,8 +16,7 @@ import android.view.View;
 import android.widget.ImageView;
 
 import com.sunway.android.memoapp.R;
-import com.sunway.android.memoapp.model.MyApplication;
-import com.sunway.android.memoapp.util.DataConstant;
+import com.sunway.android.memoapp.util.C;
 import com.sunway.android.memoapp.util.FileOperation;
 
 import java.io.File;
@@ -56,7 +55,7 @@ public class DrawingMemoActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         // setContentView(new DrawingView(this,null));
         setContentView(R.layout.drawing_memo);
-        final int memoid = getIntent().getExtras().getInt(DataConstant.TEXT_ID);
+        final int memoid = getIntent().getExtras().getInt(C.TEXT_ID);
         Toolbar upper_toolbar = (Toolbar) findViewById(R.id.toolbar_upper_drawingmemo);
         setSupportActionBar(upper_toolbar);
         Toolbar bottom_toolbar = (Toolbar) findViewById(R.id.toolbar_bottom_drawingmemo);
@@ -64,9 +63,9 @@ public class DrawingMemoActivity extends AppCompatActivity {
         final DrawingView drawingView = (DrawingView) findViewById(R.id.drawing_view_canvas);
 
 
-        if (getIntent().getExtras().getString(DataConstant.ACTION_MODE).equals(DataConstant.EDITDRAWING)) {
+        if (getIntent().getExtras().getString(C.ACTION_MODE).equals(C.EDITDRAWING)) {
             String filePath = "u_" + FileOperation.userID + "_drawing_" + memoid + ".jpg";
-            File file = new File(MyApplication.getAppContext().getFilesDir().getPath().toString(), filePath);
+            File file = new File(FileOperation.mydir, filePath);
             if (file.exists()) {
                 Bitmap b = null;
                 try {
@@ -98,7 +97,7 @@ public class DrawingMemoActivity extends AppCompatActivity {
 
 
                     String mDrawingName = "u_" + FileOperation.userID + "_drawing_" + memoid + ".jpg";
-                    File drawFile = new File(getApplicationContext().getFilesDir().getPath().toString() + File.separator + mDrawingName);
+                    File drawFile = new File(FileOperation.mydir, mDrawingName);
                     FileOutputStream fos = null;
                     try {
                         fos = new FileOutputStream(drawFile);
@@ -107,11 +106,11 @@ public class DrawingMemoActivity extends AppCompatActivity {
                     }
                     bi.compress(Bitmap.CompressFormat.PNG, 90, fos);
                     Intent showMainActivity = new Intent(DrawingMemoActivity.this, MainActivity.class);
-                    if (getIntent().getExtras().getString(DataConstant.ACTION_MODE).equals(DataConstant.ADDDRAWING)) {
-                        showMainActivity.putExtra(DataConstant.ACTION_MODE, DataConstant.ADDDRAWING);
-                    } else if (getIntent().getExtras().getString(DataConstant.ACTION_MODE).equals(DataConstant.EDITDRAWING)) {
+                    if (getIntent().getExtras().getString(C.ACTION_MODE).equals(C.ADDDRAWING)) {
+                        showMainActivity.putExtra(C.ACTION_MODE, C.ADDDRAWING);
+                    } else if (getIntent().getExtras().getString(C.ACTION_MODE).equals(C.EDITDRAWING)) {
 
-                        showMainActivity.putExtra(DataConstant.ACTION_MODE, DataConstant.EDITDRAWING);
+                        showMainActivity.putExtra(C.ACTION_MODE, C.EDITDRAWING);
                     }
 
                     startActivity(showMainActivity);

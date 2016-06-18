@@ -4,6 +4,7 @@
 
     <string name="title_header">Title</string>
     <string name="details_header">Details</string>
+    <string name="search_hint">Search Memo</string>
 
 
 </resources>

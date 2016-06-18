@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 
 import com.sunway.android.memoapp.R;
+import com.sunway.android.memoapp.util.C;
 
 import java.io.Serializable;
 
@@ -22,10 +23,10 @@ public class MainActivity extends AppCompatActivity implements Serializable {
         super.onNewIntent(intent);
         setIntent(intent);
         MainActivityFragment mainActivityFragment= (MainActivityFragment) getSupportFragmentManager().findFragmentById(R.id.fragment);
-        mainActivityFragment.passInformation(intent.getExtras().getString("TITLE"),
-                                            intent.getExtras().getString("DETAILS"),
-                intent.getExtras().getString("ACTION_MODE"),
-                intent.getExtras().getInt("PHOTOS"));
-        // FileOperation.passToFileOp(intent.getExtras().getString("TITLE"),intent.getExtras().getString("DETAILS"));
+        mainActivityFragment.passInformation(intent.getExtras().getString(C.INPUT_TITLE),
+                intent.getExtras().getString(C.INPUT_DETAILS),
+                intent.getExtras().getString(C.ACTION_MODE),
+                intent.getExtras().getInt(C.PHOTOS));
+        // FileOperation.passToFileOp(intent.getExtras().getString(C.INPUT_TITLE,intent.getExtras().getString(C.INPUT_DETAILS));
     }
 }

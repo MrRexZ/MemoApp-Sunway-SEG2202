@@ -2,7 +2,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.sunway.android.memoapp">
 
-
     <uses-permission android:name="android.permission.MEDIA_CONTENT_CONTROL" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
@@ -18,7 +17,11 @@
             android:launchMode="singleTask">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+                <action android:name="android.intent.action.SEARCH" />
 
+                <meta-data
+                    android:name="android.app.searchable"
+                    android:resource="@xml/searchable" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
@@ -28,6 +31,13 @@
         <activity android:name=".view.DrawingMemoActivity">
 
         </activity>
+        <activity android:name=".view.ReminderActivity">
+
+        </activity>
+
+        <receiver
+            android:name=".controller.AlarmReceiver"
+            android:process=":remote" />
     </application>
 
 </manifest>
