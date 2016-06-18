@@ -55,17 +55,16 @@ public class TextDetailsMemoActivity extends AppCompatActivity implements Toolba
     private int detail_photosCount = 0;
     private String latestImageName;
     private int memoID;
-    private List<Bitmap> imageViewArrayListDetails = new ArrayList<>();
+    private List<String> imageViewArrayListDetails = new ArrayList<>();
     private MemoPhotosAdapter memoPhotosAdapter;
     private ArrayList<String> filePathList = new ArrayList<>();
     private ArrayList<Integer> positionsToBeDeleted = new ArrayList<>();
-    private List<Boolean> existingPhotos = new ArrayList<>();
     private Intent intent;
     private RecyclerView photosRecyclerView;
     //  private HashMap<ImageView, Boolean> imageViewBooleanHashMap = new HashMap<ImageView,Boolean>();
 
 
-    private List<Bitmap> getImageViewList() {
+    private List<String> getImageViewList() {
         return imageViewArrayListDetails;
     }
     @Override
@@ -81,7 +80,7 @@ public class TextDetailsMemoActivity extends AppCompatActivity implements Toolba
 
         StaggeredGridLayoutManager photosGridLayoutManager = new StaggeredGridLayoutManager(3, StaggeredGridLayoutManager.VERTICAL);
         photosRecyclerView.setLayoutManager(photosGridLayoutManager);
-        memoPhotosAdapter = new MemoPhotosAdapter(this, imageViewArrayListDetails, memoID);
+        memoPhotosAdapter = new MemoPhotosAdapter(this, imageViewArrayListDetails, memoID, C.DETAILS_ACTIVITY_DISPLAY);
         photosRecyclerView.setAdapter(memoPhotosAdapter);
 
         registerForContextMenu(photosRecyclerView);
@@ -102,9 +101,8 @@ public class TextDetailsMemoActivity extends AppCompatActivity implements Toolba
                 File filePath = new File(FileOperation.mydir, fileName.toString());
                 if (filePath.exists()) {
 
-                    imageViewArrayListDetails.add(FileOperation.loadImageFromStorage(filePath.toString(), this));
+                    imageViewArrayListDetails.add(filePath.toString());
                     filePathList.add(filePath.toString());
-                    existingPhotos.add(true);
                 }
             }
 
@@ -147,12 +145,18 @@ public class TextDetailsMemoActivity extends AppCompatActivity implements Toolba
                 yourSelectedImage = BitmapOperation.getResizedBitmap(yourSelectedImage, 500, (int) resizedHeight);
 
                 //WANT TO ADD FILEPATH FOR THIS, BUT NO FILEPATH. FIND A WAY!
-                imageViewArrayListDetails.add(yourSelectedImage);
-                memoPhotosAdapter.notifyDataSetChanged();
 
-                existingPhotos.add(false);
+                storeImage(yourSelectedImage, (detail_photosCount));
+
+
+                imageViewArrayListDetails.add(FileOperation.mydir + File.separator + "u_" + FileOperation.userID + "_img_" + memoID + "_" + detail_photosCount + ".jpg");
+                filePathList.add("u_" + FileOperation.userID + "_img_" + memoID + "_" + detail_photosCount + ".jpg");
 
                 detail_photosCount++;
+
+                memoPhotosAdapter.notifyDataSetChanged();
+
+
             }
         }
     }
@@ -247,12 +251,10 @@ public class TextDetailsMemoActivity extends AppCompatActivity implements Toolba
                     while (iteratorDeletion.hasNext()) {
                         int position = (int) iteratorDeletion.next();
 
-                        if (existingPhotos.get(position) == true) {
                             File file = new File(FileOperation.mydir, filePathList.get(position));
                             FileOperation.deleteIndividualPhotosMemo(filePathList.get(position));
                             filePathList.remove(position);
-                        }
-                        existingPhotos.remove(position);
+
 
                     }
                     int memoID = intent.getExtras().getInt(C.TEXT_ID);
@@ -268,10 +270,10 @@ public class TextDetailsMemoActivity extends AppCompatActivity implements Toolba
                     showMainActivity.putExtra(C.ACTION_MODE, C.ADD);
 
 
-                Iterator iteratorArrayListImage = imageViewArrayListDetails.iterator();
-                Iterator existingPhotosIterator = existingPhotos.iterator();
+                //     Iterator iteratorArrayListImage = imageViewArrayListDetails.iterator();
+                //    Iterator existingPhotosIterator = existingPhotos.iterator();
 
-
+/*
                 while (iteratorArrayListImage.hasNext()) {
                     //If not existing photos (if false) and the arraylist has content :
 
@@ -281,7 +283,7 @@ public class TextDetailsMemoActivity extends AppCompatActivity implements Toolba
                         oldPhotosCount++;
                     }
                 }
-
+*/
                 startActivity(showMainActivity);
                 return true;
 

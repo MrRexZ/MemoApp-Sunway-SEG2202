@@ -3,12 +3,15 @@ package com.sunway.android.memoapp.model;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.sunway.android.memoapp.R;
+import com.sunway.android.memoapp.util.BitmapOperation;
 import com.sunway.android.memoapp.util.C;
 
 import java.util.List;
@@ -20,28 +23,33 @@ public class MemoPhotosAdapter extends RecyclerView.Adapter<MemoPhotosHolder> {
 
     private Context context;
     private Activity activity;
-    private List<Bitmap> imageViewList;
+    private List<String> imageViewList;
     private int memoID;
     private int adapterPosition;
     private MemoItemAdapter memoItemAdapter;
-    private int flag;
+    private int displayState;
+    private Bitmap bitmapHolder;
 
 
-    public MemoPhotosAdapter(Activity activity, List<Bitmap> imageViewList, int memoID) {
+    public MemoPhotosAdapter(Activity activity, List<String> imageViewList, int memoID, int displayState) {
         this.context = activity;
         this.activity = activity;
         this.imageViewList = imageViewList;
         this.memoID = memoID;
-        this.flag = C.TEXT_DETAILS_MEMO_RECYCLERVIEWADAPTER;
+        Drawable dh = context.getResources().getDrawable(R.drawable.ic_launcher);
+        bitmapHolder = ((BitmapDrawable) dh).getBitmap();
+        this.displayState = displayState;
     }
 
-    public MemoPhotosAdapter(Activity activity, List<Bitmap> imageViewList, int memoID, MemoItemAdapter memoItemAdapter) {
+    public MemoPhotosAdapter(Activity activity, List<String> imageViewList, int memoID, MemoItemAdapter memoItemAdapter, int displayState) {
         this.context = activity;
         this.activity = activity;
         this.imageViewList = imageViewList;
         this.memoID = memoID;
         this.memoItemAdapter = memoItemAdapter;
-        this.flag = C.NESTED_TEXT_MEMO_RECYCLERVIEWADAPTER;
+        this.displayState = displayState;
+
+
     }
 
     @Override
@@ -57,10 +65,25 @@ public class MemoPhotosAdapter extends RecyclerView.Adapter<MemoPhotosHolder> {
     @Override
     public void onBindViewHolder(MemoPhotosHolder holder, int position) {
 
-        Bitmap b = imageViewList.get(position);
+
+        int maxWidth = 0;
+        if (displayState == C.DETAILS_ACTIVITY_DISPLAY) maxWidth = 500;
+        else maxWidth = 200;
+        String filePath = imageViewList.get(position);
+
+        Bitmap b = BitmapOperation.decodeSampledBitmapFromFile(filePath, 500, 500);
+
+        int width = b.getWidth();
+        int height = b.getHeight();
+        float aspectRatio = (float) height / width;
+        float resizedHeight = aspectRatio * maxWidth;
+        b = BitmapOperation.getResizedBitmap(b, maxWidth, (int) resizedHeight);
+
         holder.imageView.setImageBitmap(b);
 
+
     }
+
 
     public int getPosition() {
         return adapterPosition;
@@ -70,7 +93,7 @@ public class MemoPhotosAdapter extends RecyclerView.Adapter<MemoPhotosHolder> {
         this.adapterPosition = adapterPosition;
     }
 
-    public List<Bitmap> getImagesList() {
+    public List<String> getImagesList() {
         return imageViewList;
     }
 

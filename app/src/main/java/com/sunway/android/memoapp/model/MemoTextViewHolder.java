@@ -2,13 +2,13 @@ package com.sunway.android.memoapp.model;
 
 import android.app.Activity;
 import android.content.Context;
-import android.graphics.Bitmap;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.view.View;
 import android.widget.TextView;
 
 import com.sunway.android.memoapp.R;
+import com.sunway.android.memoapp.util.C;
 import com.sunway.android.memoapp.util.ListOperation;
 
 import java.util.ArrayList;
@@ -24,7 +24,7 @@ public class MemoTextViewHolder extends RecyclerView.ViewHolder implements View.
     public RecyclerView photosRecyclerView;
     public int memoID;
     public int photosCount;
-    public List<Bitmap> imageViewList = new ArrayList<>();
+    public List<String> imageViewList = new ArrayList<>();
     public MemoPhotosAdapter memoPhotosAdapter;
     private Context context;
     private MemoItemAdapter memoItemAdapter;
@@ -49,7 +49,7 @@ public class MemoTextViewHolder extends RecyclerView.ViewHolder implements View.
     }
 
 
-    private List<Bitmap> getImageViewList() {
+    private List<String> getImageViewList() {
         return imageViewList;
     }
 
@@ -59,14 +59,14 @@ public class MemoTextViewHolder extends RecyclerView.ViewHolder implements View.
         StaggeredGridLayoutManager photosGridLayoutManager = new StaggeredGridLayoutManager(3, StaggeredGridLayoutManager.VERTICAL);
         photosRecyclerView.setLayoutManager(photosGridLayoutManager);
         imageViewList = getImageViewList();
-        memoPhotosAdapter = new MemoPhotosAdapter(activity, imageViewList, memoID, memoItemAdapter);
+        memoPhotosAdapter = new MemoPhotosAdapter(activity, imageViewList, memoID, memoItemAdapter, C.MAIN_ACTIVITY_FRAGMENT_DISPLAY);
         photosRecyclerView.setAdapter(memoPhotosAdapter);
 
 
     }
 
-    public void addPhotosToList(Bitmap newImageView) {
-        imageViewList.add(newImageView);
+    public void addPhotosToList(String uri) {
+        imageViewList.add(uri);
     }
 
     @Override

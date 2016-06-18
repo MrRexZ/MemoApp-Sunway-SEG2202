@@ -1,11 +1,17 @@
 package com.sunway.android.memoapp.util;
 
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.widget.ImageView;
 
 import com.sunway.android.memoapp.controller.BitmapWorkerTask;
+
+import java.lang.ref.WeakReference;
+
 
 /**
  * Created by Mr_RexZ on 6/18/2016.
@@ -73,8 +79,47 @@ public class BitmapOperation {
     }
 
 
-    public static void loadBitmap(String filePath, ImageView imageView) {
-        BitmapWorkerTask task = new BitmapWorkerTask(imageView);
-        task.execute(filePath);
+    public static boolean cancelPotentialWork(String filePath, ImageView imageView) {
+        final BitmapWorkerTask bitmapWorkerTask = getBitmapWorkerTask(imageView);
+
+        if (bitmapWorkerTask != null) {
+            final String bitmapData = bitmapWorkerTask.filePath;
+            // If bitmapData is not yet set or it differs from the new data
+            if (bitmapData == null || !bitmapData.equals(filePath)) {
+                // Cancel previous task
+                bitmapWorkerTask.cancel(true);
+            } else {
+                // The same work is already in progress
+                return false;
+            }
+        }
+        // No task associated with the ImageView, or an existing task was cancelled
+        return true;
+    }
+
+    private static BitmapWorkerTask getBitmapWorkerTask(ImageView imageView) {
+        if (imageView != null) {
+            final Drawable drawable = imageView.getDrawable();
+            if (drawable instanceof AsyncDrawable) {
+                final AsyncDrawable asyncDrawable = (AsyncDrawable) drawable;
+                return asyncDrawable.getBitmapWorkerTask();
+            }
+        }
+        return null;
+    }
+
+    static public class AsyncDrawable extends BitmapDrawable {
+        private final WeakReference<BitmapWorkerTask> bitmapWorkerTaskReference;
+
+        public AsyncDrawable(Resources res, Bitmap bitmap,
+                             BitmapWorkerTask bitmapWorkerTask) {
+            super(res, bitmap);
+            bitmapWorkerTaskReference =
+                    new WeakReference<BitmapWorkerTask>(bitmapWorkerTask);
+        }
+
+        public BitmapWorkerTask getBitmapWorkerTask() {
+            return bitmapWorkerTaskReference.get();
+        }
     }
 }

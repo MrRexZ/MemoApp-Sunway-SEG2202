@@ -214,7 +214,7 @@ public class MainActivityFragment extends Fragment implements SearchView.OnQuery
         sList = ListOperation.getListViewItems();
 
         rcAdapter = new MemoItemAdapter(
-                getActivity());
+                getActivity(), C.MAIN_ACTIVITY_FRAGMENT_DISPLAY);
         recyclerView.setAdapter(rcAdapter);
 
 

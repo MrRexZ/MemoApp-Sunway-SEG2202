@@ -2,8 +2,11 @@ package com.sunway.android.memoapp.model;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,6 +15,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 
 import com.sunway.android.memoapp.R;
+import com.sunway.android.memoapp.controller.BitmapWorkerTask;
 import com.sunway.android.memoapp.util.BitmapOperation;
 import com.sunway.android.memoapp.util.FileOperation;
 import com.sunway.android.memoapp.util.ListOperation;
@@ -30,10 +34,16 @@ public class MemoItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     private Context context;
     private Activity activity;
     private int position;
+    private Bitmap bitmapHolder;
+    private int displayState = 0;
 
-    public MemoItemAdapter(Activity context) {
+    public MemoItemAdapter(Activity context, int displayState) {
         this.context=context;
         this.activity = context;
+
+        Drawable dh = context.getResources().getDrawable(R.drawable.ic_launcher);
+        bitmapHolder = ((BitmapDrawable) dh).getBitmap();
+        this.displayState = displayState;
 
     }
 
@@ -130,14 +140,8 @@ public class MemoItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             if (file.exists()) {
                 Bitmap b = null;
                 try {
-                    b = BitmapOperation.decodeSampledBitmapFromFile(file.toString(), 500, 500);
 
-                    int width = b.getWidth();
-                    int height = b.getHeight();
-                    float aspectRatio = (float) height / width;
-                    float resizedHeight = aspectRatio * 200;
-                    b = BitmapOperation.getResizedBitmap(b, 200, (int) resizedHeight);
-                    hText.addPhotosToList(b);
+                    hText.addPhotosToList(file.toString());
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -146,6 +150,17 @@ public class MemoItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         }
 
         hText.setPhotosAdapter();
+    }
+
+    public void loadBitmap(String filePath, ImageView imageView, Resources resources) {
+        if (BitmapOperation.cancelPotentialWork(filePath, imageView)) {
+
+            final BitmapWorkerTask task = new BitmapWorkerTask(imageView);
+            final BitmapOperation.AsyncDrawable asyncDrawable =
+                    new BitmapOperation.AsyncDrawable(resources, bitmapHolder, task);
+            imageView.setImageDrawable(asyncDrawable);
+            task.execute(filePath);
+        }
     }
 
 

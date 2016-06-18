@@ -26,4 +26,8 @@ public class C {
     public static final String REGISTER_REMINDER = "REGISTER_REMINDER";
     public static final int TEXT_DETAILS_MEMO_RECYCLERVIEWADAPTER = 0;
     public static final int NESTED_TEXT_MEMO_RECYCLERVIEWADAPTER = 1;
+
+
+    public static final int MAIN_ACTIVITY_FRAGMENT_DISPLAY = 0;
+    public static final int DETAILS_ACTIVITY_DISPLAY = 1;
 }

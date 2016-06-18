@@ -13,7 +13,7 @@ import java.lang.ref.WeakReference;
  */
 public class BitmapWorkerTask extends AsyncTask<String, Void, Bitmap> {
     private final WeakReference<ImageView> imageViewReference;
-    private String filePath = null;
+    public String filePath = null;
 
     public BitmapWorkerTask(ImageView imageView) {
         // Use a WeakReference to ensure the ImageView can be garbage collected
@@ -37,4 +37,7 @@ public class BitmapWorkerTask extends AsyncTask<String, Void, Bitmap> {
             }
         }
     }
+
+
 }
+
