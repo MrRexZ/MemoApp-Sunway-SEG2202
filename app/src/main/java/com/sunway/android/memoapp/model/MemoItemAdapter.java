@@ -2,7 +2,6 @@ package com.sunway.android.memoapp.model;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
@@ -15,8 +14,6 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 
 import com.sunway.android.memoapp.R;
-import com.sunway.android.memoapp.controller.BitmapWorkerTask;
-import com.sunway.android.memoapp.util.BitmapOperation;
 import com.sunway.android.memoapp.util.FileOperation;
 import com.sunway.android.memoapp.util.ListOperation;
 
@@ -138,7 +135,6 @@ public class MemoItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             String filePath = "u_" + FileOperation.userID + "_img_" + hText.memoID + "_" + (count++) + ".jpg";
             File file = new File(FileOperation.mydir, filePath);
             if (file.exists()) {
-                Bitmap b = null;
                 try {
 
                     hText.addPhotosToList(file.toString());
@@ -152,16 +148,7 @@ public class MemoItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         hText.setPhotosAdapter();
     }
 
-    public void loadBitmap(String filePath, ImageView imageView, Resources resources) {
-        if (BitmapOperation.cancelPotentialWork(filePath, imageView)) {
 
-            final BitmapWorkerTask task = new BitmapWorkerTask(imageView);
-            final BitmapOperation.AsyncDrawable asyncDrawable =
-                    new BitmapOperation.AsyncDrawable(resources, bitmapHolder, task);
-            imageView.setImageDrawable(asyncDrawable);
-            task.execute(filePath);
-        }
-    }
 
 
     private void configureDrawingViewHolder(MemoDrawingViewHolder hDrawing, MemoItem memoItem) {

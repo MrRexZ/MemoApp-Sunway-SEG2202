@@ -68,8 +68,6 @@ public class AlarmReceiver extends BroadcastReceiver {
         PendingIntent pendingIntent = PendingIntent.getActivity(context, memoid,
                 intent, 0);
 
-        System.out.println("LOGTAGYO PHOTOSCOUNT:" + photosCount);
-
 
         NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(context)
                 .setContentTitle(msg)

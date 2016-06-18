@@ -74,7 +74,6 @@ public class DrawingMemoActivity extends AppCompatActivity {
                     img.setImageBitmap(b);
                     drawingView.addView(img);
 
-                    System.out.println("the filepath demo is : " + img);
                 } catch (FileNotFoundException e) {
                     e.printStackTrace();
                 }

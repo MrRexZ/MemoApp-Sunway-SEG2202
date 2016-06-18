@@ -8,7 +8,7 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.widget.ImageView;
 
-import com.sunway.android.memoapp.controller.BitmapWorkerTask;
+import com.sunway.android.memoapp.controller.BitmapReadingWorkerTask;
 
 import java.lang.ref.WeakReference;
 
@@ -80,14 +80,14 @@ public class BitmapOperation {
 
 
     public static boolean cancelPotentialWork(String filePath, ImageView imageView) {
-        final BitmapWorkerTask bitmapWorkerTask = getBitmapWorkerTask(imageView);
+        final BitmapReadingWorkerTask bitmapReadingWorkerTask = getBitmapWorkerTask(imageView);
 
-        if (bitmapWorkerTask != null) {
-            final String bitmapData = bitmapWorkerTask.filePath;
+        if (bitmapReadingWorkerTask != null) {
+            final String bitmapData = bitmapReadingWorkerTask.filePath;
             // If bitmapData is not yet set or it differs from the new data
             if (bitmapData == null || !bitmapData.equals(filePath)) {
                 // Cancel previous task
-                bitmapWorkerTask.cancel(true);
+                bitmapReadingWorkerTask.cancel(true);
             } else {
                 // The same work is already in progress
                 return false;
@@ -97,7 +97,7 @@ public class BitmapOperation {
         return true;
     }
 
-    private static BitmapWorkerTask getBitmapWorkerTask(ImageView imageView) {
+    private static BitmapReadingWorkerTask getBitmapWorkerTask(ImageView imageView) {
         if (imageView != null) {
             final Drawable drawable = imageView.getDrawable();
             if (drawable instanceof AsyncDrawable) {
@@ -109,16 +109,16 @@ public class BitmapOperation {
     }
 
     static public class AsyncDrawable extends BitmapDrawable {
-        private final WeakReference<BitmapWorkerTask> bitmapWorkerTaskReference;
+        private final WeakReference<BitmapReadingWorkerTask> bitmapWorkerTaskReference;
 
         public AsyncDrawable(Resources res, Bitmap bitmap,
-                             BitmapWorkerTask bitmapWorkerTask) {
+                             BitmapReadingWorkerTask bitmapReadingWorkerTask) {
             super(res, bitmap);
             bitmapWorkerTaskReference =
-                    new WeakReference<BitmapWorkerTask>(bitmapWorkerTask);
+                    new WeakReference<BitmapReadingWorkerTask>(bitmapReadingWorkerTask);
         }
 
-        public BitmapWorkerTask getBitmapWorkerTask() {
+        public BitmapReadingWorkerTask getBitmapWorkerTask() {
             return bitmapWorkerTaskReference.get();
         }
     }

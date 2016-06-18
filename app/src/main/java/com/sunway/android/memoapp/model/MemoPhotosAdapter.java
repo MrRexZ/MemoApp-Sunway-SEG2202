@@ -2,6 +2,7 @@ package com.sunway.android.memoapp.model;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
@@ -9,10 +10,11 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 
 import com.sunway.android.memoapp.R;
+import com.sunway.android.memoapp.controller.BitmapReadingWorkerTask;
 import com.sunway.android.memoapp.util.BitmapOperation;
-import com.sunway.android.memoapp.util.C;
 
 import java.util.List;
 
@@ -65,23 +67,21 @@ public class MemoPhotosAdapter extends RecyclerView.Adapter<MemoPhotosHolder> {
     @Override
     public void onBindViewHolder(MemoPhotosHolder holder, int position) {
 
-
-        int maxWidth = 0;
-        if (displayState == C.DETAILS_ACTIVITY_DISPLAY) maxWidth = 500;
-        else maxWidth = 200;
         String filePath = imageViewList.get(position);
 
-        Bitmap b = BitmapOperation.decodeSampledBitmapFromFile(filePath, 500, 500);
+        loadBitmap(filePath, holder.imageView, context.getResources());
 
-        int width = b.getWidth();
-        int height = b.getHeight();
-        float aspectRatio = (float) height / width;
-        float resizedHeight = aspectRatio * maxWidth;
-        b = BitmapOperation.getResizedBitmap(b, maxWidth, (int) resizedHeight);
+    }
 
-        holder.imageView.setImageBitmap(b);
+    public void loadBitmap(String filePath, ImageView imageView, Resources resources) {
+        if (BitmapOperation.cancelPotentialWork(filePath, imageView)) {
 
-
+            final BitmapReadingWorkerTask task = new BitmapReadingWorkerTask(imageView);
+            final BitmapOperation.AsyncDrawable asyncDrawable =
+                    new BitmapOperation.AsyncDrawable(resources, bitmapHolder, task);
+            imageView.setImageDrawable(asyncDrawable);
+            task.execute(filePath, Integer.toString(displayState));
+        }
     }
 
 

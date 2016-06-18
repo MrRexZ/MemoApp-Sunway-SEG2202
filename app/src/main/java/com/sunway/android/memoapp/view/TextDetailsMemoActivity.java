@@ -4,7 +4,6 @@ import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
-import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -14,7 +13,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -24,17 +22,14 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.sunway.android.memoapp.R;
+import com.sunway.android.memoapp.controller.BitmapStoringWorkerTask;
 import com.sunway.android.memoapp.model.MemoPhotosAdapter;
 import com.sunway.android.memoapp.model.MyApplication;
-import com.sunway.android.memoapp.util.BitmapOperation;
 import com.sunway.android.memoapp.util.C;
 import com.sunway.android.memoapp.util.FileOperation;
 import com.sunway.android.memoapp.util.ListOperation;
 
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -44,6 +39,10 @@ import java.util.List;
  */
 public class TextDetailsMemoActivity extends AppCompatActivity implements Toolbar.OnMenuItemClickListener {
 
+    public int detail_photosCount = 0;
+    public List<String> imageViewArrayListDetails = new ArrayList<>();
+    public ArrayList<String> filePathList = new ArrayList<>();
+    public Intent intent;
     private String oldTitle;
     private String oldDetails;
     private String newTitle;
@@ -52,14 +51,10 @@ public class TextDetailsMemoActivity extends AppCompatActivity implements Toolba
     private int SELECT_PICTURE = 1;
     private int REQUEST_PERMISSION = 2;
     private String TAG = "SAVING IMAGE";
-    private int detail_photosCount = 0;
     private String latestImageName;
     private int memoID;
-    private List<String> imageViewArrayListDetails = new ArrayList<>();
     private MemoPhotosAdapter memoPhotosAdapter;
-    private ArrayList<String> filePathList = new ArrayList<>();
     private ArrayList<Integer> positionsToBeDeleted = new ArrayList<>();
-    private Intent intent;
     private RecyclerView photosRecyclerView;
     //  private HashMap<ImageView, Boolean> imageViewBooleanHashMap = new HashMap<ImageView,Boolean>();
 
@@ -137,71 +132,16 @@ public class TextDetailsMemoActivity extends AppCompatActivity implements Toolba
                 cursor.close();
 
 
-                Bitmap yourSelectedImage = BitmapOperation.decodeSampledBitmapFromFile(filePath, 500, 500);
-                int width = yourSelectedImage.getWidth();
-                int height = yourSelectedImage.getHeight();
-                float aspectRatio = (float) height / width;
-                float resizedHeight = aspectRatio * 500;
-                yourSelectedImage = BitmapOperation.getResizedBitmap(yourSelectedImage, 500, (int) resizedHeight);
-
-                //WANT TO ADD FILEPATH FOR THIS, BUT NO FILEPATH. FIND A WAY!
-
-                storeImage(yourSelectedImage, (detail_photosCount));
-
-
-                imageViewArrayListDetails.add(FileOperation.mydir + File.separator + "u_" + FileOperation.userID + "_img_" + memoID + "_" + detail_photosCount + ".jpg");
-                filePathList.add("u_" + FileOperation.userID + "_img_" + memoID + "_" + detail_photosCount + ".jpg");
-
-                detail_photosCount++;
-
-                memoPhotosAdapter.notifyDataSetChanged();
+                loadImageAfterAdd(filePath);
 
 
             }
         }
     }
 
-
-    private void storeImage(Bitmap image, int photoID) {
-        File pictureFile = getOutputMediaFile(photoID);
-        if (pictureFile == null) {
-            Log.d(TAG,
-                    "Error creating media file, check storage permissions: ");
-            return;
-        }
-        try {
-            FileOutputStream fos = new FileOutputStream(pictureFile);
-
-            image.compress(Bitmap.CompressFormat.PNG, 90, fos);
-            fos.close();
-        } catch (FileNotFoundException e) {
-            Log.d(TAG, "File not found: " + e.getMessage());
-        } catch (IOException e) {
-            Log.d(TAG, "Error accessing file: " + e.getMessage());
-        }
-    }
-
-
-    private File getOutputMediaFile(int photoID) {
-
-
-        //   String timeStamp = new SimpleDateFormat("ddMMyyyy_HHmm").format(new Date());
-        File mediaFile;
-        String mImageName = null;
-
-        int memoID = 0;
-        if (intent.hasExtra(C.ACTION_MODE) && ACTION_MODE.equals(C.EDIT)) {
-            memoID = intent.getExtras().getInt(C.TEXT_ID);
-        } else if (intent.hasExtra(C.ACTION_MODE) && ACTION_MODE.equals(C.ADD)) {
-            memoID = FileOperation.getMemoTextCountId();
-        }
-
-        mImageName = "u_" + FileOperation.userID + "_img_" + memoID + "_" + photoID + ".jpg";
-
-        latestImageName = mImageName;
-        mediaFile = new File(FileOperation.mydir, latestImageName);
-
-        return mediaFile;
+    private void loadImageAfterAdd(String filePath) {
+        final BitmapStoringWorkerTask task = new BitmapStoringWorkerTask(memoPhotosAdapter, this, memoID, ACTION_MODE);
+        task.execute(filePath);
     }
 
 
