@@ -14,6 +14,7 @@ import android.widget.Toast;
 
 import com.sunway.android.memoapp.R;
 import com.sunway.android.memoapp.util.C;
+import com.sunway.android.memoapp.view.DrawingMemoActivity;
 import com.sunway.android.memoapp.view.TextDetailsMemoActivity;
 
 public class AlarmReceiver extends BroadcastReceiver {
@@ -32,38 +33,28 @@ public class AlarmReceiver extends BroadcastReceiver {
 
 
         Toast.makeText(arg0, "Alarm worked.", Toast.LENGTH_LONG).show();
-        createNotification(arg0, intent.getExtras().getString(C.INPUT_TITLE), intent.getExtras().getString(C.INPUT_DETAILS), "Alert", intent.getExtras().getInt(C.TEXT_ID), intent.getExtras().getInt(C.PHOTOS));
+        createNotification(arg0, intent.getExtras().getString(C.INPUT_TITLE), intent.getExtras().getString(C.INPUT_DETAILS), "Alert", intent.getExtras().getInt(C.TEXT_ID), intent.getExtras().getInt(C.PHOTOS), intent.getExtras().getString(C.MEMO_TYPE));
 
     }
 
-    public void createNotification(Context context, String msg, String msgText, String msgAlert, int memoid, int photosCount) {
+    public void createNotification(Context context, String msg, String msgText, String msgAlert, int memoid, int photosCount, String memoType) {
         mNotificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
 
+        Intent intent = null;
+        if (memoType.equals(C.TEXT_MEMO)) {
+            intent = new Intent(context, TextDetailsMemoActivity.class)
+                    .putExtra(C.ACTION_MODE, C.EDIT);
+        } else if (memoType.equals(C.DRAWING_MEMO)) {
+            intent = new Intent(context, DrawingMemoActivity.class)
+                    .putExtra(C.ACTION_MODE, C.EDITDRAWING);
 
-        /*
-        PendingIntent notificIntent = PendingIntent.getActivity(context,notifyID,new Intent(context,ReminderActivity.class),PendingIntent.FLAG_UPDATE_CURRENT);
+        }
 
-
-
-        Intent resultIntent = new Intent(context, MainActivity.class);
-        TaskStackBuilder stackBuilder = TaskStackBuilder.create(context);
-// Adds the back stack
-        stackBuilder.addParentStack(MainActivity.class);
-// Adds the Intent to the top of the stack
-        stackBuilder.addNextIntent(resultIntent);
-// Gets a PendingIntent containing the entire back stack
-        PendingIntent resultPendingIntent =
-                stackBuilder.getPendingIntent(notifyID, PendingIntent.FLAG_UPDATE_CURRENT);
-*/
-
-
-        Intent intent = new Intent(context, TextDetailsMemoActivity.class);
         intent.setAction(Long.toString(System.currentTimeMillis()));
-        //    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
         intent.putExtra(C.INPUT_TITLE, msg)
                 .putExtra(C.INPUT_DETAILS, msgText)
                 .putExtra(C.PHOTOS, photosCount)
-                .putExtra(C.ACTION_MODE, C.VIEW_MEMO_NOTIFICATION)
                 .putExtra(C.TEXT_ID, memoid);
         PendingIntent pendingIntent = PendingIntent.getActivity(context, memoid,
                 intent, 0);

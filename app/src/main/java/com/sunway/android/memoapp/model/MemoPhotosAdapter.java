@@ -29,11 +29,11 @@ public class MemoPhotosAdapter extends RecyclerView.Adapter<MemoPhotosHolder> {
     private int memoID;
     private int adapterPosition;
     private MemoItemAdapter memoItemAdapter;
-    private int displayState;
+    private String displayState;
     private Bitmap bitmapHolder;
 
 
-    public MemoPhotosAdapter(Activity activity, List<String> imageViewList, int memoID, int displayState) {
+    public MemoPhotosAdapter(Activity activity, List<String> imageViewList, int memoID, String displayState) {
         this.context = activity;
         this.activity = activity;
         this.imageViewList = imageViewList;
@@ -43,7 +43,7 @@ public class MemoPhotosAdapter extends RecyclerView.Adapter<MemoPhotosHolder> {
         this.displayState = displayState;
     }
 
-    public MemoPhotosAdapter(Activity activity, List<String> imageViewList, int memoID, MemoItemAdapter memoItemAdapter, int displayState) {
+    public MemoPhotosAdapter(Activity activity, List<String> imageViewList, int memoID, MemoItemAdapter memoItemAdapter, String displayState) {
         this.context = activity;
         this.activity = activity;
         this.imageViewList = imageViewList;
@@ -80,7 +80,7 @@ public class MemoPhotosAdapter extends RecyclerView.Adapter<MemoPhotosHolder> {
             final BitmapOperation.AsyncDrawable asyncDrawable =
                     new BitmapOperation.AsyncDrawable(resources, bitmapHolder, task);
             imageView.setImageDrawable(asyncDrawable);
-            task.execute(filePath, Integer.toString(displayState));
+            task.execute(filePath, displayState);
         }
     }
 

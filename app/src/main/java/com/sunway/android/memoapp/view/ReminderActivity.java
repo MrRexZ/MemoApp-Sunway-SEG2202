@@ -1,11 +1,7 @@
 package com.sunway.android.memoapp.view;
 
-import android.app.AlarmManager;
-import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
-import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
@@ -91,29 +87,29 @@ public class ReminderActivity extends AppCompatActivity {
     private void setAlarm(Calendar targetCal) {
 
 
-        info.setText("\n\n***\n"
-                + "Reminder is set on " + targetCal.getTime() + "\n"
-                + "***\n");
+        // intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 
-        IntentFilter filter = new IntentFilter();
-        filter.addAction("android.provider.Telephony.SMS_RECEIVED");
-
-        Intent intent = new Intent(getBaseContext(), AlarmReceiver.class)
-                .putExtra(C.INPUT_TITLE, getIntent().getStringExtra(C.INPUT_TITLE))
-                .putExtra(C.INPUT_DETAILS, getIntent().getStringExtra(C.INPUT_DETAILS))
-                .putExtra(C.TEXT_ID, getIntent().getExtras().getInt(C.TEXT_ID))
-                .putExtra(C.PHOTOS, getIntent().getExtras().getInt(C.PHOTOS));
-
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(getBaseContext(), getIntent().getExtras().getInt(C.TEXT_ID), intent, PendingIntent.FLAG_UPDATE_CURRENT);
-        AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
-        alarmManager.set(AlarmManager.RTC_WAKEUP, targetCal.getTimeInMillis(), pendingIntent);
-        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        Intent showMainActivity = new Intent(this, MainActivity.class)
+        Intent showActivity = null;
+        if (getIntent().getExtras().getString(C.MEMO_TYPE).equals(C.TEXT_MEMO)) {
+            showActivity = new Intent(this, TextDetailsMemoActivity.class)
                 .putExtra(C.INPUT_TITLE, getIntent().getStringExtra(C.INPUT_TITLE).toString())
                 .putExtra(C.INPUT_DETAILS, getIntent().getStringExtra(C.INPUT_DETAILS).toString())
                 .putExtra(C.PHOTOS, getIntent().getExtras().getInt(C.PHOTOS))
-                .putExtra(C.ACTION_MODE, C.REGISTER_REMINDER);
-        startActivity(showMainActivity);
+                    .putExtra(C.TEXT_ID, getIntent().getExtras().getInt(C.TEXT_ID))
+                    .putExtra(C.ACTION_MODE, getIntent().getStringExtra(C.ACTION_MODE))
+                    .putExtra(C.HAS_REMINDER, true)
+                    .putExtra(C.REMINDER_DETAILS, targetCal);
+        } else if (getIntent().getExtras().getString(C.MEMO_TYPE).equals(C.DRAWING_MEMO)) {
+            showActivity = new Intent(this, DrawingMemoActivity.class)
+                    .putExtra(C.INPUT_TITLE, getIntent().getStringExtra(C.INPUT_TITLE).toString())
+                    .putExtra(C.INPUT_DETAILS, getIntent().getStringExtra(C.INPUT_DETAILS).toString())
+                    .putExtra(C.PHOTOS, getIntent().getExtras().getInt(C.PHOTOS))
+                    .putExtra(C.TEXT_ID, getIntent().getExtras().getInt(C.TEXT_ID))
+                    .putExtra(C.ACTION_MODE, getIntent().getStringExtra(C.ACTION_MODE))
+                    .putExtra(C.HAS_REMINDER, true)
+                    .putExtra(C.REMINDER_DETAILS, targetCal);
+        }
+        startActivity(showActivity);
     }
 
 }

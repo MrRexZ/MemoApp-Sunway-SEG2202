@@ -1,7 +1,11 @@
 package com.sunway.android.memoapp.view;
 
 import android.Manifest;
+import android.app.AlarmManager;
+import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
@@ -22,6 +26,7 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.sunway.android.memoapp.R;
+import com.sunway.android.memoapp.controller.AlarmReceiver;
 import com.sunway.android.memoapp.controller.BitmapStoringWorkerTask;
 import com.sunway.android.memoapp.model.MemoPhotosAdapter;
 import com.sunway.android.memoapp.model.MyApplication;
@@ -31,6 +36,7 @@ import com.sunway.android.memoapp.util.ListOperation;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Iterator;
 import java.util.List;
 
@@ -69,6 +75,13 @@ public class TextDetailsMemoActivity extends AppCompatActivity implements Toolba
         intent = getIntent();
         ACTION_MODE = intent.getStringExtra(C.ACTION_MODE);
         detail_photosCount = intent.getExtras().getInt(C.PHOTOS);
+        oldTitle = intent.getStringExtra(C.INPUT_TITLE);
+        oldDetails = intent.getStringExtra(C.INPUT_DETAILS);
+        EditText textviewTitle = (EditText) findViewById(R.id.title_text_input);
+        EditText detailsviewTitle = (EditText) findViewById(R.id.details_text_input);
+        textviewTitle.setText(oldTitle);
+        detailsviewTitle.setText(oldDetails);
+
 
         photosRecyclerView = (RecyclerView) findViewById(R.id.recycler_view_details);
         memoID = intent.getExtras().getInt(C.TEXT_ID);
@@ -80,28 +93,17 @@ public class TextDetailsMemoActivity extends AppCompatActivity implements Toolba
 
         registerForContextMenu(photosRecyclerView);
 
-        if (ACTION_MODE.equals(C.EDIT) || ACTION_MODE.equals(C.VIEW_MEMO_NOTIFICATION)) {
-            EditText textviewTitle = (EditText) findViewById(R.id.title_text_input);
-            EditText detailsviewTitle = (EditText) findViewById(R.id.details_text_input);
-
-            oldTitle = intent.getStringExtra(C.INPUT_TITLE);
-            oldDetails = intent.getStringExtra(C.INPUT_DETAILS);
-            textviewTitle.setText(oldTitle);
-            detailsviewTitle.setText(oldDetails);
-
             int count = 0;
             while (count < detail_photosCount) {
                 File fileName = new File("u_" + FileOperation.userID + "_img_" + memoID + "_" + (count++) + ".jpg");
-
                 File filePath = new File(FileOperation.mydir, fileName.toString());
-                if (filePath.exists()) {
 
+                if (filePath.exists()) {
                     imageViewArrayListDetails.add(filePath.toString());
                     filePathList.add(filePath.toString());
                 }
             }
 
-        }
 
         Toolbar upper_toolbar = (Toolbar) findViewById(R.id.toolbar_upper);
         setSupportActionBar(upper_toolbar);
@@ -155,11 +157,15 @@ public class TextDetailsMemoActivity extends AppCompatActivity implements Toolba
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         if (id == R.id.action_reminder) {
+            EditText textviewTitle = (EditText) findViewById(R.id.title_text_input);
+            EditText textviewDetails = (EditText) findViewById(R.id.details_text_input);
             Intent showReminder = new Intent(this, ReminderActivity.class)
-                    .putExtra(C.INPUT_TITLE, oldTitle)
-                    .putExtra(C.INPUT_DETAILS, oldDetails)
+                    .putExtra(C.INPUT_TITLE, textviewTitle.getText().toString())
+                    .putExtra(C.INPUT_DETAILS, textviewDetails.getText().toString())
                     .putExtra(C.TEXT_ID, memoID)
-                    .putExtra(C.PHOTOS, intent.getExtras().getInt(C.PHOTOS));
+                    .putExtra(C.PHOTOS, detail_photosCount)
+                    .putExtra(C.MEMO_TYPE, C.TEXT_MEMO)
+                    .putExtra(C.ACTION_MODE, ACTION_MODE);
             startActivity(showReminder);
         }
         return super.onOptionsItemSelected(item);
@@ -172,10 +178,10 @@ public class TextDetailsMemoActivity extends AppCompatActivity implements Toolba
         int id = item.getItemId();
         if (id == R.id.action_submit_text_memo) {
             EditText textviewTitle = (EditText) findViewById(R.id.title_text_input);
-            EditText detailsviewTitle = (EditText) findViewById(R.id.details_text_input);
+            EditText textviewDetails = (EditText) findViewById(R.id.details_text_input);
 
             newTitle = textviewTitle.getText().toString();
-            newDetails = detailsviewTitle.getText().toString();
+            newDetails = textviewDetails.getText().toString();
 
             if (!newTitle.isEmpty() || !newDetails.isEmpty()) {
 
@@ -184,46 +190,60 @@ public class TextDetailsMemoActivity extends AppCompatActivity implements Toolba
                         .putExtra(C.INPUT_DETAILS, newDetails)
                         .putExtra(C.PHOTOS, detail_photosCount);
 
+                Iterator iteratorDeletion = positionsToBeDeleted.iterator();
+                while (iteratorDeletion.hasNext()) {
+                    int position = (int) iteratorDeletion.next();
 
-                int oldPhotosCount = intent.getExtras().getInt(C.PHOTOS);
+                    File file = new File(FileOperation.mydir, filePathList.get(position));
+                    FileOperation.deleteIndividualPhotosMemo(filePathList.get(position));
+                    filePathList.remove(position);
+                }
+
                 if (ACTION_MODE.equals(C.EDIT) || ACTION_MODE.equals("DELETE")) {
-                    Iterator iteratorDeletion = positionsToBeDeleted.iterator();
-                    while (iteratorDeletion.hasNext()) {
-                        int position = (int) iteratorDeletion.next();
 
-                            File file = new File(FileOperation.mydir, filePathList.get(position));
-                            FileOperation.deleteIndividualPhotosMemo(filePathList.get(position));
-                            filePathList.remove(position);
-
-
-                    }
-                    int memoID = intent.getExtras().getInt(C.TEXT_ID);
-
+                    int oldPhotosCount = intent.getExtras().getInt(C.PHOTOS);
                     FileOperation.replaceSelected(
                             FileOperation.DELIMITER_LINE + FileOperation.DELIMITER_UNIT + memoID + FileOperation.DELIMITER_UNIT + FileOperation.DELIMITER_LINE + "photos=" + oldPhotosCount + FileOperation.DELIMITER_LINE + oldTitle + FileOperation.DELIMITER_LINE + oldDetails + FileOperation.DELIMITER_LINE,
                             FileOperation.DELIMITER_LINE + FileOperation.DELIMITER_UNIT + memoID + FileOperation.DELIMITER_UNIT + FileOperation.DELIMITER_LINE + "photos=" + detail_photosCount + FileOperation.DELIMITER_LINE + newTitle + FileOperation.DELIMITER_LINE + newDetails + FileOperation.DELIMITER_LINE);
-                    showMainActivity.putExtra("ACTION_MODE", "EDIT");
+                    showMainActivity.putExtra(C.ACTION_MODE, C.EDIT);
 
 
                     ListOperation.modifyTextList(memoID, detail_photosCount, oldTitle, oldDetails, newTitle, newDetails);
                 } else
                     showMainActivity.putExtra(C.ACTION_MODE, C.ADD);
 
+                boolean HAS_REMINDER = intent.getExtras().getBoolean(C.HAS_REMINDER);
+                boolean alarmUp = (PendingIntent.getBroadcast(getBaseContext(), memoID,
+                        new Intent(getBaseContext(), AlarmReceiver.class),
+                        PendingIntent.FLAG_NO_CREATE) != null);
 
-                //     Iterator iteratorArrayListImage = imageViewArrayListDetails.iterator();
-                //    Iterator existingPhotosIterator = existingPhotos.iterator();
+                if (HAS_REMINDER) {
+                    Calendar targetCal = (Calendar) intent.getSerializableExtra(C.REMINDER_DETAILS);
 
-/*
-                while (iteratorArrayListImage.hasNext()) {
-                    //If not existing photos (if false) and the arraylist has content :
+                    IntentFilter filter = new IntentFilter();
+                    filter.addAction("android.provider.Telephony.SMS_RECEIVED");
 
-                    Bitmap bMap = (Bitmap) iteratorArrayListImage.next();
-                    if ((Boolean) existingPhotosIterator.next() == false) {
-                        storeImage(bMap, oldPhotosCount);
-                        oldPhotosCount++;
-                    }
+                    Intent intent = new Intent(getBaseContext(), AlarmReceiver.class)
+                            .putExtra(C.INPUT_TITLE, textviewTitle.getText().toString())
+                            .putExtra(C.INPUT_DETAILS, textviewDetails.getText().toString())
+                            .putExtra(C.TEXT_ID, memoID)
+                            .putExtra(C.PHOTOS, detail_photosCount)
+                            .putExtra(C.ACTION_MODE, C.EDIT)
+                            .putExtra(C.MEMO_TYPE, C.TEXT_MEMO);
+                    PendingIntent pendingIntent = PendingIntent.getBroadcast(getBaseContext(), memoID, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+                    AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+                    alarmManager.set(AlarmManager.RTC_WAKEUP, targetCal.getTimeInMillis(), pendingIntent);
+                } else if (alarmUp) {
+                    Intent intent = new Intent(getBaseContext(), AlarmReceiver.class)
+                            .putExtra(C.INPUT_TITLE, textviewTitle.getText().toString())
+                            .putExtra(C.INPUT_DETAILS, textviewDetails.getText().toString())
+                            .putExtra(C.TEXT_ID, memoID)
+                            .putExtra(C.PHOTOS, detail_photosCount)
+                            .putExtra(C.ACTION_MODE, C.EDIT);
+                    PendingIntent pendingIntent = PendingIntent.getBroadcast(getBaseContext(), memoID, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+
                 }
-*/
+
                 startActivity(showMainActivity);
                 return true;
 

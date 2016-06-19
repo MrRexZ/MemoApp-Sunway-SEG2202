@@ -15,7 +15,7 @@ import java.lang.ref.WeakReference;
 public class BitmapReadingWorkerTask extends AsyncTask<String, Void, Bitmap> {
     private final WeakReference<ImageView> imageViewReference;
     public String filePath = null;
-    public int displayMode = 0;
+    public String displayMode;
     private int maxWidth;
 
     public BitmapReadingWorkerTask(ImageView imageView) {
@@ -27,14 +27,14 @@ public class BitmapReadingWorkerTask extends AsyncTask<String, Void, Bitmap> {
     @Override
     protected Bitmap doInBackground(String... params) {
         filePath = params[0];
-        displayMode = Integer.parseInt(params[1]);
+        displayMode = params[1];
         return BitmapOperation.decodeSampledBitmapFromFile(filePath, 200, 200);
     }
 
     // Once complete, see if ImageView is still around and set bitmap.
     @Override
     protected void onPostExecute(Bitmap bitmap) {
-        if (displayMode == C.DETAILS_ACTIVITY_DISPLAY) maxWidth = 500;
+        if (displayMode.equals(C.DETAILS_ACTIVITY_DISPLAY)) maxWidth = 500;
         else maxWidth = 200;
         int width = bitmap.getWidth();
         int height = bitmap.getHeight();

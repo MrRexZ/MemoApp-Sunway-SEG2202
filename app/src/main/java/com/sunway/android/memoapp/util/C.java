@@ -26,8 +26,13 @@ public class C {
     public static final String REGISTER_REMINDER = "REGISTER_REMINDER";
     public static final int TEXT_DETAILS_MEMO_RECYCLERVIEWADAPTER = 0;
     public static final int NESTED_TEXT_MEMO_RECYCLERVIEWADAPTER = 1;
+    public static final String TEXT_MEMO = "TEXT_MEMO";
+    public static final String MEMO_TYPE = "MEMO_TYPE";
+    public static final String DRAWING_MEMO = "DRAWING_MEMO";
 
+    public static final String HAS_REMINDER = "HAS_REMINDER";
+    public static final String REMINDER_DETAILS = "REMINDER_DETAILS";
 
-    public static final int MAIN_ACTIVITY_FRAGMENT_DISPLAY = 0;
-    public static final int DETAILS_ACTIVITY_DISPLAY = 1;
+    public static final String MAIN_ACTIVITY_FRAGMENT_DISPLAY = "MAIN_ACTIVITY_FRAGMENT_DISPLAY";
+    public static final String DETAILS_ACTIVITY_DISPLAY = "DETAILS_ACTIVITY_DISPLAY";
 }

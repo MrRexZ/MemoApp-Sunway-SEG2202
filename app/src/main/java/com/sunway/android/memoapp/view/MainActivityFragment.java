@@ -60,7 +60,6 @@ public class MainActivityFragment extends Fragment implements SearchView.OnQuery
             File mydir = MyApplication.getAppContext().getDir("memoapp", Context.MODE_PRIVATE);
             if (!mydir.exists())
                 mydir.mkdirs();
-            mode = "START";
             FileOperation.readFile("START", "u_" + FileOperation.userID + ".txt");
 
         }
@@ -122,6 +121,8 @@ public class MainActivityFragment extends Fragment implements SearchView.OnQuery
                 int id = arg0.getItemId();
                 if (id == R.id.action_open_create_text_memo) {
                     Intent showDetail = new Intent(getActivity(), TextDetailsMemoActivity.class)
+                            .putExtra(C.INPUT_TITLE, "")
+                            .putExtra(C.INPUT_DETAILS, "")
                             .putExtra(C.ACTION_MODE, C.ADD)
                             .putExtra(C.PHOTOS, 0)
                             .putExtra(C.TEXT_ID, FileOperation.getMemoTextCountId());

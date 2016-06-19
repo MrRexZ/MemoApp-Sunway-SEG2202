@@ -49,10 +49,10 @@ public class BitmapStoringWorkerTask extends AsyncTask<String, Void, Bitmap> {
         super.onPostExecute(bitmap);
         storeImage(bitmap, (textDetailsMemoActivity.detail_photosCount));
 
-
-        textDetailsMemoActivity.imageViewArrayListDetails.add(FileOperation.mydir + File.separator + "u_" + FileOperation.userID + "_img_" + memoID + "_" + textDetailsMemoActivity.detail_photosCount + ".jpg");
-        textDetailsMemoActivity.filePathList.add("u_" + FileOperation.userID + "_img_" + memoID + "_" + textDetailsMemoActivity.detail_photosCount + ".jpg");
-
+        File fileName = new File("u_" + FileOperation.userID + "_img_" + memoID + "_" + textDetailsMemoActivity.detail_photosCount + ".jpg");
+        File filePath = new File(FileOperation.mydir, fileName.toString());
+        textDetailsMemoActivity.imageViewArrayListDetails.add(filePath.toString());
+        textDetailsMemoActivity.filePathList.add(filePath.toString());
         textDetailsMemoActivity.detail_photosCount++;
 
         memoPhotosAdapter.notifyDataSetChanged();

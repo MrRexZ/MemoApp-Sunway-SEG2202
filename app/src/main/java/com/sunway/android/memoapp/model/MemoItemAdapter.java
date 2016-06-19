@@ -32,9 +32,9 @@ public class MemoItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     private Activity activity;
     private int position;
     private Bitmap bitmapHolder;
-    private int displayState = 0;
+    private String displayState;
 
-    public MemoItemAdapter(Activity context, int displayState) {
+    public MemoItemAdapter(Activity context, String displayState) {
         this.context=context;
         this.activity = context;
 
