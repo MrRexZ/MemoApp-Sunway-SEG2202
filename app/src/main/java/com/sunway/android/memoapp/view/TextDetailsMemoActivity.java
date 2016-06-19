@@ -239,7 +239,8 @@ public class TextDetailsMemoActivity extends AppCompatActivity implements Toolba
                             .putExtra(C.INPUT_DETAILS, textviewDetails.getText().toString())
                             .putExtra(C.TEXT_ID, memoID)
                             .putExtra(C.PHOTOS, detail_photosCount)
-                            .putExtra(C.ACTION_MODE, C.EDIT);
+                            .putExtra(C.ACTION_MODE, C.EDIT)
+                            .putExtra(C.MEMO_TYPE, C.TEXT_MEMO);
                     PendingIntent pendingIntent = PendingIntent.getBroadcast(getBaseContext(), memoID, intent, PendingIntent.FLAG_UPDATE_CURRENT);
 
                 }

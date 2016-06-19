@@ -51,7 +51,6 @@ public class AlarmReceiver extends BroadcastReceiver {
         }
 
         intent.setAction(Long.toString(System.currentTimeMillis()));
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
         intent.putExtra(C.INPUT_TITLE, msg)
                 .putExtra(C.INPUT_DETAILS, msgText)
                 .putExtra(C.PHOTOS, photosCount)
