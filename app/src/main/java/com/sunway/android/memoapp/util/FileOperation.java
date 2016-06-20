@@ -8,7 +8,6 @@ import android.widget.Toast;
 
 import com.sunway.android.memoapp.model.MemoDrawingItem;
 import com.sunway.android.memoapp.model.MemoTextItem;
-import com.sunway.android.memoapp.model.MyApplication;
 
 import java.io.BufferedReader;
 import java.io.File;

@@ -10,6 +10,8 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Filter;
+import android.widget.Filterable;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
@@ -20,35 +22,40 @@ import com.sunway.android.memoapp.util.ListOperation;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by Mr_RexZ on 5/27/2016.
  */
-public class MemoItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+public class MemoItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> implements Filterable {
 
     private final static int TEXT = 1;
     private final static int DRAWING = 2;
+    public List<MemoItem> nMemoList = new ArrayList<MemoItem>();
     private Context context;
     private Activity activity;
     private int position;
     private Bitmap bitmapHolder;
     private String displayState;
+    private MemoItemFilter mFilter = new MemoItemFilter();
+    private List<MemoItem> oldMemoList = new ArrayList<MemoItem>();
+
 
     public MemoItemAdapter(Activity context, String displayState) {
-        this.context=context;
+        this.context = context;
         this.activity = context;
 
         Drawable dh = context.getResources().getDrawable(R.drawable.ic_launcher);
         bitmapHolder = ((BitmapDrawable) dh).getBitmap();
         this.displayState = displayState;
+        nMemoList.addAll(ListOperation.getListViewItems());
 
     }
 
 
-
     @Override
-    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType)
-    {
+    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
 
         RecyclerView.ViewHolder viewHolder;
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
@@ -75,7 +82,7 @@ public class MemoItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
 
-        MemoItem memoItem = ListOperation.getListViewItems().get(position);
+        MemoItem memoItem = nMemoList.get(position);
         switch (holder.getItemViewType()) {
             case (TEXT):
                 MemoTextViewHolder v1 = (MemoTextViewHolder) holder;
@@ -93,18 +100,17 @@ public class MemoItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
     @Override
     public int getItemViewType(int position) {
-        if (ListOperation.getIndividualMemoItem(position) instanceof MemoTextItem)
+        if (nMemoList.get(position) instanceof MemoTextItem)
             return TEXT;
-        else if (ListOperation.getIndividualMemoItem(position) instanceof MemoDrawingItem)
+        else if (nMemoList.get(position) instanceof MemoDrawingItem)
             return DRAWING;
 
         return -1;
     }
 
     @Override
-    public int getItemCount()
-    {
-        return ListOperation.getListViewItems().size();
+    public int getItemCount() {
+        return nMemoList.size();
     }
 
     public int getPosition() {
@@ -149,8 +155,6 @@ public class MemoItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     }
 
 
-
-
     private void configureDrawingViewHolder(MemoDrawingViewHolder hDrawing, MemoItem memoItem) {
 
         if (hDrawing.drawingContainer.getChildCount() > 0) {
@@ -176,6 +180,57 @@ public class MemoItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
         }
     }
+
+    public Filter getFilter() {
+
+        if (mFilter == null)
+            mFilter = new MemoItemFilter();
+
+        return mFilter;
     }
+
+    private class MemoItemFilter extends Filter {
+        @Override
+        protected FilterResults performFiltering(CharSequence constraint) {
+            FilterResults results = new FilterResults();
+            if (constraint == null || constraint.length() == 0 || constraint.equals("")) {
+                results.values = ListOperation.getListViewItems();
+                results.count = ListOperation.getListViewItems().size();
+                System.out.println("hey");
+            } else {
+                List<MemoItem> tMemoList = new ArrayList<MemoItem>();
+
+                for (MemoItem p : ListOperation.getListViewItems()) {
+                    if (p instanceof MemoTextItem) {
+                        MemoTextItem memoTextItem = (MemoTextItem) p;
+                        if (memoTextItem.getTitle().toUpperCase().startsWith(constraint.toString().toUpperCase())) {
+                            tMemoList.add(memoTextItem);
+                            System.out.println("all values exec:");
+                        }
+                    }
+                }
+
+                results.values = tMemoList;
+                results.count = tMemoList.size();
+
+            }
+            return results;
+        }
+
+        @Override
+        protected void publishResults(CharSequence constraint, FilterResults results) {
+
+
+            nMemoList.clear();
+            nMemoList.addAll((List<MemoItem>) results.values);
+            System.out.println("all values are :" + nMemoList.size());
+            notifyDataSetChanged();
+
+
+        }
+
+
+    }
+}
 
 

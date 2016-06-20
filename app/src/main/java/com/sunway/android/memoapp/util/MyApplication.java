@@ -1,4 +1,4 @@
-package com.sunway.android.memoapp.model;
+package com.sunway.android.memoapp.util;
 
 import android.app.Application;
 import android.content.Context;

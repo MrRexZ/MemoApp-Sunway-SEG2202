@@ -29,10 +29,10 @@ import com.sunway.android.memoapp.R;
 import com.sunway.android.memoapp.controller.AlarmReceiver;
 import com.sunway.android.memoapp.controller.BitmapStoringWorkerTask;
 import com.sunway.android.memoapp.model.MemoPhotosAdapter;
-import com.sunway.android.memoapp.model.MyApplication;
 import com.sunway.android.memoapp.util.C;
 import com.sunway.android.memoapp.util.FileOperation;
 import com.sunway.android.memoapp.util.ListOperation;
+import com.sunway.android.memoapp.util.MyApplication;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -62,8 +62,6 @@ public class TextDetailsMemoActivity extends AppCompatActivity implements Toolba
     private MemoPhotosAdapter memoPhotosAdapter;
     private ArrayList<Integer> positionsToBeDeleted = new ArrayList<>();
     private RecyclerView photosRecyclerView;
-    //  private HashMap<ImageView, Boolean> imageViewBooleanHashMap = new HashMap<ImageView,Boolean>();
-
 
     private List<String> getImageViewList() {
         return imageViewArrayListDetails;

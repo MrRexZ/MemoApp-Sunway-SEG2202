@@ -26,13 +26,12 @@ import com.sunway.android.memoapp.model.MemoDrawingItem;
 import com.sunway.android.memoapp.model.MemoItem;
 import com.sunway.android.memoapp.model.MemoItemAdapter;
 import com.sunway.android.memoapp.model.MemoTextItem;
-import com.sunway.android.memoapp.model.MyApplication;
 import com.sunway.android.memoapp.util.C;
 import com.sunway.android.memoapp.util.FileOperation;
 import com.sunway.android.memoapp.util.ListOperation;
+import com.sunway.android.memoapp.util.MyApplication;
 
 import java.io.File;
-import java.util.List;
 
 /**
  * Created by Mr_RexZ on 5/28/2016.
@@ -91,12 +90,13 @@ public class MainActivityFragment extends Fragment implements SearchView.OnQuery
 
     @Override
     public boolean onQueryTextSubmit(String query) {
-
         return false;
     }
 
     @Override
     public boolean onQueryTextChange(String newText) {
+
+        rcAdapter.getFilter().filter(newText);
         return false;
     }
 
@@ -194,6 +194,8 @@ public class MainActivityFragment extends Fragment implements SearchView.OnQuery
             FileOperation.readFile(mode, "u_" + FileOperation.userID + ".txt");
 
 
+            rcAdapter.nMemoList.clear();
+            rcAdapter.nMemoList.addAll(ListOperation.getListViewItems());
             rcAdapter.notifyDataSetChanged();
             input_title = "";
             input_details = "";
@@ -210,9 +212,6 @@ public class MainActivityFragment extends Fragment implements SearchView.OnQuery
         recyclerView.setHasFixedSize(true);
         _sGridLayoutManager = new StaggeredGridLayoutManager( 3 , StaggeredGridLayoutManager.VERTICAL );
         recyclerView.setLayoutManager( _sGridLayoutManager );
-
-        List<MemoItem> sList;
-        sList = ListOperation.getListViewItems();
 
         rcAdapter = new MemoItemAdapter(
                 getActivity(), C.MAIN_ACTIVITY_FRAGMENT_DISPLAY);
