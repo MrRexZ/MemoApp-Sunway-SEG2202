@@ -38,16 +38,18 @@ public class MainActivityFragmentTouchListener implements RecyclerView.OnItemTou
                     MemoTextItem memoTextItem = (MemoTextItem) memoitem;
                     Intent showDetail = new Intent(fragment.getActivity(), TextDetailsMemoActivity.class)
                             .putExtra(C.ACTION_MODE, C.EDIT)
-                            .putExtra(C.TEXT_ID, memoitem.getMemoID())
+                            .putExtra(C.MEMO_ID, memoitem.getMemoID())
                             .putExtra(C.INPUT_TITLE, memoTextItem.getTitle())
                             .putExtra(C.INPUT_DETAILS, memoTextItem.getContent())
-                            .putExtra(C.PHOTOS, memoTextItem.getPhotosCount());
+                            .putExtra(C.PHOTOS, memoTextItem.getPhotosCount())
+                            .putExtra(C.ADAPTER_POSITION, position);
                     fragment.getActivity().startActivity(showDetail);
                 } else if (memoitem instanceof MemoDrawingItem) {
                     MemoDrawingItem memoDrawingItem = (MemoDrawingItem) memoitem;
                     Intent showDrawing = new Intent(fragment.getActivity(), DrawingMemoActivity.class)
                             .putExtra(C.ACTION_MODE, C.EDITDRAWING)
-                            .putExtra(C.TEXT_ID, memoDrawingItem.getMemoID());
+                            .putExtra(C.MEMO_ID, memoDrawingItem.getMemoID())
+                            .putExtra(C.ADAPTER_POSITION, position);
                     fragment.getActivity().startActivity(showDrawing);
 
 

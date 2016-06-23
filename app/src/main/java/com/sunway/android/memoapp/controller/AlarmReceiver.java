@@ -33,7 +33,7 @@ public class AlarmReceiver extends BroadcastReceiver {
 
 
         Toast.makeText(arg0, "Alarm worked.", Toast.LENGTH_LONG).show();
-        createNotification(arg0, intent.getExtras().getString(C.INPUT_TITLE), intent.getExtras().getString(C.INPUT_DETAILS), "Alert", intent.getExtras().getInt(C.TEXT_ID), intent.getExtras().getInt(C.PHOTOS), intent.getExtras().getString(C.MEMO_TYPE));
+        createNotification(arg0, intent.getExtras().getString(C.INPUT_TITLE), intent.getExtras().getString(C.INPUT_DETAILS), "Alert", intent.getExtras().getInt(C.MEMO_ID), intent.getExtras().getInt(C.PHOTOS), intent.getExtras().getString(C.MEMO_TYPE));
 
     }
 
@@ -54,7 +54,7 @@ public class AlarmReceiver extends BroadcastReceiver {
         intent.putExtra(C.INPUT_TITLE, msg)
                 .putExtra(C.INPUT_DETAILS, msgText)
                 .putExtra(C.PHOTOS, photosCount)
-                .putExtra(C.TEXT_ID, memoid);
+                .putExtra(C.MEMO_ID, memoid);
         PendingIntent pendingIntent = PendingIntent.getActivity(context, memoid,
                 intent, 0);
 

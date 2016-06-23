@@ -61,7 +61,8 @@
                 android:id="@+id/title_text_input"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/titleText" />
+                android:layout_below="@id/titleText"
+                android:inputType="textShortMessage|textAutoCorrect|textCapSentences|textMultiLine" />
 
             <TextView
                 android:id="@+id/detailsText"
@@ -78,7 +79,7 @@
                 android:layout_height="wrap_content"
                 android:layout_below="@id/detailsText"
                 android:ems="10"
-                android:inputType="textMultiLine" />
+                android:inputType="textShortMessage|textAutoCorrect|textCapSentences|textMultiLine" />
 
 
         </RelativeLayout>

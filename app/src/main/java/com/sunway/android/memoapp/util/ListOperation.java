@@ -3,6 +3,7 @@ package com.sunway.android.memoapp.util;
 import com.sunway.android.memoapp.model.MemoDrawingItem;
 import com.sunway.android.memoapp.model.MemoItem;
 import com.sunway.android.memoapp.model.MemoTextItem;
+import com.sunway.android.memoapp.model.Reminder;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,7 +24,7 @@ public class ListOperation {
         listViewItems.add(memoType);
     }
 
-    public static void modifyTextList(int textid, int photosCount, String oldTitle, String oldDetails, String newTitle, String newDetails) {
+    public static void modifyTextList(int textid, int photosCount, String oldTitle, String oldDetails, String newTitle, String newDetails, int year, int month, int day, int hour, int minute, int second) {
 
         for (int counter=0;counter<listViewItems.size();counter++) {
 
@@ -31,16 +32,17 @@ public class ListOperation {
                 MemoItem memoItem= listViewItems.get(counter);
             if (memoItem instanceof MemoTextItem) {
                 MemoTextItem memoTextItem = (MemoTextItem) memoItem;
-                if (memoTextItem.getTitle().equals(oldTitle) && memoTextItem.getContent().equals(oldDetails) && memoTextItem.getMemoID() == textid) {
+                if (memoTextItem.getMemoID() == textid) {
                     memoTextItem.setTitle(newTitle);
                     memoTextItem.setContent(newDetails);
                     memoTextItem.setPhotosCount(photosCount);
+                    memoTextItem.setReminder(new Reminder(year, month, day, hour, minute, second));
             }
             }
         }
     }
 
-    public static void modifyDrawingList(int textid) {
+    public static void modifyDrawingList(int textid, int year, int month, int day, int hour, int minute, int second) {
 
         for (int counter = 0; counter < listViewItems.size(); counter++) {
 
@@ -49,6 +51,7 @@ public class ListOperation {
                 MemoDrawingItem memoDrawingItem = (MemoDrawingItem) memoItem;
                 if (memoDrawingItem.getMemoID() == textid)
                     memoDrawingItem.setMemoID(textid);
+                memoDrawingItem.setReminder(new Reminder(year, month, day, hour, minute, second));
 
             }
         }
@@ -63,7 +66,7 @@ public class ListOperation {
             MemoItem memoItem = listViewItems.get(counter);
             if (memoItem instanceof MemoTextItem) {
                 MemoTextItem memoTextItem = (MemoTextItem) memoItem;
-                if (memoTextItem.getTitle().equals(oldTitle) && memoTextItem.getContent().equals(oldDetails) && memoTextItem.getMemoID() == textid) {
+                if (memoTextItem.getMemoID() == textid) {
                     listViewItems.remove(counter);
                 }
             }

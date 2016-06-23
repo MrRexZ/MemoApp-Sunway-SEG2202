@@ -10,12 +10,14 @@ public class MemoTextItem implements MemoItem {
     private String content;
     private int memoid;
     private int photosCount;
+    private Reminder reminder;
 
-    public MemoTextItem(int memoid, int photosCount, String title, String content) {
+    public MemoTextItem(int memoid, int photosCount, String title, String content, Reminder reminder) {
         setTitle(title);
         setContent(content);
         setMemoID(memoid);
         setPhotosCount(photosCount);
+        setReminder(reminder);
     }
 
     public String getTitle() {
@@ -49,5 +51,13 @@ public class MemoTextItem implements MemoItem {
 
     public void setPhotosCount(int photosCount) {
         this.photosCount = photosCount;
+    }
+
+    public Reminder getReminder() {
+        return this.reminder;
+    }
+
+    public void setReminder(Reminder reminder) {
+        this.reminder = reminder;
     }
 }

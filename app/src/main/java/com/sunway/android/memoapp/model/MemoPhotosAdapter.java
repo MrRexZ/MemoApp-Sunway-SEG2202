@@ -2,7 +2,6 @@ package com.sunway.android.memoapp.model;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
@@ -10,10 +9,8 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 
 import com.sunway.android.memoapp.R;
-import com.sunway.android.memoapp.controller.BitmapReadingWorkerTask;
 import com.sunway.android.memoapp.util.BitmapOperation;
 
 import java.util.List;
@@ -69,19 +66,8 @@ public class MemoPhotosAdapter extends RecyclerView.Adapter<MemoPhotosHolder> {
 
         String filePath = imageViewList.get(position);
 
-        loadBitmap(filePath, holder.imageView, context.getResources());
+        BitmapOperation.loadBitmap(filePath, holder.imageView, context.getResources(), bitmapHolder, displayState);
 
-    }
-
-    public void loadBitmap(String filePath, ImageView imageView, Resources resources) {
-        if (BitmapOperation.cancelPotentialWork(filePath, imageView)) {
-
-            final BitmapReadingWorkerTask task = new BitmapReadingWorkerTask(imageView);
-            final BitmapOperation.AsyncDrawable asyncDrawable =
-                    new BitmapOperation.AsyncDrawable(resources, bitmapHolder, task);
-            imageView.setImageDrawable(asyncDrawable);
-            task.execute(filePath, displayState);
-        }
     }
 
 

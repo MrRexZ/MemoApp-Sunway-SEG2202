@@ -13,6 +13,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.lang.ref.WeakReference;
 
 /**
  * Created by Mr_RexZ on 6/19/2016.
@@ -21,12 +22,12 @@ public class BitmapStoringWorkerTask extends AsyncTask<String, Void, Bitmap> {
     private String filePath;
     private int memoID;
     private MemoPhotosAdapter memoPhotosAdapter;
-    private TextDetailsMemoActivity textDetailsMemoActivity;
     private String ACTION_MODE;
+    private WeakReference<TextDetailsMemoActivity> weakTextDetailsMemoActivity;
 
     public BitmapStoringWorkerTask(MemoPhotosAdapter memoPhotosAdapter, TextDetailsMemoActivity textDetailsMemoActivity, int memoID, String ACTION_MODE) {
         this.memoPhotosAdapter = memoPhotosAdapter;
-        this.textDetailsMemoActivity = textDetailsMemoActivity;
+        weakTextDetailsMemoActivity = new WeakReference<TextDetailsMemoActivity>(textDetailsMemoActivity);
         this.memoID = memoID;
         this.ACTION_MODE = ACTION_MODE;
     }
@@ -47,21 +48,24 @@ public class BitmapStoringWorkerTask extends AsyncTask<String, Void, Bitmap> {
     @Override
     protected void onPostExecute(Bitmap bitmap) {
         super.onPostExecute(bitmap);
-        storeImage(bitmap, (textDetailsMemoActivity.detail_photosCount));
+        TextDetailsMemoActivity textDetailsMemoActivityAsync = weakTextDetailsMemoActivity.get();
+        if (textDetailsMemoActivityAsync != null) {
+            storeImage(bitmap, textDetailsMemoActivityAsync.detail_photosCount, textDetailsMemoActivityAsync);
 
-        File fileName = new File("u_" + FileOperation.userID + "_img_" + memoID + "_" + textDetailsMemoActivity.detail_photosCount + ".jpg");
+            File fileName = new File("u_" + FileOperation.userID + "_img_" + memoID + "_" + textDetailsMemoActivityAsync.detail_photosCount + ".jpg");
         File filePath = new File(FileOperation.mydir, fileName.toString());
-        textDetailsMemoActivity.imageViewArrayListDetails.add(filePath.toString());
-        textDetailsMemoActivity.filePathList.add(filePath.toString());
-        textDetailsMemoActivity.detail_photosCount++;
+            textDetailsMemoActivityAsync.imageViewArrayListDetails.add(filePath.toString());
+            textDetailsMemoActivityAsync.existingImage.add(filePath.toString());
+            textDetailsMemoActivityAsync.detail_photosCount++;
 
         memoPhotosAdapter.notifyDataSetChanged();
+        }
 
     }
 
 
-    private void storeImage(Bitmap image, int photoID) {
-        File pictureFile = getOutputMediaFile(photoID);
+    private void storeImage(Bitmap image, int photoID, TextDetailsMemoActivity textDetailsMemoActivityAsync) {
+        File pictureFile = getOutputMediaFile(photoID, textDetailsMemoActivityAsync);
         if (pictureFile == null) {
             return;
         }
@@ -77,27 +81,24 @@ public class BitmapStoringWorkerTask extends AsyncTask<String, Void, Bitmap> {
         }
     }
 
-
-    private File getOutputMediaFile(int photoID) {
-
+    private File getOutputMediaFile(int photoID, TextDetailsMemoActivity textDetailsMemoActivityAsync) {
 
         //   String timeStamp = new SimpleDateFormat("ddMMyyyy_HHmm").format(new Date());
         File mediaFile;
         String mImageName = null;
 
         int memoID = 0;
-        if (textDetailsMemoActivity.intent.hasExtra(C.ACTION_MODE) && ACTION_MODE.equals(C.EDIT)) {
-            memoID = textDetailsMemoActivity.intent.getExtras().getInt(C.TEXT_ID);
-        } else if (textDetailsMemoActivity.intent.hasExtra(C.ACTION_MODE) && ACTION_MODE.equals(C.ADD)) {
+        if (textDetailsMemoActivityAsync.intent.hasExtra(C.ACTION_MODE) && ACTION_MODE.equals(C.EDIT)) {
+            memoID = textDetailsMemoActivityAsync.intent.getExtras().getInt(C.MEMO_ID);
+        } else if (textDetailsMemoActivityAsync.intent.hasExtra(C.ACTION_MODE) && ACTION_MODE.equals(C.ADD)) {
             memoID = FileOperation.getMemoTextCountId();
         }
-
         mImageName = "u_" + FileOperation.userID + "_img_" + memoID + "_" + photoID + ".jpg";
-
         mediaFile = new File(FileOperation.mydir, mImageName);
 
         return mediaFile;
     }
+
 
 }
 

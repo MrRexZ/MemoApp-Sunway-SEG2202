@@ -108,6 +108,17 @@ public class BitmapOperation {
         return null;
     }
 
+    public static void loadBitmap(String filePath, ImageView imageView, Resources resources, Bitmap bitmapHolder, String displayState) {
+        if (BitmapOperation.cancelPotentialWork(filePath, imageView)) {
+
+            final BitmapReadingWorkerTask task = new BitmapReadingWorkerTask(imageView);
+            final BitmapOperation.AsyncDrawable asyncDrawable =
+                    new BitmapOperation.AsyncDrawable(resources, bitmapHolder, task);
+            imageView.setImageDrawable(asyncDrawable);
+            task.execute(filePath, displayState);
+        }
+    }
+
     static public class AsyncDrawable extends BitmapDrawable {
         private final WeakReference<BitmapReadingWorkerTask> bitmapWorkerTaskReference;
 

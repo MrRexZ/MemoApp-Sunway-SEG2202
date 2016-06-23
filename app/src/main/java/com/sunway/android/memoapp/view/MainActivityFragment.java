@@ -42,7 +42,6 @@ public class MainActivityFragment extends Fragment implements SearchView.OnQuery
     private String input_title=null;
     private String input_details=null;
     private String mode = "START";
-    private int photosCount = 0;
     private View rootView;
     private RecyclerView recyclerView;
     private MemoItemAdapter rcAdapter;
@@ -61,7 +60,9 @@ public class MainActivityFragment extends Fragment implements SearchView.OnQuery
                 mydir.mkdirs();
             FileOperation.readFile("START", "u_" + FileOperation.userID + ".txt");
 
+
         }
+
 
     }
 
@@ -125,13 +126,13 @@ public class MainActivityFragment extends Fragment implements SearchView.OnQuery
                             .putExtra(C.INPUT_DETAILS, "")
                             .putExtra(C.ACTION_MODE, C.ADD)
                             .putExtra(C.PHOTOS, 0)
-                            .putExtra(C.TEXT_ID, FileOperation.getMemoTextCountId());
+                            .putExtra(C.MEMO_ID, FileOperation.getMemoTextCountId());
                     startActivity(showDetail);
                     return true;
                 } else if (id == R.id.action_create_drawing_memo) {
                     Intent showDrawing = new Intent(getActivity(), DrawingMemoActivity.class)
                             .putExtra(C.ACTION_MODE, C.ADDDRAWING)
-                            .putExtra(C.TEXT_ID, FileOperation.getMemoTextCountId());
+                            .putExtra(C.MEMO_ID, FileOperation.getMemoTextCountId());
                     startActivity(showDrawing);
                     return true;
                 }
@@ -146,62 +147,15 @@ public class MainActivityFragment extends Fragment implements SearchView.OnQuery
         input_title=title;
         input_details=details;
         this.mode=mode;
-        this.photosCount = photosCount;
 
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        boolean inputNotNull = input_details != null && input_title != null;
-        boolean textFieldHasInput = input_details != null && input_title != null && (!input_details.isEmpty() || !input_title.isEmpty());
-        boolean addText = mode.equals(C.ADD);
-        boolean addDrawingMemo = mode.equals(C.ADDDRAWING);
-        boolean editModeChangeToEmpty = input_details != null && mode != null && input_details.isEmpty() && input_title.isEmpty() && mode.equals(C.EDIT);
-        boolean editDrawing = mode.equals(C.EDITDRAWING);
-        boolean editText = mode.equals(C.EDIT);
-        boolean registerReminder = mode.equals(C.REGISTER_REMINDER);
-        boolean isBack = mode.equals(C.BACK);
 
-        if ((inputNotNull) || addText || editText || (editModeChangeToEmpty) || addDrawingMemo || editDrawing) {
+        refreshAdapter();
 
-
-            if (mode.equals(C.ADD)) {
-                try {
-
-                    FileOperation.writeUserTextMemoFile(input_title, input_details, photosCount);
-
-                } catch (Exception e) {
-                    System.err.println("can write NOT " + e.getMessage());
-                }
-
-
-                FileOperation.replaceSelected(
-                        FileOperation.DELIMITER_LINE + "counter=" + ((FileOperation.getMemoTextCountId()) - 1) + FileOperation.DELIMITER_LINE,
-                        FileOperation.DELIMITER_LINE+"counter="+ ((FileOperation.getMemoTextCountId())) +FileOperation.DELIMITER_LINE);
-
-            } else if (mode.equals(C.ADDDRAWING)) {
-                try {
-                    FileOperation.writeDrawingMemo();
-                } catch (Exception e) {
-                    System.out.println("Error writing to drawing memo:" + e.getMessage());
-                }
-                FileOperation.replaceSelected(
-                        FileOperation.DELIMITER_LINE + "counter=" + ((FileOperation.getMemoTextCountId()) - 1) + FileOperation.DELIMITER_LINE,
-                        FileOperation.DELIMITER_LINE + "counter=" + ((FileOperation.getMemoTextCountId())) + FileOperation.DELIMITER_LINE);
-            }
-
-            FileOperation.readFile(mode, "u_" + FileOperation.userID + ".txt");
-
-
-            rcAdapter.nMemoList.clear();
-            rcAdapter.nMemoList.addAll(ListOperation.getListViewItems());
-            rcAdapter.notifyDataSetChanged();
-            input_title = "";
-            input_details = "";
-
-
-        }
 
     }
 
@@ -248,10 +202,7 @@ public class MainActivityFragment extends Fragment implements SearchView.OnQuery
             MemoTextItem memoTextItem = (MemoTextItem) memoItem;
             FileOperation.deleteTextMemo(memoTextItem.getMemoID(), memoTextItem.getPhotosCount(), memoTextItem.getTitle(), memoTextItem.getContent());
             FileOperation.deleteImagesMemo(memoTextItem.getMemoID(), memoTextItem.getPhotosCount());
-
             ListOperation.deleteList(memoTextItem.getMemoID(), memoTextItem.getTitle(), memoTextItem.getContent());
-            mode = "DELETE";
-            FileOperation.readFile(mode, "u_" + FileOperation.userID + ".txt");
 
         } else if (memoItem instanceof MemoDrawingItem) {
             MemoDrawingItem memoDrawingItem = (MemoDrawingItem) memoItem;
@@ -261,9 +212,17 @@ public class MainActivityFragment extends Fragment implements SearchView.OnQuery
             mode = C.DELETE_DRAWINGS;
         }
 
-        rcAdapter.notifyDataSetChanged();
+        refreshAdapter();
+
         return super.onContextItemSelected(item);
     }
 
+
+    private void refreshAdapter() {
+
+        rcAdapter.nMemoList.clear();
+        rcAdapter.nMemoList.addAll(ListOperation.getListViewItems());
+        rcAdapter.notifyDataSetChanged();
+    }
 
 }

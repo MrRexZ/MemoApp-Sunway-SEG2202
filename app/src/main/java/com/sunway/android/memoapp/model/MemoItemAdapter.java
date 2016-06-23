@@ -3,7 +3,6 @@ package com.sunway.android.memoapp.model;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.support.v7.widget.RecyclerView;
@@ -12,16 +11,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Filter;
 import android.widget.Filterable;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
 
 import com.sunway.android.memoapp.R;
+import com.sunway.android.memoapp.util.BitmapOperation;
+import com.sunway.android.memoapp.util.C;
 import com.sunway.android.memoapp.util.FileOperation;
 import com.sunway.android.memoapp.util.ListOperation;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -40,6 +37,7 @@ public class MemoItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     private String displayState;
     private MemoItemFilter mFilter = new MemoItemFilter();
     private List<MemoItem> oldMemoList = new ArrayList<MemoItem>();
+
 
 
     public MemoItemAdapter(Activity context, String displayState) {
@@ -157,29 +155,17 @@ public class MemoItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
     private void configureDrawingViewHolder(MemoDrawingViewHolder hDrawing, MemoItem memoItem) {
 
-        if (hDrawing.drawingContainer.getChildCount() > 0) {
-            hDrawing.drawingContainer.removeAllViews();
-        }
         MemoDrawingItem memoDrawingItem = (MemoDrawingItem) memoItem;
 
 
-        String filePath = "u_" + FileOperation.userID + "_drawing_" + memoDrawingItem.getMemoID() + ".jpg";
-        File file = new File(FileOperation.mydir, filePath);
-        if (file.exists()) {
-            Bitmap b = null;
-            try {
-                b = BitmapFactory.decodeStream(new FileInputStream(file));
-                ImageView img = new ImageView(hDrawing.itemView.getContext());
-                img.setImageBitmap(b);
-                LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(450, 550);
-                img.setLayoutParams(layoutParams);
-                hDrawing.drawingContainer.addView(img);
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-            }
+        String fileName = "u_" + FileOperation.userID + "_drawing_" + memoDrawingItem.getMemoID() + ".jpg";
+        File filePath = new File(FileOperation.mydir, fileName);
+
+        BitmapOperation.loadBitmap(filePath.toString(), hDrawing.drawingContainer, context.getResources(), bitmapHolder, C.DRAWING_ACTIVITY_DISPLAY);
+
 
         }
-    }
+
 
     public Filter getFilter() {
 

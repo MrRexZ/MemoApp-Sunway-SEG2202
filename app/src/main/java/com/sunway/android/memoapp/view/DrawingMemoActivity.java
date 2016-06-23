@@ -8,21 +8,22 @@ import android.content.IntentFilter;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.ImageView;
 
 import com.sunway.android.memoapp.R;
 import com.sunway.android.memoapp.controller.AlarmReceiver;
+import com.sunway.android.memoapp.model.MemoDrawingItem;
+import com.sunway.android.memoapp.model.MemoItem;
+import com.sunway.android.memoapp.model.Reminder;
 import com.sunway.android.memoapp.util.C;
 import com.sunway.android.memoapp.util.FileOperation;
+import com.sunway.android.memoapp.util.ListOperation;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -35,33 +36,19 @@ import java.util.Calendar;
  */
 public class DrawingMemoActivity extends AppCompatActivity {
 
+    private final int REGISTER_REMINDER = 3;
     private Intent intent;
+    private String ACTION_MODE;
+    private int adapterPosition;
+    private Calendar targetCal;
 
-    public static Bitmap getBitmapFromView(View view) {
-        //Define a bitmap with the same size as the view
-        Bitmap returnedBitmap = Bitmap.createBitmap(view.getWidth(), view.getHeight(), Bitmap.Config.ARGB_8888);
-        //Bind a canvas to it
-        Canvas canvas = new Canvas(returnedBitmap);
-        //Get the view's background
-        Drawable bgDrawable = view.getBackground();
-        if (bgDrawable != null)
-            //has background drawable, then draw it on the canvas
-            bgDrawable.draw(canvas);
-        else
-            //does not have background drawable, then draw white background on the canvas
-            canvas.drawColor(Color.WHITE);
-        // draw the view on the canvas
-        view.draw(canvas);
-        //return the bitmap
-        return returnedBitmap;
-    }
+
 
     @Override
-    protected void onCreate(@Nullable Bundle savedInstanceState) {
+    protected void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        // setContentView(new DrawingView(this,null));
         setContentView(R.layout.drawing_memo);
-        final int memoID = getIntent().getExtras().getInt(C.TEXT_ID);
+        final int memoID = getIntent().getExtras().getInt(C.MEMO_ID);
 
         Toolbar upper_toolbar = (Toolbar) findViewById(R.id.toolbar_upper_drawingmemo);
         setSupportActionBar(upper_toolbar);
@@ -69,6 +56,9 @@ public class DrawingMemoActivity extends AppCompatActivity {
         bottom_toolbar.inflateMenu(R.menu.bottom_drawingmemo_menu);
         final DrawingView drawingView = (DrawingView) findViewById(R.id.drawing_view_canvas);
         intent = getIntent();
+        ACTION_MODE = intent.getExtras().getString(C.ACTION_MODE);
+        adapterPosition = intent.getExtras().getInt(C.ADAPTER_POSITION);
+
 
 
         String filePath = "u_" + FileOperation.userID + "_drawing_" + memoID + ".jpg";
@@ -94,42 +84,78 @@ public class DrawingMemoActivity extends AppCompatActivity {
                 if (id == R.id.action_save_drawing) {
 
                     saveDrawing(memoID);
-                    Intent showMainActivity = new Intent(DrawingMemoActivity.this, MainActivity.class);
-                    if (getIntent().getExtras().getString(C.ACTION_MODE).equals(C.ADDDRAWING)) {
-                        showMainActivity.putExtra(C.ACTION_MODE, C.ADDDRAWING);
-                    } else if (getIntent().getExtras().getString(C.ACTION_MODE).equals(C.EDITDRAWING)) {
 
-                        showMainActivity.putExtra(C.ACTION_MODE, C.EDITDRAWING);
+
+                    MemoItem selectedMemoItem = ListOperation.getIndividualMemoItem(adapterPosition);
+                    Reminder selectedReminder = selectedMemoItem.getReminder();
+                    int oldYear = selectedReminder.getYear();
+                    int oldMonth = selectedReminder.getMonth();
+                    int oldDay = selectedReminder.getDay();
+                    int oldHour = selectedReminder.getHour();
+                    int oldMinute = selectedReminder.getMinute();
+                    int oldSecond = selectedReminder.getSecond();
+
+                    //GET YEAR,MONT, ETC. INITIALIZE TO ZERO.
+                    int year = oldYear;
+                    int month = oldMonth;
+                    int day = oldDay;
+                    int hour = oldHour;
+                    int minute = oldMinute;
+                    int second = oldSecond;
+
+
+                    if (targetCal != null) {
+                        IntentFilter filter = new IntentFilter();
+                        filter.addAction("android.provider.Telephony.SMS_RECEIVED");
+                        Intent intent = new Intent(getBaseContext(), AlarmReceiver.class);
+                        PendingIntent pendingIntent = PendingIntent.getBroadcast(getBaseContext(), memoID, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+                        AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+                        alarmManager.set(AlarmManager.RTC_WAKEUP, targetCal.getTimeInMillis(), pendingIntent);
+
+                        year = targetCal.get(Calendar.YEAR);
+                        month = targetCal.get(Calendar.MONTH);
+                        day = targetCal.get(Calendar.DAY_OF_MONTH);
+                        hour = targetCal.get(Calendar.HOUR);
+                        minute = targetCal.get(Calendar.MINUTE);
+                        second = targetCal.get(Calendar.SECOND);
                     }
 
 
-                    boolean HAS_REMINDER = intent.getExtras().getBoolean(C.HAS_REMINDER);
                     boolean alarmUp = (PendingIntent.getBroadcast(getBaseContext(), memoID,
                             new Intent(getBaseContext(), AlarmReceiver.class),
                             PendingIntent.FLAG_NO_CREATE) != null);
 
-                    if (HAS_REMINDER) {
-                        Calendar targetCal = (Calendar) intent.getSerializableExtra(C.REMINDER_DETAILS);
-
-                        IntentFilter filter = new IntentFilter();
-                        filter.addAction("android.provider.Telephony.SMS_RECEIVED");
-
+                    if (alarmUp) {
                         Intent intent = new Intent(getBaseContext(), AlarmReceiver.class)
-                                .putExtra(C.TEXT_ID, memoID)
-                                .putExtra(C.INPUT_TITLE, getIntent().getExtras().getString(C.INPUT_TITLE))
-                                .putExtra(C.INPUT_DETAILS, getIntent().getExtras().getString(C.INPUT_DETAILS))
-                                .putExtra(C.ACTION_MODE, C.EDITDRAWING)
+                                .putExtra(C.ACTION_MODE, C.EDIT)
+                                .putExtra(C.MEMO_ID, memoID)
+                                .putExtra(C.INPUT_TITLE, "Drawing memo reminder")
+                                .putExtra(C.INPUT_DETAILS, "Click to view drawing")
                                 .putExtra(C.MEMO_TYPE, C.DRAWING_MEMO);
-                        PendingIntent pendingIntent = PendingIntent.getBroadcast(getBaseContext(), memoID, intent, PendingIntent.FLAG_UPDATE_CURRENT);
-                        AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
-                        alarmManager.set(AlarmManager.RTC_WAKEUP, targetCal.getTimeInMillis(), pendingIntent);
-                    } else if (alarmUp) {
-                        Intent intent = new Intent(getBaseContext(), AlarmReceiver.class)
-                                .putExtra(C.TEXT_ID, memoID)
-                                .putExtra(C.ACTION_MODE, C.EDITDRAWING);
                         PendingIntent pendingIntent = PendingIntent.getBroadcast(getBaseContext(), memoID, intent, PendingIntent.FLAG_UPDATE_CURRENT);
 
                     }
+
+
+                    Intent showMainActivity = new Intent(DrawingMemoActivity.this, MainActivity.class);
+
+
+                    if (getIntent().getExtras().getString(C.ACTION_MODE).equals(C.ADDDRAWING)) {
+                        showMainActivity.putExtra(C.ACTION_MODE, C.ADDDRAWING);
+                    } else if (getIntent().getExtras().getString(C.ACTION_MODE).equals(C.EDITDRAWING)) {
+
+                        FileOperation.replaceSelected(
+                                FileOperation.DELIMITER_LINE + FileOperation.DELIMITER_UNIT + (memoID) + FileOperation.DELIMITER_UNIT + FileOperation.DELIMITER_LINE + "Drawing" + FileOperation.DELIMITER_LINE
+                                        + "reminder=" + oldYear + "," + oldMonth + "," + oldDay + "," + oldHour + "," + oldMinute + "," + oldSecond + FileOperation.DELIMITER_LINE,
+                                FileOperation.DELIMITER_LINE + FileOperation.DELIMITER_UNIT + (memoID) + FileOperation.DELIMITER_UNIT + FileOperation.DELIMITER_LINE + "Drawing" + FileOperation.DELIMITER_LINE
+                                        + "reminder=" + year + "," + month + "," + day + "," + hour + "," + minute + "," + second + FileOperation.DELIMITER_LINE
+                        );
+                        ListOperation.modifyDrawingList(memoID, year, month, day, hour, minute, second);
+                        showMainActivity.putExtra(C.ACTION_MODE, C.EDITDRAWING);
+                    }
+
+                    if (ACTION_MODE.equals(C.ADDDRAWING))
+                        writeDrawingMemo(year, month, day, hour, minute, second);
 
                     startActivity(showMainActivity);
 
@@ -139,6 +165,22 @@ public class DrawingMemoActivity extends AppCompatActivity {
         });
     }
 
+
+    private void writeDrawingMemo(int year, int month, int day, int hour, int minute, int second) {
+
+        try {
+            FileOperation.writeDrawingMemo(year, month, day, hour, minute, second);
+        } catch (Exception e) {
+            System.out.println("Error writing to drawing memo:" + e.getMessage());
+        }
+        FileOperation.replaceSelected(
+                FileOperation.DELIMITER_LINE + "counter=" + ((FileOperation.getMemoTextCountId()) - 1) + FileOperation.DELIMITER_LINE,
+                FileOperation.DELIMITER_LINE + "counter=" + ((FileOperation.getMemoTextCountId())) + FileOperation.DELIMITER_LINE);
+
+        ListOperation.addToList(new MemoDrawingItem((FileOperation.getMemoTextCountId() - 1), new Reminder(year, month, day, hour, minute, second)));
+
+
+    }
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
 
@@ -151,17 +193,32 @@ public class DrawingMemoActivity extends AppCompatActivity {
         int id = item.getItemId();
         if (id == R.id.action_reminder) {
 
-            saveDrawing(getIntent().getExtras().getInt(C.TEXT_ID));
+            saveDrawing(getIntent().getExtras().getInt(C.MEMO_ID));
             Intent showReminder = new Intent(this, ReminderActivity.class)
-                    .putExtra(C.INPUT_TITLE, "Drawing memo reminder")
-                    .putExtra(C.INPUT_DETAILS, "Click to view the drawing memo")
-                    .putExtra(C.TEXT_ID, getIntent().getExtras().getInt(C.TEXT_ID))
-                    .putExtra(C.PHOTOS, getIntent().getExtras().getInt(C.PHOTOS))
-                    .putExtra(C.MEMO_TYPE, C.DRAWING_MEMO)
-                    .putExtra(C.ACTION_MODE, getIntent().getExtras().getString(C.ACTION_MODE));
-            startActivity(showReminder);
+                    .putExtra(C.MEMO_TYPE, C.DRAWING_MEMO);
+            startActivityForResult(showReminder, REGISTER_REMINDER);
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode == RESULT_OK) {
+            switch (requestCode) {
+                case REGISTER_REMINDER:
+                    Calendar targetCal = (Calendar) data.getSerializableExtra(C.REMINDER_DETAILS);
+
+                    IntentFilter filter = new IntentFilter();
+                    filter.addAction("android.provider.Telephony.SMS_RECEIVED");
+
+                    Intent intent = new Intent(getBaseContext(), AlarmReceiver.class);
+                    PendingIntent pendingIntent = PendingIntent.getBroadcast(getBaseContext(), getIntent().getExtras().getInt(C.MEMO_ID), intent, PendingIntent.FLAG_UPDATE_CURRENT);
+                    AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+                    alarmManager.set(AlarmManager.RTC_WAKEUP, targetCal.getTimeInMillis(), pendingIntent);
+                    break;
+            }
+        }
     }
 
     private void saveDrawing(int memoID) {
@@ -171,7 +228,6 @@ public class DrawingMemoActivity extends AppCompatActivity {
         drawingView.draw(canvas);
 
         Bitmap bi = drawingView.getDrawingCache();
-
 
         String mDrawingName = "u_" + FileOperation.userID + "_drawing_" + memoID + ".jpg";
         File drawFile = new File(FileOperation.mydir, mDrawingName);

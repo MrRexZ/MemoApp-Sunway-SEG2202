@@ -1,5 +1,6 @@
 package com.sunway.android.memoapp.view;
 
+import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Intent;
 import android.os.Bundle;
@@ -61,6 +62,14 @@ public class ReminderActivity extends AppCompatActivity {
                         pickerTime.getCurrentMinute(),
                         00);
 
+                System.out.println("HEY : " + pickerDate.getYear() + "," + pickerDate.getMonth() + "," + pickerDate.getDayOfMonth() + "," + pickerTime.getCurrentHour() + "," + pickerTime.getCurrentMinute() + ".");
+
+                System.out.println("HEY:  " +
+                        cal.get(Calendar.YEAR) + "," +
+                        cal.get(Calendar.MONTH) + "," +
+                        cal.get(Calendar.DAY_OF_MONTH) + "," +
+                        cal.get(Calendar.HOUR) + "           aa     " +
+                        cal.get(Calendar.MINUTE) + ".");
                 if (cal.compareTo(current) <= 0) {
                     //The set Date/Time already passed
                     Toast.makeText(getApplicationContext(),
@@ -89,27 +98,9 @@ public class ReminderActivity extends AppCompatActivity {
 
         // intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 
-        Intent showActivity = null;
-        if (getIntent().getExtras().getString(C.MEMO_TYPE).equals(C.TEXT_MEMO)) {
-            showActivity = new Intent(this, TextDetailsMemoActivity.class)
-                .putExtra(C.INPUT_TITLE, getIntent().getStringExtra(C.INPUT_TITLE).toString())
-                .putExtra(C.INPUT_DETAILS, getIntent().getStringExtra(C.INPUT_DETAILS).toString())
-                .putExtra(C.PHOTOS, getIntent().getExtras().getInt(C.PHOTOS))
-                    .putExtra(C.TEXT_ID, getIntent().getExtras().getInt(C.TEXT_ID))
-                    .putExtra(C.ACTION_MODE, getIntent().getStringExtra(C.ACTION_MODE))
-                    .putExtra(C.HAS_REMINDER, true)
-                    .putExtra(C.REMINDER_DETAILS, targetCal);
-        } else if (getIntent().getExtras().getString(C.MEMO_TYPE).equals(C.DRAWING_MEMO)) {
-            showActivity = new Intent(this, DrawingMemoActivity.class)
-                    .putExtra(C.INPUT_TITLE, getIntent().getStringExtra(C.INPUT_TITLE).toString())
-                    .putExtra(C.INPUT_DETAILS, getIntent().getStringExtra(C.INPUT_DETAILS).toString())
-                    .putExtra(C.PHOTOS, getIntent().getExtras().getInt(C.PHOTOS))
-                    .putExtra(C.TEXT_ID, getIntent().getExtras().getInt(C.TEXT_ID))
-                    .putExtra(C.ACTION_MODE, getIntent().getStringExtra(C.ACTION_MODE))
-                    .putExtra(C.HAS_REMINDER, true)
-                    .putExtra(C.REMINDER_DETAILS, targetCal);
-        }
-        startActivity(showActivity);
+        Intent sendResult = new Intent()
+                .putExtra(C.REMINDER_DETAILS, targetCal);
+        setResult(Activity.RESULT_OK, sendResult);
+        finish();
     }
-
 }

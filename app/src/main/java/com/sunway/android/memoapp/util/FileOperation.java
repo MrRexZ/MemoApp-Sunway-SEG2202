@@ -8,6 +8,7 @@ import android.widget.Toast;
 
 import com.sunway.android.memoapp.model.MemoDrawingItem;
 import com.sunway.android.memoapp.model.MemoTextItem;
+import com.sunway.android.memoapp.model.Reminder;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -86,12 +87,6 @@ public class FileOperation {
 
 
                 int startIndex = 0;
-                if (mode.equals("START")) startIndex = 0;
-                else if (mode.equals(C.ADD) || mode.equals(C.ADDDRAWING))
-                    startIndex = (memoCountId - 1);
-                else if (mode.equals(C.EDIT) || mode.equals(C.EDITDRAWING) || mode.equals("DELETE") || mode.equals(C.BACK) || mode.equals(C.REGISTER_REMINDER))
-                    startIndex = memoCountId;
-
                 searchAndAdd(startIndex, processedString);
 
             }
@@ -107,29 +102,35 @@ public class FileOperation {
 
     private static void searchAndAdd(int startIndex, String processedString) {
         for (int counterTextMemo = startIndex; counterTextMemo <= memoCountId; counterTextMemo++) {
-            String pattern = DELIMITER_LINE + DELIMITER_UNIT + (counterTextMemo) + DELIMITER_UNIT + DELIMITER_LINE + "photos=(\\d+)" + DELIMITER_LINE + "((?:.)*?)" + DELIMITER_LINE + "((?:.)*?)" + DELIMITER_LINE;
-
+            String pattern = DELIMITER_LINE + DELIMITER_UNIT + counterTextMemo + DELIMITER_UNIT + DELIMITER_LINE
+                    + "photos=(\\d+)" + DELIMITER_LINE
+                    + "((?:.)*?)" + DELIMITER_LINE
+                    + "((?:.)*?)" + DELIMITER_LINE
+                    + "reminder=(?:(\\d+),(\\d+),(\\d+),(\\d+),(\\d+),(\\d+))" + DELIMITER_LINE;
             Pattern r = Pattern.compile(pattern, Pattern.DOTALL);
             Matcher m = r.matcher(processedString);
 
             if (m.find()) {
-                ListOperation.addToList(new MemoTextItem(counterTextMemo, Integer.parseInt(m.group(1)), m.group(2), m.group(3)));
+                ListOperation.addToList(new MemoTextItem(counterTextMemo,
+                        Integer.parseInt(m.group(1)), m.group(2), m.group(3),
+                        new Reminder(Integer.parseInt(m.group(4)), Integer.parseInt(m.group(5)), Integer.parseInt(m.group(6)), Integer.parseInt(m.group(7)), Integer.parseInt(m.group(8)), Integer.parseInt(m.group(9)))));
             } else {
-
-                pattern = DELIMITER_LINE + DELIMITER_UNIT + (counterTextMemo) + DELIMITER_UNIT + DELIMITER_LINE + "Drawing";
+                pattern = DELIMITER_LINE + DELIMITER_UNIT + (counterTextMemo) + DELIMITER_UNIT + DELIMITER_LINE + "Drawing" + DELIMITER_LINE
+                        + "reminder=(?:(\\d+),(\\d+),(\\d+),(\\d+),(\\d+),(\\d+))" + DELIMITER_LINE;
                 r = Pattern.compile(pattern, Pattern.DOTALL);
                 m = r.matcher(processedString);
-                if (m.find()) ListOperation.addToList(new MemoDrawingItem(counterTextMemo));
+                if (m.find()) ListOperation.addToList(new MemoDrawingItem(counterTextMemo,
+                        new Reminder(Integer.parseInt(m.group(1)), Integer.parseInt(m.group(2)), Integer.parseInt(m.group(3)), Integer.parseInt(m.group(4)), Integer.parseInt(m.group(5)), Integer.parseInt(m.group(6)))));
+
             }
 
         }
     }
 
 
-    public static void writeUserTextMemoFile(String input_title, String input_detail, int num_of_photos) throws IOException {
+    public static void writeUserTextMemoFile(String input_title, String input_detail, int num_of_photos, int year, int month, int day, int hour, int minute, int second) throws IOException {
 
         FileOutputStream fOut = new FileOutputStream(new File(mydir, "u_" + userID + ".txt"), true);
-        // FileOutputStream fOut = MyApplication.getAppContext().openFileOutput("u_" + userID + ".txt", Context.MODE_APPEND);
         OutputStreamWriter outputStreamWriter = new OutputStreamWriter(fOut);
 
         if (memoCountId == 0) {
@@ -149,11 +150,13 @@ public class FileOperation {
         outputStreamWriter.append(DELIMITER_LINE);
         outputStreamWriter.append(input_detail);
         outputStreamWriter.append(DELIMITER_LINE);
+        outputStreamWriter.append("reminder=" + year + "," + month + "," + day + "," + hour + "," + minute + "," + second);
+        outputStreamWriter.append(DELIMITER_LINE);
         outputStreamWriter.close();
 
     }
 
-    public static void writeDrawingMemo() throws IOException {
+    public static void writeDrawingMemo(int year, int month, int day, int hour, int minute, int second) throws IOException {
 
 
         FileOutputStream fOut = new FileOutputStream(new File(mydir, "u_" + userID + ".txt"), true);
@@ -172,6 +175,9 @@ public class FileOperation {
         outputStreamWriter.append(DELIMITER_UNIT);
         outputStreamWriter.append(DELIMITER_LINE);
         outputStreamWriter.append("Drawing");
+        outputStreamWriter.append(DELIMITER_LINE);
+        outputStreamWriter.append("reminder=" + year + "," + month + "," + day + "," + hour + "," + minute + "," + second);
+        outputStreamWriter.append(DELIMITER_LINE);
         outputStreamWriter.close();
 
 

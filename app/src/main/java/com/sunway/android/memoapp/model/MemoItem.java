@@ -9,4 +9,8 @@ public interface MemoItem  {
     int getMemoID();
 
     void setMemoID(int memoid);
+
+    Reminder getReminder();
+
+    void setReminder(Reminder reminder);
 }

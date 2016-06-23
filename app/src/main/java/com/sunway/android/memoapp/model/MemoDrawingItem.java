@@ -6,9 +6,11 @@ package com.sunway.android.memoapp.model;
 public class MemoDrawingItem implements MemoItem {
 
     private int memoid;
+    private Reminder reminder;
 
-    public MemoDrawingItem(int memoid) {
+    public MemoDrawingItem(int memoid, Reminder newReminder) {
         setMemoID(memoid);
+        setReminder(newReminder);
 
     }
 
@@ -20,5 +22,13 @@ public class MemoDrawingItem implements MemoItem {
     @Override
     public void setMemoID(int memoid) {
         this.memoid = memoid;
+    }
+
+    public Reminder getReminder() {
+        return this.reminder;
+    }
+
+    public void setReminder(Reminder reminder) {
+        this.reminder = reminder;
     }
 }

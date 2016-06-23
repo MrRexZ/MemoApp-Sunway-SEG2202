@@ -6,7 +6,7 @@ package com.sunway.android.memoapp.util;
 public class C {
     public static final String ACTION_MODE = "ACTION_MODE";
     public static final String PHOTOS = "PHOTOS";
-    public static final String TEXT_ID = "TEXT_ID";
+    public static final String MEMO_ID = "MEMO_ID";
     public static final String ADD = "ADD";
 
     public static final String ADDDRAWING = "ADDDRAWING";
@@ -32,7 +32,16 @@ public class C {
 
     public static final String HAS_REMINDER = "HAS_REMINDER";
     public static final String REMINDER_DETAILS = "REMINDER_DETAILS";
+    public static final String ADAPTER_POSITION = "ADAPTER_POSITION";
+
+    public static final String REMINDER_YEAR = "REMINDER_YEAR";
+    public static final String REMINDER_MONTH = "REMINDER_YEAR";
+    public static final String REMINDER_DAY = "REMINDER_YEAR";
+    public static final String REMINDER_HOUR = "REMINDER_YEAR";
+    public static final String REMINDER_MINUTE = "REMINDER_YEAR";
+    public static final String REMINDER_SECOND = "REMINDER_YEAR";
 
     public static final String MAIN_ACTIVITY_FRAGMENT_DISPLAY = "MAIN_ACTIVITY_FRAGMENT_DISPLAY";
     public static final String DETAILS_ACTIVITY_DISPLAY = "DETAILS_ACTIVITY_DISPLAY";
+    public static final String DRAWING_ACTIVITY_DISPLAY = "DRAWING_ACTIVITY_DISPLAY";
 }
