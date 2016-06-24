@@ -17,6 +17,8 @@ import com.sunway.android.memoapp.util.C;
 import com.sunway.android.memoapp.view.DrawingMemoActivity;
 import com.sunway.android.memoapp.view.TextDetailsMemoActivity;
 
+import java.io.Serializable;
+
 public class AlarmReceiver extends BroadcastReceiver {
 
     private NotificationManager mNotificationManager;
@@ -33,20 +35,27 @@ public class AlarmReceiver extends BroadcastReceiver {
 
 
         Toast.makeText(arg0, "Alarm worked.", Toast.LENGTH_LONG).show();
-        createNotification(arg0, intent.getExtras().getString(C.INPUT_TITLE), intent.getExtras().getString(C.INPUT_DETAILS), "Alert", intent.getExtras().getInt(C.MEMO_ID), intent.getExtras().getInt(C.PHOTOS), intent.getExtras().getString(C.MEMO_TYPE));
+        createNotification(arg0, intent.getExtras().getString(C.INPUT_TITLE),
+                intent.getExtras().getString(C.INPUT_DETAILS), "Alert",
+                intent.getExtras().getInt(C.MEMO_ID),
+                intent.getExtras().getInt(C.PHOTOS),
+                intent.getExtras().getString(C.MEMO_TYPE),
+                intent.getSerializableExtra(C.MEMO_OBJECT));
 
     }
 
-    public void createNotification(Context context, String msg, String msgText, String msgAlert, int memoid, int photosCount, String memoType) {
+    public void createNotification(Context context, String msg, String msgText, String msgAlert, int memoid, int photosCount, String memoType, Serializable memoItem) {
         mNotificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
 
         Intent intent = null;
         if (memoType.equals(C.TEXT_MEMO)) {
             intent = new Intent(context, TextDetailsMemoActivity.class)
-                    .putExtra(C.ACTION_MODE, C.EDIT);
+                    .putExtra(C.ACTION_MODE, C.EDIT)
+                    .putExtra(C.MEMO_OBJECT, memoItem);
         } else if (memoType.equals(C.DRAWING_MEMO)) {
             intent = new Intent(context, DrawingMemoActivity.class)
-                    .putExtra(C.ACTION_MODE, C.EDITDRAWING);
+                    .putExtra(C.ACTION_MODE, C.EDITDRAWING)
+                    .putExtra(C.MEMO_OBJECT, memoItem);
 
         }
 

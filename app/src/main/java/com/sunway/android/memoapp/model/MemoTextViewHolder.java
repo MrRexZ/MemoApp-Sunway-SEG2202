@@ -9,7 +9,6 @@ import android.widget.TextView;
 
 import com.sunway.android.memoapp.R;
 import com.sunway.android.memoapp.util.C;
-import com.sunway.android.memoapp.util.ListOperation;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,7 +16,7 @@ import java.util.List;
 /**
  * Created by Mr_RexZ on 5/30/2016.
  */
-public class MemoTextViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener, View.OnLongClickListener {
+public class MemoTextViewHolder extends RecyclerView.ViewHolder implements View.OnLongClickListener {
 
     public TextView titleName;
     public TextView contentName;
@@ -41,11 +40,6 @@ public class MemoTextViewHolder extends RecyclerView.ViewHolder implements View.
         contentName = (TextView) itemView.findViewById(R.id.list_item_content);
 
         photosRecyclerView = (RecyclerView) itemView.findViewById(R.id.recycler_view_photos_memo);
-        photosRecyclerView.setOnClickListener(this);
-
-
-
-
     }
 
 
@@ -69,16 +63,6 @@ public class MemoTextViewHolder extends RecyclerView.ViewHolder implements View.
         imageViewList.add(uri);
     }
 
-    @Override
-    public void onClick(View view) {
-
-        MemoItem memoitem = ListOperation.getListViewItems().get(getAdapterPosition());
-
-        //  if (view.getId() == R.id.card_view_list_text) {
-
-        //
-
-    }
 
     @Override
     public boolean onLongClick(View v) {

@@ -30,7 +30,6 @@ import android.widget.Toast;
 import com.sunway.android.memoapp.R;
 import com.sunway.android.memoapp.controller.AlarmReceiver;
 import com.sunway.android.memoapp.controller.BitmapStoringWorkerTask;
-import com.sunway.android.memoapp.model.MemoItem;
 import com.sunway.android.memoapp.model.MemoPhotosAdapter;
 import com.sunway.android.memoapp.model.MemoTextItem;
 import com.sunway.android.memoapp.model.Reminder;
@@ -69,8 +68,7 @@ public class TextDetailsMemoActivity extends AppCompatActivity implements Toolba
     private ArrayList<Integer> positionsToBeDeleted = new ArrayList<>();
     private RecyclerView photosRecyclerView;
     private Calendar targetCal;
-    private int adapterPosition;
-    private MemoItem selectedMemoItem;
+    private MemoTextItem memoTextItem;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -81,8 +79,7 @@ public class TextDetailsMemoActivity extends AppCompatActivity implements Toolba
         detail_photosCount = intent.getExtras().getInt(C.PHOTOS);
         oldTitle = intent.getStringExtra(C.INPUT_TITLE);
         oldDetails = intent.getStringExtra(C.INPUT_DETAILS);
-        adapterPosition = intent.getExtras().getInt(C.ADAPTER_POSITION);
-        selectedMemoItem = ListOperation.getIndividualMemoItem(adapterPosition);
+        memoTextItem = (MemoTextItem) intent.getSerializableExtra(C.MEMO_OBJECT);
         EditText textviewTitle = (EditText) findViewById(R.id.title_text_input);
         EditText detailsviewTitle = (EditText) findViewById(R.id.details_text_input);
         textviewTitle.setText(oldTitle);
@@ -218,7 +215,7 @@ public class TextDetailsMemoActivity extends AppCompatActivity implements Toolba
 
                 if (ACTION_MODE.equals(C.EDIT) || ACTION_MODE.equals("DELETE")) {
 
-                    Reminder selectedReminder = selectedMemoItem.getReminder();
+                    Reminder selectedReminder = memoTextItem.getReminder();
                     int oldYear = selectedReminder.getYear();
                     int oldMonth = selectedReminder.getMonth();
                     int oldDay = selectedReminder.getDay();
@@ -276,7 +273,8 @@ public class TextDetailsMemoActivity extends AppCompatActivity implements Toolba
                             .putExtra(C.MEMO_ID, memoID)
                             .putExtra(C.PHOTOS, detail_photosCount)
                             .putExtra(C.ACTION_MODE, C.EDIT)
-                            .putExtra(C.MEMO_TYPE, C.TEXT_MEMO);
+                            .putExtra(C.MEMO_TYPE, C.TEXT_MEMO)
+                            .putExtra(C.MEMO_OBJECT, memoTextItem);
                     PendingIntent pendingIntent = PendingIntent.getBroadcast(getBaseContext(), memoID, intent, PendingIntent.FLAG_UPDATE_CURRENT);
 
                 }

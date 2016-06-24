@@ -19,7 +19,6 @@ import android.widget.ImageView;
 import com.sunway.android.memoapp.R;
 import com.sunway.android.memoapp.controller.AlarmReceiver;
 import com.sunway.android.memoapp.model.MemoDrawingItem;
-import com.sunway.android.memoapp.model.MemoItem;
 import com.sunway.android.memoapp.model.Reminder;
 import com.sunway.android.memoapp.util.C;
 import com.sunway.android.memoapp.util.FileOperation;
@@ -41,6 +40,7 @@ public class DrawingMemoActivity extends AppCompatActivity {
     private String ACTION_MODE;
     private int adapterPosition;
     private Calendar targetCal;
+    private MemoDrawingItem memoDrawingItem;
 
 
 
@@ -57,7 +57,7 @@ public class DrawingMemoActivity extends AppCompatActivity {
         final DrawingView drawingView = (DrawingView) findViewById(R.id.drawing_view_canvas);
         intent = getIntent();
         ACTION_MODE = intent.getExtras().getString(C.ACTION_MODE);
-        adapterPosition = intent.getExtras().getInt(C.ADAPTER_POSITION);
+        memoDrawingItem = (MemoDrawingItem) intent.getSerializableExtra(C.MEMO_OBJECT);
 
 
 
@@ -86,63 +86,46 @@ public class DrawingMemoActivity extends AppCompatActivity {
                     saveDrawing(memoID);
 
 
-                    MemoItem selectedMemoItem = ListOperation.getIndividualMemoItem(adapterPosition);
-                    Reminder selectedReminder = selectedMemoItem.getReminder();
-                    int oldYear = selectedReminder.getYear();
-                    int oldMonth = selectedReminder.getMonth();
-                    int oldDay = selectedReminder.getDay();
-                    int oldHour = selectedReminder.getHour();
-                    int oldMinute = selectedReminder.getMinute();
-                    int oldSecond = selectedReminder.getSecond();
-
-                    //GET YEAR,MONT, ETC. INITIALIZE TO ZERO.
-                    int year = oldYear;
-                    int month = oldMonth;
-                    int day = oldDay;
-                    int hour = oldHour;
-                    int minute = oldMinute;
-                    int second = oldSecond;
-
-
-                    if (targetCal != null) {
-                        IntentFilter filter = new IntentFilter();
-                        filter.addAction("android.provider.Telephony.SMS_RECEIVED");
-                        Intent intent = new Intent(getBaseContext(), AlarmReceiver.class);
-                        PendingIntent pendingIntent = PendingIntent.getBroadcast(getBaseContext(), memoID, intent, PendingIntent.FLAG_UPDATE_CURRENT);
-                        AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
-                        alarmManager.set(AlarmManager.RTC_WAKEUP, targetCal.getTimeInMillis(), pendingIntent);
-
-                        year = targetCal.get(Calendar.YEAR);
-                        month = targetCal.get(Calendar.MONTH);
-                        day = targetCal.get(Calendar.DAY_OF_MONTH);
-                        hour = targetCal.get(Calendar.HOUR);
-                        minute = targetCal.get(Calendar.MINUTE);
-                        second = targetCal.get(Calendar.SECOND);
-                    }
-
-
-                    boolean alarmUp = (PendingIntent.getBroadcast(getBaseContext(), memoID,
-                            new Intent(getBaseContext(), AlarmReceiver.class),
-                            PendingIntent.FLAG_NO_CREATE) != null);
-
-                    if (alarmUp) {
-                        Intent intent = new Intent(getBaseContext(), AlarmReceiver.class)
-                                .putExtra(C.ACTION_MODE, C.EDIT)
-                                .putExtra(C.MEMO_ID, memoID)
-                                .putExtra(C.INPUT_TITLE, "Drawing memo reminder")
-                                .putExtra(C.INPUT_DETAILS, "Click to view drawing")
-                                .putExtra(C.MEMO_TYPE, C.DRAWING_MEMO);
-                        PendingIntent pendingIntent = PendingIntent.getBroadcast(getBaseContext(), memoID, intent, PendingIntent.FLAG_UPDATE_CURRENT);
-
-                    }
 
 
                     Intent showMainActivity = new Intent(DrawingMemoActivity.this, MainActivity.class);
+
+                    int year = 0;
+                    int month = 0;
+                    int day = 0;
+                    int hour = 0;
+                    int minute = 0;
+                    int second = 0;
+
 
 
                     if (getIntent().getExtras().getString(C.ACTION_MODE).equals(C.ADDDRAWING)) {
                         showMainActivity.putExtra(C.ACTION_MODE, C.ADDDRAWING);
                     } else if (getIntent().getExtras().getString(C.ACTION_MODE).equals(C.EDITDRAWING)) {
+
+                        Reminder selectedReminder = memoDrawingItem.getReminder();
+                        int oldYear = selectedReminder.getYear();
+                        int oldMonth = selectedReminder.getMonth();
+                        int oldDay = selectedReminder.getDay();
+                        int oldHour = selectedReminder.getHour();
+                        int oldMinute = selectedReminder.getMinute();
+                        int oldSecond = selectedReminder.getSecond();
+
+                        if (targetCal == null) {
+                            year = oldYear;
+                            month = oldMonth;
+                            day = oldDay;
+                            hour = oldHour;
+                            minute = oldMinute;
+                            second = oldSecond;
+                        } else {
+                            year = targetCal.get(Calendar.YEAR);
+                            month = targetCal.get(Calendar.MONTH);
+                            day = targetCal.get(Calendar.DAY_OF_MONTH);
+                            hour = targetCal.get(Calendar.HOUR);
+                            minute = targetCal.get(Calendar.MINUTE);
+                            second = targetCal.get(Calendar.SECOND);
+                        }
 
                         FileOperation.replaceSelected(
                                 FileOperation.DELIMITER_LINE + FileOperation.DELIMITER_UNIT + (memoID) + FileOperation.DELIMITER_UNIT + FileOperation.DELIMITER_LINE + "Drawing" + FileOperation.DELIMITER_LINE
@@ -152,6 +135,32 @@ public class DrawingMemoActivity extends AppCompatActivity {
                         );
                         ListOperation.modifyDrawingList(memoID, year, month, day, hour, minute, second);
                         showMainActivity.putExtra(C.ACTION_MODE, C.EDITDRAWING);
+                    }
+
+                    if (targetCal != null) {
+                        IntentFilter filter = new IntentFilter();
+                        filter.addAction("android.provider.Telephony.SMS_RECEIVED");
+
+                        Intent intent = new Intent(getBaseContext(), AlarmReceiver.class);
+                        PendingIntent pendingIntent = PendingIntent.getBroadcast(getBaseContext(), getIntent().getExtras().getInt(C.MEMO_ID), intent, PendingIntent.FLAG_UPDATE_CURRENT);
+                        AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+                        alarmManager.set(AlarmManager.RTC_WAKEUP, targetCal.getTimeInMillis(), pendingIntent);
+                    }
+
+                    boolean alarmUp = (PendingIntent.getBroadcast(getBaseContext(), memoID,
+                            new Intent(getBaseContext(), AlarmReceiver.class),
+                            PendingIntent.FLAG_NO_CREATE) != null);
+
+                    if (alarmUp) {
+                        Intent intent = new Intent(getBaseContext(), AlarmReceiver.class)
+                                .putExtra(C.ACTION_MODE, C.EDITDRAWING)
+                                .putExtra(C.MEMO_ID, memoID)
+                                .putExtra(C.INPUT_TITLE, "Drawing memo reminder")
+                                .putExtra(C.INPUT_DETAILS, "Click to view drawing")
+                                .putExtra(C.MEMO_TYPE, C.DRAWING_MEMO)
+                                .putExtra(C.MEMO_OBJECT, memoDrawingItem);
+                        PendingIntent pendingIntent = PendingIntent.getBroadcast(getBaseContext(), memoID, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+
                     }
 
                     if (ACTION_MODE.equals(C.ADDDRAWING))
@@ -207,15 +216,7 @@ public class DrawingMemoActivity extends AppCompatActivity {
         if (resultCode == RESULT_OK) {
             switch (requestCode) {
                 case REGISTER_REMINDER:
-                    Calendar targetCal = (Calendar) data.getSerializableExtra(C.REMINDER_DETAILS);
-
-                    IntentFilter filter = new IntentFilter();
-                    filter.addAction("android.provider.Telephony.SMS_RECEIVED");
-
-                    Intent intent = new Intent(getBaseContext(), AlarmReceiver.class);
-                    PendingIntent pendingIntent = PendingIntent.getBroadcast(getBaseContext(), getIntent().getExtras().getInt(C.MEMO_ID), intent, PendingIntent.FLAG_UPDATE_CURRENT);
-                    AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
-                    alarmManager.set(AlarmManager.RTC_WAKEUP, targetCal.getTimeInMillis(), pendingIntent);
+                    targetCal = (Calendar) data.getSerializableExtra(C.REMINDER_DETAILS);
                     break;
             }
         }

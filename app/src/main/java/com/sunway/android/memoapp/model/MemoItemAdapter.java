@@ -36,7 +36,6 @@ public class MemoItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     private Bitmap bitmapHolder;
     private String displayState;
     private MemoItemFilter mFilter = new MemoItemFilter();
-    private List<MemoItem> oldMemoList = new ArrayList<MemoItem>();
 
 
 

@@ -1,9 +1,11 @@
 package com.sunway.android.memoapp.model;
 
+import java.io.Serializable;
+
 /**
  * Created by Mr_RexZ on 5/27/2016.
  */
-public class MemoTextItem implements MemoItem {
+public class MemoTextItem implements MemoItem, Serializable {
 
     int image; // drawable reference id
     private String title;

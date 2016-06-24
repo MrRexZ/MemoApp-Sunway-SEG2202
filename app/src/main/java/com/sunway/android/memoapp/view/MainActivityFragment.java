@@ -196,7 +196,7 @@ public class MainActivityFragment extends Fragment implements SearchView.OnQuery
 
 
         int position =rcAdapter.getPosition();
-        MemoItem memoItem = ListOperation.getIndividualMemoItem(position);
+        MemoItem memoItem = rcAdapter.nMemoList.get(position);
 
         if (memoItem instanceof MemoTextItem) {
             MemoTextItem memoTextItem = (MemoTextItem) memoItem;

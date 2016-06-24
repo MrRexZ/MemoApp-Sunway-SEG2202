@@ -11,7 +11,6 @@ import com.sunway.android.memoapp.model.MemoItem;
 import com.sunway.android.memoapp.model.MemoItemAdapter;
 import com.sunway.android.memoapp.model.MemoTextItem;
 import com.sunway.android.memoapp.util.C;
-import com.sunway.android.memoapp.util.ListOperation;
 import com.sunway.android.memoapp.util.MyApplication;
 import com.sunway.android.memoapp.view.DrawingMemoActivity;
 import com.sunway.android.memoapp.view.MainActivityFragment;
@@ -33,7 +32,7 @@ public class MainActivityFragmentTouchListener implements RecyclerView.OnItemTou
             if (child != null) {
                 int position = viewRecycle.getChildAdapterPosition(child);
 
-                MemoItem memoitem = ListOperation.getIndividualMemoItem(position);
+                MemoItem memoitem = memoItemAdapter.nMemoList.get(position);
                 if (memoitem instanceof MemoTextItem) {
                     MemoTextItem memoTextItem = (MemoTextItem) memoitem;
                     Intent showDetail = new Intent(fragment.getActivity(), TextDetailsMemoActivity.class)
@@ -42,14 +41,14 @@ public class MainActivityFragmentTouchListener implements RecyclerView.OnItemTou
                             .putExtra(C.INPUT_TITLE, memoTextItem.getTitle())
                             .putExtra(C.INPUT_DETAILS, memoTextItem.getContent())
                             .putExtra(C.PHOTOS, memoTextItem.getPhotosCount())
-                            .putExtra(C.ADAPTER_POSITION, position);
+                            .putExtra(C.MEMO_OBJECT, memoTextItem);
                     fragment.getActivity().startActivity(showDetail);
                 } else if (memoitem instanceof MemoDrawingItem) {
                     MemoDrawingItem memoDrawingItem = (MemoDrawingItem) memoitem;
                     Intent showDrawing = new Intent(fragment.getActivity(), DrawingMemoActivity.class)
                             .putExtra(C.ACTION_MODE, C.EDITDRAWING)
                             .putExtra(C.MEMO_ID, memoDrawingItem.getMemoID())
-                            .putExtra(C.ADAPTER_POSITION, position);
+                            .putExtra(C.MEMO_OBJECT, memoDrawingItem);
                     fragment.getActivity().startActivity(showDrawing);
 
 

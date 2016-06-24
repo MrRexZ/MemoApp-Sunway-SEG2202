@@ -33,6 +33,9 @@ public class C {
     public static final String HAS_REMINDER = "HAS_REMINDER";
     public static final String REMINDER_DETAILS = "REMINDER_DETAILS";
     public static final String ADAPTER_POSITION = "ADAPTER_POSITION";
+    public static final String MEMO_OBJECT = "MEMO_OBJECT";
+
+
 
     public static final String REMINDER_YEAR = "REMINDER_YEAR";
     public static final String REMINDER_MONTH = "REMINDER_YEAR";

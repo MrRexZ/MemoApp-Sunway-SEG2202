@@ -1,9 +1,11 @@
 package com.sunway.android.memoapp.model;
 
+import java.io.Serializable;
+
 /**
  * Created by Mr_RexZ on 6/14/2016.
  */
-public class MemoDrawingItem implements MemoItem {
+public class MemoDrawingItem implements MemoItem, Serializable {
 
     private int memoid;
     private Reminder reminder;

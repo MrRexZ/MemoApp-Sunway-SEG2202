@@ -1,9 +1,11 @@
 package com.sunway.android.memoapp.model;
 
+import java.io.Serializable;
+
 /**
  * Created by Mr_RexZ on 6/24/2016.
  */
-public class Reminder {
+public class Reminder implements Serializable {
     private int year;
     private int month;
     private int day;
