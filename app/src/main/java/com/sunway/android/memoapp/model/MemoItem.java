@@ -10,6 +10,14 @@ public interface MemoItem {
 
     void setMemoID(int memoid);
 
+    String getTitle();
+
+    void setTitle(String title);
+
+    String getContent();
+
+    void setContent(String content);
+
     Reminder getReminder();
 
     void setReminder(Reminder reminder);

@@ -85,6 +85,10 @@ public class MainActivityFragment extends Fragment implements SearchView.OnQuery
         int id = item.getItemId();
         if (id == R.id.action_delete_temp_file) {
             FileOperation.deleteTempFile();
+            return true;
+        } else if (id == R.id.action_view_reminder_list) {
+            Intent showReminderList = new Intent(getActivity(), ReminderListActivity.class);
+            startActivity(showReminderList);
         }
         return false;
     }
@@ -209,7 +213,6 @@ public class MainActivityFragment extends Fragment implements SearchView.OnQuery
             int memoid = memoDrawingItem.getMemoID();
             FileOperation.deleteDrawingMemo(memoid);
             ListOperation.deleteDrawingMemoList(position);
-            mode = C.DELETE_DRAWINGS;
         }
 
         refreshAdapter();

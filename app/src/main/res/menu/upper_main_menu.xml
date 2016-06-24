@@ -18,4 +18,8 @@
         android:title="Settings"
         app:showAsAction="never"
        />
+    <item
+        android:id="@+id/action_view_reminder_list"
+        android:title="View Reminder List"
+        app:showAsAction="ifRoom" />
 </menu>

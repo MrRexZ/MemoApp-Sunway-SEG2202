@@ -43,6 +43,7 @@ public class MainActivityFragmentTouchListener implements RecyclerView.OnItemTou
                             .putExtra(C.PHOTOS, memoTextItem.getPhotosCount())
                             .putExtra(C.MEMO_OBJECT, memoTextItem);
                     fragment.getActivity().startActivity(showDetail);
+                    return true;
                 } else if (memoitem instanceof MemoDrawingItem) {
                     MemoDrawingItem memoDrawingItem = (MemoDrawingItem) memoitem;
                     Intent showDrawing = new Intent(fragment.getActivity(), DrawingMemoActivity.class)
@@ -50,6 +51,7 @@ public class MainActivityFragmentTouchListener implements RecyclerView.OnItemTou
                             .putExtra(C.MEMO_ID, memoDrawingItem.getMemoID())
                             .putExtra(C.MEMO_OBJECT, memoDrawingItem);
                     fragment.getActivity().startActivity(showDrawing);
+                    return true;
 
 
                 }

@@ -6,6 +6,7 @@ import com.sunway.android.memoapp.model.MemoTextItem;
 import com.sunway.android.memoapp.model.Reminder;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -58,6 +59,7 @@ public class ListOperation {
     }
 
 
+
     public static void deleteList(int textid, String oldTitle, String oldDetails) {
 
         for (int counter = 0; counter < listViewItems.size(); counter++) {
@@ -81,6 +83,16 @@ public class ListOperation {
 
     public static List<MemoItem> getListViewItems() {
         return listViewItems;
+    }
+
+    public static List<Reminder> getListViewReminderItems() {
+        Iterator iteratorReminder = listViewItems.iterator();
+        ArrayList<Reminder> reminderArrayList = new ArrayList<>();
+        while (iteratorReminder.hasNext()) {
+            reminderArrayList.add(((MemoItem) iteratorReminder.next()).getReminder());
+        }
+        return reminderArrayList;
+
     }
 
     public static MemoItem getIndividualMemoItem(int index) {
