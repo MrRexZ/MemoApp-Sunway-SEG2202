@@ -62,7 +62,6 @@ public class ReminderActivity extends AppCompatActivity {
                         pickerTime.getCurrentMinute(),
                         00);
 
-                System.out.println("HEY : " + pickerDate.getYear() + "," + pickerDate.getMonth() + "," + pickerDate.getDayOfMonth() + "," + pickerTime.getCurrentHour() + "," + pickerTime.getCurrentMinute() + ".");
 
                 System.out.println("HEY:  " +
                         cal.get(Calendar.YEAR) + "," +

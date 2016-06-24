@@ -57,6 +57,7 @@ public class TextDetailsMemoActivity extends AppCompatActivity implements Toolba
     public List<String> imageViewArrayListDetails = new ArrayList<>();
     public Intent intent;
     public ArrayList<String> existingImage = new ArrayList<>();
+    public ArrayList<String> filePathToBeDeleted = new ArrayList<>();
     private String oldTitle;
     private String oldDetails;
     private String newTitle;
@@ -65,7 +66,6 @@ public class TextDetailsMemoActivity extends AppCompatActivity implements Toolba
     private String TAG = "SAVING IMAGE";
     private int memoID;
     private MemoPhotosAdapter memoPhotosAdapter;
-    private ArrayList<Integer> positionsToBeDeleted = new ArrayList<>();
     private RecyclerView photosRecyclerView;
     private Calendar targetCal;
     private MemoTextItem memoTextItem;
@@ -190,16 +190,11 @@ public class TextDetailsMemoActivity extends AppCompatActivity implements Toolba
                         .putExtra(C.INPUT_DETAILS, newDetails)
                         .putExtra(C.PHOTOS, detail_photosCount);
 
-                Iterator iteratorDeletion = positionsToBeDeleted.iterator();
+                Iterator iteratorDeletion = filePathToBeDeleted.iterator();
+
                 while (iteratorDeletion.hasNext()) {
 
-                    int position = (int) iteratorDeletion.next();
-
-
-                    File filePath = new File(FileOperation.mydir, imageViewArrayListDetails.get(position));
-                    FileOperation.deleteIndividualPhotosMemo(filePath.toString());
-                    //existingImage.remove(position);
-
+                    FileOperation.deleteIndividualPhotosMemo((String) iteratorDeletion.next());
                 }
 
 
@@ -349,9 +344,7 @@ public class TextDetailsMemoActivity extends AppCompatActivity implements Toolba
 
 
         int position = memoPhotosAdapter.getPosition();
-        positionsToBeDeleted.add(position);
-        imageViewArrayListDetails.remove(position);
-
+        filePathToBeDeleted.add(imageViewArrayListDetails.remove(position));
         memoPhotosAdapter.notifyDataSetChanged();
 
         return super.onContextItemSelected(item);
