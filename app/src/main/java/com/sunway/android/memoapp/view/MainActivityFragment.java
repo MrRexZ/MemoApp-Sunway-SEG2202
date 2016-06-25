@@ -302,6 +302,7 @@ public class MainActivityFragment extends Fragment implements SearchView.OnQuery
                 recyclerView.setLayoutManager(_sGridLayoutManager);
                 Collections.sort(ListOperation.getListViewItems(), new MemoItemComparator());
                 refreshAdapter();
+                layout_MainMenu.getForeground().setAlpha(0);
                 changeSortPopUp.dismiss();
             }
         });
