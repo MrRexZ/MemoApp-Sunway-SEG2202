@@ -98,4 +98,16 @@ public class ListOperation {
         return listViewItems.get(index);
     }
 
+    public static MemoItem getMemoItemFromID(int memoID) {
+
+        for (int counter = 0; counter < listViewItems.size(); counter++) {
+
+            MemoItem memoItem = listViewItems.get(counter);
+            if (memoItem.getMemoID() == memoID) {
+                return memoItem;
+            }
+        }
+        return null;
+    }
+
 }

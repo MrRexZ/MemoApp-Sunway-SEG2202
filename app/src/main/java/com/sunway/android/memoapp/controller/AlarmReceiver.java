@@ -17,8 +17,6 @@ import com.sunway.android.memoapp.util.C;
 import com.sunway.android.memoapp.view.DrawingMemoActivity;
 import com.sunway.android.memoapp.view.TextDetailsMemoActivity;
 
-import java.io.Serializable;
-
 public class AlarmReceiver extends BroadcastReceiver {
 
     private NotificationManager mNotificationManager;
@@ -39,31 +37,28 @@ public class AlarmReceiver extends BroadcastReceiver {
                 intent.getExtras().getString(C.INPUT_DETAILS), "Alert",
                 intent.getExtras().getInt(C.MEMO_ID),
                 intent.getExtras().getInt(C.PHOTOS),
-                intent.getExtras().getString(C.MEMO_TYPE),
-                intent.getSerializableExtra(C.MEMO_OBJECT));
+                intent.getExtras().getString(C.MEMO_TYPE));
 
     }
 
-    public void createNotification(Context context, String msg, String msgText, String msgAlert, int memoid, int photosCount, String memoType, Serializable memoItem) {
+    public void createNotification(Context context, String msg, String msgText, String msgAlert, int memoid, int photosCount, String memoType) {
         mNotificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
 
         Intent intent = null;
         if (memoType.equals(C.TEXT_MEMO)) {
             intent = new Intent(context, TextDetailsMemoActivity.class)
-                    .putExtra(C.ACTION_MODE, C.EDIT)
-                    .putExtra(C.MEMO_OBJECT, memoItem);
+                    .putExtra(C.ACTION_MODE, C.EDIT);
+
         } else if (memoType.equals(C.DRAWING_MEMO)) {
             intent = new Intent(context, DrawingMemoActivity.class)
-                    .putExtra(C.ACTION_MODE, C.EDITDRAWING)
-                    .putExtra(C.MEMO_OBJECT, memoItem);
-
+                    .putExtra(C.ACTION_MODE, C.EDITDRAWING);
         }
-
         intent.setAction(Long.toString(System.currentTimeMillis()));
         intent.putExtra(C.INPUT_TITLE, msg)
                 .putExtra(C.INPUT_DETAILS, msgText)
                 .putExtra(C.PHOTOS, photosCount)
                 .putExtra(C.MEMO_ID, memoid);
+
         PendingIntent pendingIntent = PendingIntent.getActivity(context, memoid,
                 intent, 0);
 

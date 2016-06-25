@@ -36,7 +36,7 @@ public class BitmapReadingWorkerTask extends AsyncTask<String, Void, Bitmap> {
     protected void onPostExecute(Bitmap bitmap) {
         if (displayMode.equals(C.DETAILS_ACTIVITY_DISPLAY)) maxWidth = 500;
         else if (displayMode.equals(C.MAIN_ACTIVITY_FRAGMENT_DISPLAY)) maxWidth = 200;
-        else if (displayMode.equals(C.DRAWING_ACTIVITY_DISPLAY)) maxWidth = 500;
+        else if (displayMode.equals(C.DRAWING_ACTIVITY_DISPLAY)) maxWidth = 400;
         int width = bitmap.getWidth();
         int height = bitmap.getHeight();
         float aspectRatio = (float) height / width;

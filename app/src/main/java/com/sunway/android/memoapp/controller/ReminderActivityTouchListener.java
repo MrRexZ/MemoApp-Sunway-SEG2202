@@ -43,16 +43,14 @@ public class ReminderActivityTouchListener implements RecyclerView.OnItemTouchLi
                             .putExtra(C.MEMO_ID, memoitem.getMemoID())
                             .putExtra(C.INPUT_TITLE, memoTextItem.getTitle())
                             .putExtra(C.INPUT_DETAILS, memoTextItem.getContent())
-                            .putExtra(C.PHOTOS, memoTextItem.getPhotosCount())
-                            .putExtra(C.MEMO_OBJECT, memoTextItem);
+                            .putExtra(C.PHOTOS, memoTextItem.getPhotosCount());
                     weakReferenceReminderListActivity.get().startActivity(showDetail);
                     return true;
                 } else if (memoitem instanceof MemoDrawingItem) {
                     MemoDrawingItem memoDrawingItem = (MemoDrawingItem) memoitem;
                     Intent showDrawing = new Intent(weakReferenceReminderListActivity.get(), DrawingMemoActivity.class)
                             .putExtra(C.ACTION_MODE, C.EDITDRAWING)
-                            .putExtra(C.MEMO_ID, memoDrawingItem.getMemoID())
-                            .putExtra(C.MEMO_OBJECT, memoDrawingItem);
+                            .putExtra(C.MEMO_ID, memoDrawingItem.getMemoID());
                     weakReferenceReminderListActivity.get().startActivity(showDrawing);
                     return true;
 

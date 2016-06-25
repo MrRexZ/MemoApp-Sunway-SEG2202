@@ -45,8 +45,7 @@ public class MainActivityFragmentTouchListener implements RecyclerView.OnItemTou
                     MemoDrawingItem memoDrawingItem = (MemoDrawingItem) memoitem;
                     Intent showDrawing = new Intent(fragment.getActivity(), DrawingMemoActivity.class)
                             .putExtra(C.ACTION_MODE, C.EDITDRAWING)
-                            .putExtra(C.MEMO_ID, memoDrawingItem.getMemoID())
-                            .putExtra(C.MEMO_OBJECT, memoDrawingItem);
+                            .putExtra(C.MEMO_ID, memoDrawingItem.getMemoID());
                     fragment.getActivity().startActivity(showDrawing);
                     return true;
                 }

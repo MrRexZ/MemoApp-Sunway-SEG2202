@@ -41,6 +41,7 @@ public class DrawingMemoActivity extends AppCompatActivity {
     private int adapterPosition;
     private Calendar targetCal;
     private MemoDrawingItem memoDrawingItem;
+    private Reminder tempReminder = new Reminder(0, 0, 0, 0, 0, 0);
 
 
 
@@ -57,7 +58,10 @@ public class DrawingMemoActivity extends AppCompatActivity {
         final DrawingView drawingView = (DrawingView) findViewById(R.id.drawing_view_canvas);
         intent = getIntent();
         ACTION_MODE = intent.getExtras().getString(C.ACTION_MODE);
-        memoDrawingItem = (MemoDrawingItem) intent.getSerializableExtra(C.MEMO_OBJECT);
+
+        if (ACTION_MODE.equals(C.EDITDRAWING)) {
+            memoDrawingItem = (MemoDrawingItem) ListOperation.getMemoItemFromID(memoID);
+        }
 
 
 
@@ -84,18 +88,14 @@ public class DrawingMemoActivity extends AppCompatActivity {
                 if (id == R.id.action_save_drawing) {
 
                     saveDrawing(memoID);
-
-
-
-
                     Intent showMainActivity = new Intent(DrawingMemoActivity.this, MainActivity.class);
 
-                    int year = 0;
-                    int month = 0;
-                    int day = 0;
-                    int hour = 0;
-                    int minute = 0;
-                    int second = 0;
+                    int year = tempReminder.getYear();
+                    int month = tempReminder.getMonth();
+                    int day = tempReminder.getDay();
+                    int hour = tempReminder.getHour();
+                    int minute = tempReminder.getMinute();
+                    int second = tempReminder.getSecond();
 
 
 
@@ -119,24 +119,25 @@ public class DrawingMemoActivity extends AppCompatActivity {
                             hour = oldHour;
                             minute = oldMinute;
                             second = oldSecond;
-                        } else {
-                            year = targetCal.get(Calendar.YEAR);
-                            month = targetCal.get(Calendar.MONTH);
-                            day = targetCal.get(Calendar.DAY_OF_MONTH);
-                            hour = targetCal.get(Calendar.HOUR);
-                            minute = targetCal.get(Calendar.MINUTE);
-                            second = targetCal.get(Calendar.SECOND);
-
-                            FileOperation.replaceSelected(
-                                    FileOperation.DELIMITER_LINE + FileOperation.DELIMITER_UNIT + (memoID) + FileOperation.DELIMITER_UNIT + FileOperation.DELIMITER_LINE + "Drawing" + FileOperation.DELIMITER_LINE
-                                            + "reminder=" + oldYear + "," + oldMonth + "," + oldDay + "," + oldHour + "," + oldMinute + "," + oldSecond + FileOperation.DELIMITER_LINE,
-                                    FileOperation.DELIMITER_LINE + FileOperation.DELIMITER_UNIT + (memoID) + FileOperation.DELIMITER_UNIT + FileOperation.DELIMITER_LINE + "Drawing" + FileOperation.DELIMITER_LINE
-                                            + "reminder=" + year + "," + month + "," + day + "," + hour + "," + minute + "," + second + FileOperation.DELIMITER_LINE
-                            );
-                            ListOperation.modifyDrawingList(memoID, year, month, day, hour, minute, second);
                         }
 
+
+                        FileOperation.replaceSelected(
+                                FileOperation.DELIMITER_LINE + FileOperation.DELIMITER_UNIT + (memoID) + FileOperation.DELIMITER_UNIT + FileOperation.DELIMITER_LINE + "Drawing" + FileOperation.DELIMITER_LINE
+                                        + "reminder=" + oldYear + "," + oldMonth + "," + oldDay + "," + oldHour + "," + oldMinute + "," + oldSecond + FileOperation.DELIMITER_LINE,
+                                FileOperation.DELIMITER_LINE + FileOperation.DELIMITER_UNIT + (memoID) + FileOperation.DELIMITER_UNIT + FileOperation.DELIMITER_LINE + "Drawing" + FileOperation.DELIMITER_LINE
+                                        + "reminder=" + year + "," + month + "," + day + "," + hour + "," + minute + "," + second + FileOperation.DELIMITER_LINE
+                        );
+                        ListOperation.modifyDrawingList(memoID, year, month, day, hour, minute, second);
+
                     }
+
+
+
+
+                    if (ACTION_MODE.equals(C.ADDDRAWING))
+                        writeDrawingMemo(year, month, day, hour, minute, second);
+
 
                     if (targetCal != null) {
                         IntentFilter filter = new IntentFilter();
@@ -148,6 +149,7 @@ public class DrawingMemoActivity extends AppCompatActivity {
                         alarmManager.set(AlarmManager.RTC_WAKEUP, targetCal.getTimeInMillis(), pendingIntent);
                     }
 
+
                     boolean alarmUp = (PendingIntent.getBroadcast(getBaseContext(), memoID,
                             new Intent(getBaseContext(), AlarmReceiver.class),
                             PendingIntent.FLAG_NO_CREATE) != null);
@@ -158,14 +160,10 @@ public class DrawingMemoActivity extends AppCompatActivity {
                                 .putExtra(C.MEMO_ID, memoID)
                                 .putExtra(C.INPUT_TITLE, "Drawing memo reminder")
                                 .putExtra(C.INPUT_DETAILS, "Click to view drawing")
-                                .putExtra(C.MEMO_TYPE, C.DRAWING_MEMO)
-                                .putExtra(C.MEMO_OBJECT, memoDrawingItem);
+                                .putExtra(C.MEMO_TYPE, C.DRAWING_MEMO);
                         PendingIntent pendingIntent = PendingIntent.getBroadcast(getBaseContext(), memoID, intent, PendingIntent.FLAG_UPDATE_CURRENT);
 
                     }
-
-                    if (ACTION_MODE.equals(C.ADDDRAWING))
-                        writeDrawingMemo(year, month, day, hour, minute, second);
 
                     startActivity(showMainActivity);
 
@@ -187,8 +185,10 @@ public class DrawingMemoActivity extends AppCompatActivity {
                 FileOperation.DELIMITER_LINE + "counter=" + ((FileOperation.getMemoTextCountId()) - 1) + FileOperation.DELIMITER_LINE,
                 FileOperation.DELIMITER_LINE + "counter=" + ((FileOperation.getMemoTextCountId())) + FileOperation.DELIMITER_LINE);
 
-        ListOperation.addToList(new MemoDrawingItem((FileOperation.getMemoTextCountId() - 1), new Reminder(year, month, day, hour, minute, second),
-                ListOperation.DRAWING_MEMO_SORT_ORDER));
+        memoDrawingItem = new MemoDrawingItem((FileOperation.getMemoTextCountId() - 1),
+                new Reminder(year, month, day, hour, minute, second),
+                ListOperation.DRAWING_MEMO_SORT_ORDER);
+        ListOperation.addToList(memoDrawingItem);
 
 
     }
@@ -219,6 +219,13 @@ public class DrawingMemoActivity extends AppCompatActivity {
             switch (requestCode) {
                 case REGISTER_REMINDER:
                     targetCal = (Calendar) data.getSerializableExtra(C.REMINDER_DETAILS);
+                    tempReminder = new Reminder(targetCal.get(Calendar.YEAR),
+                            targetCal.get(Calendar.MONTH),
+                            targetCal.get(Calendar.DAY_OF_MONTH),
+                            targetCal.get(Calendar.HOUR),
+                            targetCal.get(Calendar.MINUTE),
+                            targetCal.get(Calendar.SECOND)
+                    );
                     break;
             }
         }

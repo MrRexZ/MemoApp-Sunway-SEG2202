@@ -77,7 +77,6 @@ public class TextDetailsMemoActivity extends AppCompatActivity implements Toolba
         intent = getIntent();
         ACTION_MODE = intent.getStringExtra(C.ACTION_MODE);
         memoID = intent.getExtras().getInt(C.MEMO_ID);
-        memoTextItem = (MemoTextItem) intent.getSerializableExtra(C.MEMO_OBJECT);
         EditText textviewTitle = (EditText) findViewById(R.id.title_text_input);
         EditText detailsviewTitle = (EditText) findViewById(R.id.details_text_input);
 
@@ -100,6 +99,8 @@ public class TextDetailsMemoActivity extends AppCompatActivity implements Toolba
 
 
         if (ACTION_MODE.equals(C.EDIT)) {
+
+            memoTextItem = (MemoTextItem) ListOperation.getMemoItemFromID(memoID);
             detail_photosCount = memoTextItem.getPhotosCount();
             oldTitle = memoTextItem.getTitle();
             oldDetails = memoTextItem.getContent();
@@ -181,6 +182,8 @@ public class TextDetailsMemoActivity extends AppCompatActivity implements Toolba
 
         int id = item.getItemId();
         if (id == R.id.action_submit_text_memo) {
+
+
             EditText textviewTitle = (EditText) findViewById(R.id.title_text_input);
             EditText textviewDetails = (EditText) findViewById(R.id.details_text_input);
 
@@ -206,9 +209,17 @@ public class TextDetailsMemoActivity extends AppCompatActivity implements Toolba
                 int minute = 0;
                 int second = 0;
 
+                if (targetCal != null) {
+                    year = targetCal.get(Calendar.YEAR);
+                    month = targetCal.get(Calendar.MONTH);
+                    day = targetCal.get(Calendar.DAY_OF_MONTH);
+                    hour = targetCal.get(Calendar.HOUR);
+                    minute = targetCal.get(Calendar.MINUTE);
+                    second = targetCal.get(Calendar.SECOND);
+                }
 
 
-                if (ACTION_MODE.equals(C.EDIT) || ACTION_MODE.equals("DELETE")) {
+                if (ACTION_MODE.equals(C.EDIT)) {
 
                     Reminder selectedReminder = memoTextItem.getReminder();
                     int oldYear = selectedReminder.getYear();
@@ -217,6 +228,7 @@ public class TextDetailsMemoActivity extends AppCompatActivity implements Toolba
                     int oldHour = selectedReminder.getHour();
                     int oldMinute = selectedReminder.getMinute();
                     int oldSecond = selectedReminder.getSecond();
+                    System.out.println("DEBUG YO :" + oldYear + oldMinute);
 
                     if (targetCal == null) {
                         year = oldYear;
@@ -225,26 +237,24 @@ public class TextDetailsMemoActivity extends AppCompatActivity implements Toolba
                         hour = oldHour;
                         minute = oldMinute;
                         second = oldSecond;
-                    } else {
-                        year = targetCal.get(Calendar.YEAR);
-                        month = targetCal.get(Calendar.MONTH);
-                        day = targetCal.get(Calendar.DAY_OF_MONTH);
-                        hour = targetCal.get(Calendar.HOUR);
-                        minute = targetCal.get(Calendar.MINUTE);
-                        second = targetCal.get(Calendar.SECOND);
-
-
-                        int oldPhotosCount = memoTextItem.getPhotosCount();
-                        FileOperation.replaceSelected(
-                                FileOperation.DELIMITER_LINE + FileOperation.DELIMITER_UNIT + memoID + FileOperation.DELIMITER_UNIT + FileOperation.DELIMITER_LINE + "photos=" + oldPhotosCount + FileOperation.DELIMITER_LINE + oldTitle + FileOperation.DELIMITER_LINE + oldDetails + FileOperation.DELIMITER_LINE + "reminder=" + oldYear + "," + oldMonth + "," + oldDay + "," + oldHour + "," + oldMinute + "," + oldSecond + FileOperation.DELIMITER_LINE,
-                                FileOperation.DELIMITER_LINE + FileOperation.DELIMITER_UNIT + memoID + FileOperation.DELIMITER_UNIT + FileOperation.DELIMITER_LINE + "photos=" + detail_photosCount + FileOperation.DELIMITER_LINE + newTitle + FileOperation.DELIMITER_LINE + newDetails + FileOperation.DELIMITER_LINE + "reminder=" + year + "," + month + "," + day + "," + hour + "," + minute + "," + second + FileOperation.DELIMITER_LINE);
-                        showMainActivity.putExtra(C.ACTION_MODE, C.EDIT);
-
-                        ListOperation.modifyTextList(memoID, detail_photosCount, newTitle, newDetails, year, month, day, hour, minute, second);
                     }
+
+
+                    int oldPhotosCount = memoTextItem.getPhotosCount();
+                    FileOperation.replaceSelected(
+                            FileOperation.DELIMITER_LINE + FileOperation.DELIMITER_UNIT + memoID + FileOperation.DELIMITER_UNIT + FileOperation.DELIMITER_LINE + "photos=" + oldPhotosCount + FileOperation.DELIMITER_LINE + oldTitle + FileOperation.DELIMITER_LINE + oldDetails + FileOperation.DELIMITER_LINE + "reminder=" + oldYear + "," + oldMonth + "," + oldDay + "," + oldHour + "," + oldMinute + "," + oldSecond + FileOperation.DELIMITER_LINE,
+                            FileOperation.DELIMITER_LINE + FileOperation.DELIMITER_UNIT + memoID + FileOperation.DELIMITER_UNIT + FileOperation.DELIMITER_LINE + "photos=" + detail_photosCount + FileOperation.DELIMITER_LINE + newTitle + FileOperation.DELIMITER_LINE + newDetails + FileOperation.DELIMITER_LINE + "reminder=" + year + "," + month + "," + day + "," + hour + "," + minute + "," + second + FileOperation.DELIMITER_LINE);
+                    showMainActivity.putExtra(C.ACTION_MODE, C.EDIT);
+
+                    ListOperation.modifyTextList(memoID, detail_photosCount, newTitle, newDetails, year, month, day, hour, minute, second);
+
 
                 } else
                     showMainActivity.putExtra(C.ACTION_MODE, C.ADD);
+
+
+
+                if (ACTION_MODE.equals(C.ADD)) writeMemo(year, month, day, hour, minute, second);
 
 
                 if (targetCal != null) {
@@ -254,6 +264,7 @@ public class TextDetailsMemoActivity extends AppCompatActivity implements Toolba
                     PendingIntent pendingIntent = PendingIntent.getBroadcast(getBaseContext(), memoID, intent, PendingIntent.FLAG_UPDATE_CURRENT);
                     AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
                     alarmManager.set(AlarmManager.RTC_WAKEUP, targetCal.getTimeInMillis(), pendingIntent);
+
 
                 }
 
@@ -268,15 +279,10 @@ public class TextDetailsMemoActivity extends AppCompatActivity implements Toolba
                             .putExtra(C.MEMO_ID, memoID)
                             .putExtra(C.PHOTOS, detail_photosCount)
                             .putExtra(C.ACTION_MODE, C.EDIT)
-                            .putExtra(C.MEMO_TYPE, C.TEXT_MEMO)
-                            .putExtra(C.MEMO_OBJECT, memoTextItem);
+                            .putExtra(C.MEMO_TYPE, C.TEXT_MEMO);
                     PendingIntent pendingIntent = PendingIntent.getBroadcast(getBaseContext(), memoID, intent, PendingIntent.FLAG_UPDATE_CURRENT);
 
                 }
-
-
-                if (ACTION_MODE.equals(C.ADD)) writeMemo(year, month, day, hour, minute, second);
-
 
                 startActivity(showMainActivity);
                 return true;
@@ -321,12 +327,13 @@ public class TextDetailsMemoActivity extends AppCompatActivity implements Toolba
                 FileOperation.DELIMITER_LINE + "counter=" + ((FileOperation.getMemoTextCountId())) + FileOperation.DELIMITER_LINE);
 
 
-        ListOperation.addToList(new MemoTextItem(FileOperation.getMemoTextCountId() - 1,
+        memoTextItem = new MemoTextItem(FileOperation.getMemoTextCountId() - 1,
                 detail_photosCount,
                 newTitle,
                 newDetails,
                 new Reminder(year, month, day, hour, minute, second),
-                ListOperation.TEXT_MEMO_SORT_ORDER));
+                ListOperation.TEXT_MEMO_SORT_ORDER);
+        ListOperation.addToList(memoTextItem);
 
     }
 
