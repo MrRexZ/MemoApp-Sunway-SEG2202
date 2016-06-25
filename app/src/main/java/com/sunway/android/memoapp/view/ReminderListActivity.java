@@ -26,9 +26,6 @@ import com.sunway.android.memoapp.model.ReminderAdapter;
 import com.sunway.android.memoapp.util.FileOperation;
 import com.sunway.android.memoapp.util.ListOperation;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class ReminderListActivity extends AppCompatActivity {
 
     private ReminderAdapter reminderAdapter;
@@ -55,10 +52,8 @@ public class ReminderListActivity extends AppCompatActivity {
         recyclerView.setLayoutManager(mLayoutManager);
         recyclerView.setItemAnimator(new DefaultItemAnimator());
 
-        List<MemoItem> memoItemListOperation = new ArrayList<>();
-        memoItemListOperation = ListOperation.getListViewItems();
         reminderAdapter = new ReminderAdapter(
-                this, memoItemListOperation);
+                this, ListOperation.getListViewItems());
         recyclerView.setAdapter(reminderAdapter);
 
         recyclerView.addOnItemTouchListener(new ReminderActivityTouchListener(this, recyclerView, reminderAdapter));
@@ -98,22 +93,35 @@ public class ReminderListActivity extends AppCompatActivity {
         if (memoItem instanceof MemoTextItem) {
             MemoTextItem memoTextItem = (MemoTextItem) memoItem;
             FileOperation.replaceSelected(
-                    FileOperation.DELIMITER_LINE + FileOperation.DELIMITER_UNIT + memoItem.getMemoID() + FileOperation.DELIMITER_UNIT + FileOperation.DELIMITER_LINE + "photos=" + memoTextItem.getPhotosCount() + FileOperation.DELIMITER_LINE + memoTextItem.getTitle() + FileOperation.DELIMITER_LINE + memoTextItem.getContent() + FileOperation.DELIMITER_LINE + "reminder=" + selectedReminder.getYear() + "," + selectedReminder.getMonth() + "," + selectedReminder.getDay() + "," + selectedReminder.getHour() + "," + selectedReminder.getMinute() + "," + selectedReminder.getSecond() + FileOperation.DELIMITER_LINE,
-                    FileOperation.DELIMITER_LINE + FileOperation.DELIMITER_UNIT + memoItem.getMemoID() + FileOperation.DELIMITER_UNIT + FileOperation.DELIMITER_LINE + "photos=" + memoTextItem.getPhotosCount() + FileOperation.DELIMITER_LINE + memoTextItem.getTitle() + FileOperation.DELIMITER_LINE + memoTextItem.getContent() + FileOperation.DELIMITER_LINE + "reminder=" + 0 + "," + 0 + "," + 0 + "," + 0 + "," + 0 + "," + 0 + FileOperation.DELIMITER_LINE);
-            ListOperation.modifyTextList(memoItem.getMemoID(), memoTextItem.getPhotosCount(), memoTextItem.getTitle(), memoTextItem.getContent(), memoTextItem.getTitle(), memoTextItem.getContent(), 0, 0, 0, 0, 0, 0);
+                    FileOperation.DELIMITER_LINE + FileOperation.DELIMITER_UNIT + memoItem.getMemoID() + FileOperation.DELIMITER_UNIT + FileOperation.DELIMITER_LINE +
+                            "photos=" + memoTextItem.getPhotosCount() + FileOperation.DELIMITER_LINE +
+                            memoID + FileOperation.DELIMITER_LINE +
+                            memoTextItem.getTitle() + FileOperation.DELIMITER_LINE +
+                            memoTextItem.getContent() + FileOperation.DELIMITER_LINE +
+                            "reminder=" + oldYear + "," + oldMonth + "," + oldDay + "," + oldHour + "," + oldMinute + "," + oldSecond + FileOperation.DELIMITER_LINE,
+
+                    FileOperation.DELIMITER_LINE + FileOperation.DELIMITER_UNIT + memoID + FileOperation.DELIMITER_UNIT + FileOperation.DELIMITER_LINE +
+                            "photos=" + memoTextItem.getPhotosCount() + FileOperation.DELIMITER_LINE +
+                            memoTextItem.getTitle() + FileOperation.DELIMITER_LINE +
+                            memoTextItem.getContent() + FileOperation.DELIMITER_LINE +
+                            "reminder=" + 0 + "," + 0 + "," + 0 + "," + 0 + "," + 0 + "," + 0 + FileOperation.DELIMITER_LINE);
+            ListOperation.modifyTextList(memoID, memoTextItem.getPhotosCount(), memoTextItem.getTitle(), memoTextItem.getContent(), 0, 0, 0, 0, 0, 0);
 
         } else if (memoItem instanceof MemoDrawingItem) {
 
             FileOperation.replaceSelected(
-                    FileOperation.DELIMITER_LINE + FileOperation.DELIMITER_UNIT + (memoID) + FileOperation.DELIMITER_UNIT + FileOperation.DELIMITER_LINE + "Drawing" + FileOperation.DELIMITER_LINE
+                    FileOperation.DELIMITER_LINE + FileOperation.DELIMITER_UNIT + (memoID) + FileOperation.DELIMITER_UNIT + FileOperation.DELIMITER_LINE +
+                            "Drawing" + FileOperation.DELIMITER_LINE
                             + "reminder=" + oldYear + "," + oldMonth + "," + oldDay + "," + oldHour + "," + oldMinute + "," + oldSecond + FileOperation.DELIMITER_LINE,
-                    FileOperation.DELIMITER_LINE + FileOperation.DELIMITER_UNIT + (memoID) + FileOperation.DELIMITER_UNIT + FileOperation.DELIMITER_LINE + "Drawing" + FileOperation.DELIMITER_LINE
+                    FileOperation.DELIMITER_LINE + FileOperation.DELIMITER_UNIT + (memoID) + FileOperation.DELIMITER_UNIT + FileOperation.DELIMITER_LINE +
+                            "Drawing" + FileOperation.DELIMITER_LINE
                             + "reminder=" + 0 + "," + 0 + "," + 0 + "," + 0 + "," + 0 + "," + 0 + FileOperation.DELIMITER_LINE
             );
-
             ListOperation.modifyDrawingList(memoID, 0, 0, 0, 0, 0, 0);
-
         }
+
+
+        reminderAdapter.getMemoItemArrayList().remove(position);
 
         IntentFilter filter = new IntentFilter();
         filter.addAction("android.provider.Telephony.SMS_RECEIVED");

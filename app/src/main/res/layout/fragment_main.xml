@@ -1,10 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/fragmentVal"
+
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/mainmenu"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:foreground="@drawable/shape_window_dim">
+
+    <RelativeLayout
+        android:id="@+id/fragment_main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:weightSum="1">
+        android:weightSum="1">
 
     <android.support.v7.widget.Toolbar
         xmlns:android="http://schemas.android.com/apk/res/android"
@@ -42,3 +49,5 @@
 
 
 </RelativeLayout>
+
+</FrameLayout>

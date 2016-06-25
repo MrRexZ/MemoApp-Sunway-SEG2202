@@ -5,7 +5,6 @@ package com.sunway.android.memoapp.model;
  */
 public interface MemoItem {
 
-
     int getMemoID();
 
     void setMemoID(int memoid);
@@ -21,4 +20,8 @@ public interface MemoItem {
     Reminder getReminder();
 
     void setReminder(Reminder reminder);
+
+    int getSortOrder();
+
+    void setSortOrder(int sortOrder);
 }

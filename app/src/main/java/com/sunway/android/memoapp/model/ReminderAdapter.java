@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 import com.sunway.android.memoapp.R;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -23,7 +24,15 @@ public class ReminderAdapter extends RecyclerView.Adapter<ReminderViewHolder> {
     private int position;
 
     public ReminderAdapter(Activity activity, List<MemoItem> memoItemArrayList) {
-        this.memoItemArrayList = memoItemArrayList;
+
+        Iterator iteratorList = memoItemArrayList.iterator();
+        while (iteratorList.hasNext()) {
+            MemoItem memoItem = (MemoItem) iteratorList.next();
+            Reminder reminder = memoItem.getReminder();
+
+            if (reminder.getYear() != 0 || reminder.getMonth() != 0 || reminder.getDay() != 0 || reminder.getHour() != 0 || reminder.getMinute() != 0 || reminder.getSecond() != 0)
+                this.memoItemArrayList.add(memoItem);
+        }
         this.activity = activity;
         context = activity;
     }

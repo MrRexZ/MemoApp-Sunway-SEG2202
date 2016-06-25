@@ -27,15 +27,15 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".view.TextDetailsMemoActivity"></activity>
-        <activity android:name=".view.DrawingMemoActivity"></activity>
-        <activity android:name=".view.ReminderActivity"></activity>
+        <activity android:name=".view.TextDetailsMemoActivity" />
+        <activity android:name=".view.DrawingMemoActivity" />
+        <activity android:name=".view.ReminderActivity" />
 
         <receiver
             android:name=".controller.AlarmReceiver"
             android:process=":remote" />
 
-        <activity android:name=".view.ReminderListActivity"></activity>
+        <activity android:name=".view.ReminderListActivity" />
     </application>
 
 </manifest>

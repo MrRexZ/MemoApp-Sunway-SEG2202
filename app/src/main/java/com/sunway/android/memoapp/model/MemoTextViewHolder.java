@@ -56,9 +56,7 @@ public class MemoTextViewHolder extends RecyclerView.ViewHolder implements View.
         memoPhotosAdapter = new MemoPhotosAdapter(activity, imageViewList, memoID, memoItemAdapter, C.MAIN_ACTIVITY_FRAGMENT_DISPLAY);
         photosRecyclerView.setAdapter(memoPhotosAdapter);
 
-
     }
-
     public void addPhotosToList(String uri) {
         imageViewList.add(uri);
     }
@@ -68,7 +66,7 @@ public class MemoTextViewHolder extends RecyclerView.ViewHolder implements View.
     public boolean onLongClick(View v) {
 
         memoItemAdapter.setPosition(getAdapterPosition());
-        return false;
+        return true;
     }
 
 

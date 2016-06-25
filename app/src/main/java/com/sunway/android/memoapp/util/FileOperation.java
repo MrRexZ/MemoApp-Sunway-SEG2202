@@ -113,14 +113,16 @@ public class FileOperation {
             if (m.find()) {
                 ListOperation.addToList(new MemoTextItem(counterTextMemo,
                         Integer.parseInt(m.group(1)), m.group(2), m.group(3),
-                        new Reminder(Integer.parseInt(m.group(4)), Integer.parseInt(m.group(5)), Integer.parseInt(m.group(6)), Integer.parseInt(m.group(7)), Integer.parseInt(m.group(8)), Integer.parseInt(m.group(9)))));
+                        new Reminder(Integer.parseInt(m.group(4)), Integer.parseInt(m.group(5)), Integer.parseInt(m.group(6)), Integer.parseInt(m.group(7)), Integer.parseInt(m.group(8)), Integer.parseInt(m.group(9))),
+                        ListOperation.TEXT_MEMO_SORT_ORDER));
             } else {
                 pattern = DELIMITER_LINE + DELIMITER_UNIT + (counterTextMemo) + DELIMITER_UNIT + DELIMITER_LINE + "Drawing" + DELIMITER_LINE
                         + "reminder=(?:(\\d+),(\\d+),(\\d+),(\\d+),(\\d+),(\\d+))" + DELIMITER_LINE;
                 r = Pattern.compile(pattern, Pattern.DOTALL);
                 m = r.matcher(processedString);
                 if (m.find()) ListOperation.addToList(new MemoDrawingItem(counterTextMemo,
-                        new Reminder(Integer.parseInt(m.group(1)), Integer.parseInt(m.group(2)), Integer.parseInt(m.group(3)), Integer.parseInt(m.group(4)), Integer.parseInt(m.group(5)), Integer.parseInt(m.group(6)))));
+                        new Reminder(Integer.parseInt(m.group(1)), Integer.parseInt(m.group(2)), Integer.parseInt(m.group(3)), Integer.parseInt(m.group(4)), Integer.parseInt(m.group(5)), Integer.parseInt(m.group(6))),
+                        ListOperation.DRAWING_MEMO_SORT_ORDER));
 
             }
 

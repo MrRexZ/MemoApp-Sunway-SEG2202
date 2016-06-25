@@ -38,9 +38,6 @@ public class MainActivityFragmentTouchListener implements RecyclerView.OnItemTou
                     Intent showDetail = new Intent(fragment.getActivity(), TextDetailsMemoActivity.class)
                             .putExtra(C.ACTION_MODE, C.EDIT)
                             .putExtra(C.MEMO_ID, memoitem.getMemoID())
-                            .putExtra(C.INPUT_TITLE, memoTextItem.getTitle())
-                            .putExtra(C.INPUT_DETAILS, memoTextItem.getContent())
-                            .putExtra(C.PHOTOS, memoTextItem.getPhotosCount())
                             .putExtra(C.MEMO_OBJECT, memoTextItem);
                     fragment.getActivity().startActivity(showDetail);
                     return true;
@@ -52,8 +49,6 @@ public class MainActivityFragmentTouchListener implements RecyclerView.OnItemTou
                             .putExtra(C.MEMO_OBJECT, memoDrawingItem);
                     fragment.getActivity().startActivity(showDrawing);
                     return true;
-
-
                 }
 
             }

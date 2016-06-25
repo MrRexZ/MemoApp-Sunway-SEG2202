@@ -46,7 +46,9 @@ public class MemoItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         Drawable dh = context.getResources().getDrawable(R.drawable.ic_launcher);
         bitmapHolder = ((BitmapDrawable) dh).getBitmap();
         this.displayState = displayState;
+
         nMemoList.addAll(ListOperation.getListViewItems());
+
 
     }
 
@@ -156,10 +158,9 @@ public class MemoItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
         MemoDrawingItem memoDrawingItem = (MemoDrawingItem) memoItem;
 
-
         String fileName = "u_" + FileOperation.userID + "_drawing_" + memoDrawingItem.getMemoID() + ".jpg";
         File filePath = new File(FileOperation.mydir, fileName);
-
+        if (filePath.exists())
         BitmapOperation.loadBitmap(filePath.toString(), hDrawing.drawingContainer, context.getResources(), bitmapHolder, C.DRAWING_ACTIVITY_DISPLAY);
 
 

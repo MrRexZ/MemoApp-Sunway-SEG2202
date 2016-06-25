@@ -76,18 +76,13 @@ public class TextDetailsMemoActivity extends AppCompatActivity implements Toolba
         setContentView(R.layout.memo_details);
         intent = getIntent();
         ACTION_MODE = intent.getStringExtra(C.ACTION_MODE);
-        detail_photosCount = intent.getExtras().getInt(C.PHOTOS);
-        oldTitle = intent.getStringExtra(C.INPUT_TITLE);
-        oldDetails = intent.getStringExtra(C.INPUT_DETAILS);
+        memoID = intent.getExtras().getInt(C.MEMO_ID);
         memoTextItem = (MemoTextItem) intent.getSerializableExtra(C.MEMO_OBJECT);
         EditText textviewTitle = (EditText) findViewById(R.id.title_text_input);
         EditText detailsviewTitle = (EditText) findViewById(R.id.details_text_input);
-        textviewTitle.setText(oldTitle);
-        detailsviewTitle.setText(oldDetails);
 
 
         photosRecyclerView = (RecyclerView) findViewById(R.id.recycler_view_details);
-        memoID = intent.getExtras().getInt(C.MEMO_ID);
 
         StaggeredGridLayoutManager photosGridLayoutManager = new StaggeredGridLayoutManager(3, StaggeredGridLayoutManager.VERTICAL);
         photosRecyclerView.setLayoutManager(photosGridLayoutManager);
@@ -96,6 +91,20 @@ public class TextDetailsMemoActivity extends AppCompatActivity implements Toolba
 
         registerForContextMenu(photosRecyclerView);
 
+
+        Toolbar upper_toolbar = (Toolbar) findViewById(R.id.toolbar_upper);
+        setSupportActionBar(upper_toolbar);
+        Toolbar bottom_toolbar = (Toolbar) findViewById(R.id.toolbar_bottom);
+        bottom_toolbar.inflateMenu(R.menu.bottom_textdetailsmemo_menu);
+        bottom_toolbar.setOnMenuItemClickListener(this);
+
+
+        if (ACTION_MODE.equals(C.EDIT)) {
+            detail_photosCount = memoTextItem.getPhotosCount();
+            oldTitle = memoTextItem.getTitle();
+            oldDetails = memoTextItem.getContent();
+            textviewTitle.setText(oldTitle);
+            detailsviewTitle.setText(oldDetails);
             int count = 0;
             while (count < detail_photosCount) {
                 File fileName = new File("u_" + FileOperation.userID + "_img_" + memoID + "_" + (count++) + ".jpg");
@@ -105,13 +114,8 @@ public class TextDetailsMemoActivity extends AppCompatActivity implements Toolba
                     imageViewArrayListDetails.add(filePath.toString());
                 }
             }
+        }
 
-
-        Toolbar upper_toolbar = (Toolbar) findViewById(R.id.toolbar_upper);
-        setSupportActionBar(upper_toolbar);
-        Toolbar bottom_toolbar = (Toolbar) findViewById(R.id.toolbar_bottom);
-        bottom_toolbar.inflateMenu(R.menu.bottom_textdetailsmemo_menu);
-        bottom_toolbar.setOnMenuItemClickListener(this);
 
     }
 
@@ -191,14 +195,10 @@ public class TextDetailsMemoActivity extends AppCompatActivity implements Toolba
                         .putExtra(C.PHOTOS, detail_photosCount);
 
                 Iterator iteratorDeletion = filePathToBeDeleted.iterator();
-
                 while (iteratorDeletion.hasNext()) {
-
                     FileOperation.deleteIndividualPhotosMemo((String) iteratorDeletion.next());
                 }
 
-
-                //GET YEAR,MONT, ETC. INITIALIZE TO ZERO.
                 int year = 0;
                 int month = 0;
                 int day = 0;
@@ -218,7 +218,6 @@ public class TextDetailsMemoActivity extends AppCompatActivity implements Toolba
                     int oldMinute = selectedReminder.getMinute();
                     int oldSecond = selectedReminder.getSecond();
 
-                    //GET YEAR,MONT, ETC. INITIALIZE TO ZERO.
                     if (targetCal == null) {
                         year = oldYear;
                         month = oldMonth;
@@ -233,16 +232,17 @@ public class TextDetailsMemoActivity extends AppCompatActivity implements Toolba
                         hour = targetCal.get(Calendar.HOUR);
                         minute = targetCal.get(Calendar.MINUTE);
                         second = targetCal.get(Calendar.SECOND);
+
+
+                        int oldPhotosCount = memoTextItem.getPhotosCount();
+                        FileOperation.replaceSelected(
+                                FileOperation.DELIMITER_LINE + FileOperation.DELIMITER_UNIT + memoID + FileOperation.DELIMITER_UNIT + FileOperation.DELIMITER_LINE + "photos=" + oldPhotosCount + FileOperation.DELIMITER_LINE + oldTitle + FileOperation.DELIMITER_LINE + oldDetails + FileOperation.DELIMITER_LINE + "reminder=" + oldYear + "," + oldMonth + "," + oldDay + "," + oldHour + "," + oldMinute + "," + oldSecond + FileOperation.DELIMITER_LINE,
+                                FileOperation.DELIMITER_LINE + FileOperation.DELIMITER_UNIT + memoID + FileOperation.DELIMITER_UNIT + FileOperation.DELIMITER_LINE + "photos=" + detail_photosCount + FileOperation.DELIMITER_LINE + newTitle + FileOperation.DELIMITER_LINE + newDetails + FileOperation.DELIMITER_LINE + "reminder=" + year + "," + month + "," + day + "," + hour + "," + minute + "," + second + FileOperation.DELIMITER_LINE);
+                        showMainActivity.putExtra(C.ACTION_MODE, C.EDIT);
+
+                        ListOperation.modifyTextList(memoID, detail_photosCount, newTitle, newDetails, year, month, day, hour, minute, second);
                     }
 
-                    int oldPhotosCount = intent.getExtras().getInt(C.PHOTOS);
-                    FileOperation.replaceSelected(
-                            FileOperation.DELIMITER_LINE + FileOperation.DELIMITER_UNIT + memoID + FileOperation.DELIMITER_UNIT + FileOperation.DELIMITER_LINE + "photos=" + oldPhotosCount + FileOperation.DELIMITER_LINE + oldTitle + FileOperation.DELIMITER_LINE + oldDetails + FileOperation.DELIMITER_LINE + "reminder=" + oldYear + "," + oldMonth + "," + oldDay + "," + oldHour + "," + oldMinute + "," + oldSecond + FileOperation.DELIMITER_LINE,
-                            FileOperation.DELIMITER_LINE + FileOperation.DELIMITER_UNIT + memoID + FileOperation.DELIMITER_UNIT + FileOperation.DELIMITER_LINE + "photos=" + detail_photosCount + FileOperation.DELIMITER_LINE + newTitle + FileOperation.DELIMITER_LINE + newDetails + FileOperation.DELIMITER_LINE + "reminder=" + year + "," + month + "," + day + "," + hour + "," + minute + "," + second + FileOperation.DELIMITER_LINE);
-                    showMainActivity.putExtra(C.ACTION_MODE, C.EDIT);
-
-
-                    ListOperation.modifyTextList(memoID, detail_photosCount, oldTitle, oldDetails, newTitle, newDetails, year, month, day, hour, minute, second);
                 } else
                     showMainActivity.putExtra(C.ACTION_MODE, C.ADD);
 
@@ -325,7 +325,8 @@ public class TextDetailsMemoActivity extends AppCompatActivity implements Toolba
                 detail_photosCount,
                 newTitle,
                 newDetails,
-                new Reminder(year, month, day, hour, minute, second)));
+                new Reminder(year, month, day, hour, minute, second),
+                ListOperation.TEXT_MEMO_SORT_ORDER));
 
     }
 

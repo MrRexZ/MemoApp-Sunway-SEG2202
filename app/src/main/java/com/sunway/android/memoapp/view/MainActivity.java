@@ -29,8 +29,6 @@ public class MainActivity extends AppCompatActivity implements Serializable {
                     intent.getExtras().getString(C.INPUT_DETAILS),
                     intent.getExtras().getString(C.ACTION_MODE),
                     intent.getExtras().getInt(C.PHOTOS));
-            // FileOperation.passToFileOp(intent.getExtras().getString(C.INPUT_TITLE,intent.getExtras().getString(C.INPUT_DETAILS));
-
         }
     }
 }

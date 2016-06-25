@@ -11,12 +11,14 @@ public class MemoDrawingItem implements MemoItem, Serializable {
     private Reminder reminder;
     private String title;
     private String content;
+    private int sortOrder;
 
-    public MemoDrawingItem(int memoid, Reminder newReminder) {
+    public MemoDrawingItem(int memoid, Reminder newReminder, int sortOrder) {
         setMemoID(memoid);
         setReminder(newReminder);
         title = "Drawing Memo";
         content = "Click to view info";
+        setSortOrder(sortOrder);
 
     }
 
@@ -54,5 +56,13 @@ public class MemoDrawingItem implements MemoItem, Serializable {
 
     public void setContent(String content) {
         this.content = content;
+    }
+
+    public int getSortOrder() {
+        return sortOrder;
+    }
+
+    public void setSortOrder(int sortOrder) {
+        this.sortOrder = sortOrder;
     }
 }

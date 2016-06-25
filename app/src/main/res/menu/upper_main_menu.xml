@@ -22,4 +22,9 @@
         android:id="@+id/action_view_reminder_list"
         android:title="View Reminder List"
         app:showAsAction="ifRoom" />
+
+    <item
+        android:id="@+id/action_set_sort_order"
+        android:title="Sort Memo"
+        app:showAsAction="ifRoom" />
 </menu>

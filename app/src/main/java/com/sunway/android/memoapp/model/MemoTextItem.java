@@ -13,13 +13,15 @@ public class MemoTextItem implements MemoItem, Serializable {
     private int memoid;
     private int photosCount;
     private Reminder reminder;
+    private int sortOrder;
 
-    public MemoTextItem(int memoid, int photosCount, String title, String content, Reminder reminder) {
+    public MemoTextItem(int memoid, int photosCount, String title, String content, Reminder reminder, int sortOrder) {
         setTitle(title);
         setContent(content);
         setMemoID(memoid);
         setPhotosCount(photosCount);
         setReminder(reminder);
+        this.sortOrder = sortOrder;
     }
 
     public String getTitle() {
@@ -61,5 +63,13 @@ public class MemoTextItem implements MemoItem, Serializable {
 
     public void setReminder(Reminder reminder) {
         this.reminder = reminder;
+    }
+
+    public int getSortOrder() {
+        return sortOrder;
+    }
+
+    public void setSortOrder(int sortOrder) {
+        this.sortOrder = sortOrder;
     }
 }

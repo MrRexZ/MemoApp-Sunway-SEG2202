@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/memo_sorting_relative_layout"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:background="@color/white"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin">
+
+
+    <TextView
+        android:id="@+id/text_memo_sort_order_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="30dp"
+        android:text="Text Memo" />
+
+    <TextView
+        android:id="@+id/drawing_memo_sort_order_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/text_memo_input_order"
+        android:text="Drawing Memo" />
+
+    <EditText
+        android:id="@+id/drawing_memo_input_order"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/drawing_memo_sort_order_text"
+        android:layout_toEndOf="@+id/drawing_memo_sort_order_text"
+        android:layout_toRightOf="@+id/drawing_memo_sort_order_text"
+        android:inputType="number" />
+
+    <EditText
+        android:id="@+id/text_memo_input_order"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/text_memo_sort_order_text"
+        android:layout_toEndOf="@+id/text_memo_sort_order_text"
+        android:layout_toRightOf="@+id/text_memo_sort_order_text"
+        android:inputType="number" />
+
+    <Button
+        android:id="@+id/close_popup"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/drawing_memo_sort_order_text"
+        android:layout_marginTop="20dp"
+
+        android:text="Save" />
+
+    <Button
+        android:id="@+id/reset_sorting"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/drawing_memo_input_order"
+        android:layout_alignStart="@+id/drawing_memo_input_order"
+        android:layout_alignTop="@+id/close_popup"
+        android:text="Reset" />
+</RelativeLayout>

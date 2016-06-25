@@ -18,12 +18,6 @@ public class ReminderViewHolder extends RecyclerView.ViewHolder implements View.
     public TextView second_display;
     public TextView title_reminder;
     public TextView details_reminder;
-    private int year;
-    private int month;
-    private int day;
-    private int hour;
-    private int minute;
-    private int second;
     private ReminderAdapter reminderAdapter;
 
 
@@ -46,6 +40,6 @@ public class ReminderViewHolder extends RecyclerView.ViewHolder implements View.
     public boolean onLongClick(View v) {
 
         reminderAdapter.setPosition(getAdapterPosition());
-        return false;
+        return true;
     }
 }

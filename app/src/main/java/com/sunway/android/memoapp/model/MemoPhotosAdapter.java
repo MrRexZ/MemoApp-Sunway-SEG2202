@@ -65,7 +65,6 @@ public class MemoPhotosAdapter extends RecyclerView.Adapter<MemoPhotosHolder> {
     public void onBindViewHolder(MemoPhotosHolder holder, int position) {
 
         String filePath = imageViewList.get(position);
-
         BitmapOperation.loadBitmap(filePath, holder.imageView, context.getResources(), bitmapHolder, displayState);
 
     }

@@ -14,6 +14,8 @@ import java.util.List;
  */
 public class ListOperation {
 
+    public static int TEXT_MEMO_SORT_ORDER = 0;
+    public static int DRAWING_MEMO_SORT_ORDER = 0;
 
     private static List<MemoItem> listViewItems = new ArrayList<>();
 
@@ -25,7 +27,7 @@ public class ListOperation {
         listViewItems.add(memoType);
     }
 
-    public static void modifyTextList(int textid, int photosCount, String oldTitle, String oldDetails, String newTitle, String newDetails, int year, int month, int day, int hour, int minute, int second) {
+    public static void modifyTextList(int textid, int photosCount, String newTitle, String newDetails, int year, int month, int day, int hour, int minute, int second) {
 
         for (int counter=0;counter<listViewItems.size();counter++) {
 
@@ -43,37 +45,34 @@ public class ListOperation {
         }
     }
 
-    public static void modifyDrawingList(int textid, int year, int month, int day, int hour, int minute, int second) {
+    public static void modifyDrawingList(int memoID, int year, int month, int day, int hour, int minute, int second) {
 
         for (int counter = 0; counter < listViewItems.size(); counter++) {
 
             MemoItem memoItem = listViewItems.get(counter);
             if (memoItem instanceof MemoDrawingItem) {
                 MemoDrawingItem memoDrawingItem = (MemoDrawingItem) memoItem;
-                if (memoDrawingItem.getMemoID() == textid)
-                    memoDrawingItem.setMemoID(textid);
-                memoDrawingItem.setReminder(new Reminder(year, month, day, hour, minute, second));
+                if (memoDrawingItem.getMemoID() == memoID)
+                    memoDrawingItem.setReminder(new Reminder(year, month, day, hour, minute, second));
 
             }
         }
     }
 
 
-
-    public static void deleteList(int textid, String oldTitle, String oldDetails) {
+    public static void deleteList(int textid) {
 
         for (int counter = 0; counter < listViewItems.size(); counter++) {
 
 
             MemoItem memoItem = listViewItems.get(counter);
-            if (memoItem instanceof MemoTextItem) {
-                MemoTextItem memoTextItem = (MemoTextItem) memoItem;
-                if (memoTextItem.getMemoID() == textid) {
+
+            if (memoItem.getMemoID() == textid) {
                     listViewItems.remove(counter);
                 }
             }
         }
-    }
+
 
     public static void deleteDrawingMemoList(int position) {
         listViewItems.remove(position);
