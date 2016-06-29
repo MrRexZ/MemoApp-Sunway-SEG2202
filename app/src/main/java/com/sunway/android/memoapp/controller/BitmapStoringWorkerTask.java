@@ -83,7 +83,6 @@ public class BitmapStoringWorkerTask extends AsyncTask<String, Void, Bitmap> {
 
     private File getOutputMediaFile(int photoID, TextDetailsMemoActivity textDetailsMemoActivityAsync) {
 
-        //   String timeStamp = new SimpleDateFormat("ddMMyyyy_HHmm").format(new Date());
         File mediaFile;
         String mImageName = null;
 

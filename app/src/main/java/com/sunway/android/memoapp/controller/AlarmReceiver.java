@@ -32,16 +32,15 @@ public class AlarmReceiver extends BroadcastReceiver {
         }
 
 
-        Toast.makeText(arg0, "Alarm worked.", Toast.LENGTH_LONG).show();
+        Toast.makeText(arg0, "Reminder received!", Toast.LENGTH_LONG).show();
         createNotification(arg0, intent.getExtras().getString(C.INPUT_TITLE),
-                intent.getExtras().getString(C.INPUT_DETAILS), "Alert",
+                intent.getExtras().getString(C.INPUT_DETAILS), "New Reminder",
                 intent.getExtras().getInt(C.MEMO_ID),
-                intent.getExtras().getInt(C.PHOTOS),
                 intent.getExtras().getString(C.MEMO_TYPE));
 
     }
 
-    public void createNotification(Context context, String msg, String msgText, String msgAlert, int memoid, int photosCount, String memoType) {
+    public void createNotification(Context context, String msg, String msgText, String msgAlert, int memoid, String memoType) {
         mNotificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
 
         Intent intent = null;
@@ -54,10 +53,7 @@ public class AlarmReceiver extends BroadcastReceiver {
                     .putExtra(C.ACTION_MODE, C.EDITDRAWING);
         }
         intent.setAction(Long.toString(System.currentTimeMillis()));
-        intent.putExtra(C.INPUT_TITLE, msg)
-                .putExtra(C.INPUT_DETAILS, msgText)
-                .putExtra(C.PHOTOS, photosCount)
-                .putExtra(C.MEMO_ID, memoid);
+        intent.putExtra(C.MEMO_ID, memoid);
 
         PendingIntent pendingIntent = PendingIntent.getActivity(context, memoid,
                 intent, 0);

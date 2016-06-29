@@ -56,7 +56,7 @@ public class MemoItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
 
-        RecyclerView.ViewHolder viewHolder;
+        RecyclerView.ViewHolder viewHolder = null;
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
         switch (viewType) {
             case TEXT:
@@ -69,10 +69,7 @@ public class MemoItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                         R.layout.list_item_drawing_memo, null);
                 viewHolder = new MemoDrawingViewHolder(v2, this, activity);
                 break;
-            default:
-                View v3 = inflater.inflate(
-                        R.layout.list_item_text_memo, null);
-                viewHolder = new MemoTextViewHolder(v3, this, activity);
+
         }
 
         return viewHolder;
@@ -113,7 +110,6 @@ public class MemoItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     }
 
     public int getPosition() {
-
         return position;
     }
 
@@ -124,8 +120,15 @@ public class MemoItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     private void configureTextViewHolder(MemoTextViewHolder hText, MemoItem memoItem) {
 
         MemoTextItem memoTextItem = (MemoTextItem) memoItem;
-        hText.titleName.setText(memoTextItem.getTitle());
-        hText.contentName.setText(memoTextItem.getContent());
+        String title = memoTextItem.getTitle();
+        String content = memoTextItem.getContent();
+
+        if (title.length() > 8)
+            title = new StringBuilder(title).substring(0, 8) + "...";
+        if (memoTextItem.getContent().length() > 30)
+            content = new StringBuilder(content).substring(0, 30) + "...";
+        hText.titleName.setText(title);
+        hText.contentName.setText(content);
         hText.memoID = memoTextItem.getMemoID();
         hText.photosCount = memoTextItem.getPhotosCount();
 

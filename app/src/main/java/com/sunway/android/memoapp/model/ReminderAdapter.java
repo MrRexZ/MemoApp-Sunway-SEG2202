@@ -88,9 +88,9 @@ public class ReminderAdapter extends RecyclerView.Adapter<ReminderViewHolder> {
                 selectedMonth = "December";
                 break;
         }
-        holder.year_display.setText(Integer.toString(selectedReminder.getYear()));
+        holder.year_display.setText(Integer.toString(selectedReminder.getYear()) + ",");
         holder.month_display.setText(selectedMonth + " ");
-        holder.day_display.setText(Integer.toString(selectedReminder.getDay()) + "th of ");
+        holder.day_display.setText(Integer.toString(selectedReminder.getDay()) + " ");
         holder.hour_display.setText(Integer.toString(selectedReminder.getHour()) + " : ");
         holder.minute_display.setText(Integer.toString(selectedReminder.getMinute()) + " : ");
         holder.second_display.setText(Integer.toString(selectedReminder.getSecond()) + "");

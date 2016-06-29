@@ -10,16 +10,23 @@ import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.widget.RelativeLayout;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * Created by Mr_RexZ on 6/14/2016.
  */
+
 public class DrawingView extends RelativeLayout {
-    private Paint paint = new Paint();
+    public Paint paint = new Paint();
     private Path path = new Path();
+    private ArrayList<Path> paths = new ArrayList<Path>();
+    private Map<Path, Integer> colorsMap = new HashMap<Path, Integer>();
+    private int newColor = -1;
 
     public DrawingView(Context context, AttributeSet attrs) {
         super(context, attrs);
-        setWillNotDraw(false);
         this.setDrawingCacheEnabled(true);
         this.buildDrawingCache();
 
@@ -33,13 +40,28 @@ public class DrawingView extends RelativeLayout {
 
     @Override
     protected void dispatchDraw(Canvas canvas) {
+
         super.dispatchDraw(canvas);
+        for (Path p : paths) {
+            paint.setColor(colorsMap.get(p));
+            canvas.drawPath(p, paint);
+        }
+
+        paint.setColor(newColor);
         canvas.drawPath(path, paint);
+        System.out.println("COUNT: " + paths.size());
+
     }
 
-    @Override
-    protected void onDraw(Canvas canvas) {
-        canvas.drawPath(path, paint);
+
+    public void setColor(int newColor) {
+        colorsMap.put(path, paint.getColor());
+        paths.add(path);
+
+        path = new Path();
+        paint.setColor(newColor);
+        this.newColor = newColor;
+        postInvalidate();
     }
 
     public Bitmap get() {

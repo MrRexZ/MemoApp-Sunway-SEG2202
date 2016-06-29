@@ -37,6 +37,7 @@ public class MemoPhotosAdapter extends RecyclerView.Adapter<MemoPhotosHolder> {
         this.memoID = memoID;
         Drawable dh = context.getResources().getDrawable(R.drawable.ic_launcher);
         bitmapHolder = ((BitmapDrawable) dh).getBitmap();
+        bitmapHolder = BitmapOperation.getResizedBitmap(bitmapHolder, 400, 400);
         this.displayState = displayState;
     }
 

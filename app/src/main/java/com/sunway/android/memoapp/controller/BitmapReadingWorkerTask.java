@@ -34,13 +34,15 @@ public class BitmapReadingWorkerTask extends AsyncTask<String, Void, Bitmap> {
     // Once complete, see if ImageView is still around and set bitmap.
     @Override
     protected void onPostExecute(Bitmap bitmap) {
-        if (displayMode.equals(C.DETAILS_ACTIVITY_DISPLAY)) maxWidth = 500;
-        else if (displayMode.equals(C.MAIN_ACTIVITY_FRAGMENT_DISPLAY)) maxWidth = 200;
+
+        if (bitmap != null) {
+            if (displayMode.equals(C.DETAILS_ACTIVITY_DISPLAY)) maxWidth = 400;
+            else if (displayMode.equals(C.MAIN_ACTIVITY_FRAGMENT_DISPLAY)) maxWidth = 100;
         else if (displayMode.equals(C.DRAWING_ACTIVITY_DISPLAY)) maxWidth = 400;
         int width = bitmap.getWidth();
         int height = bitmap.getHeight();
         float aspectRatio = (float) height / width;
-        float resizedHeight = aspectRatio * maxWidth;
+            float resizedHeight = maxWidth * aspectRatio;
         bitmap = BitmapOperation.getResizedBitmap(bitmap, maxWidth, (int) resizedHeight);
 
         if (imageViewReference != null && bitmap != null) {
@@ -48,6 +50,7 @@ public class BitmapReadingWorkerTask extends AsyncTask<String, Void, Bitmap> {
             if (imageView != null) {
                 imageView.setImageBitmap(bitmap);
             }
+        }
         }
     }
 

@@ -36,14 +36,6 @@ public class C {
     public static final String MEMO_OBJECT = "MEMO_OBJECT";
 
 
-
-    public static final String REMINDER_YEAR = "REMINDER_YEAR";
-    public static final String REMINDER_MONTH = "REMINDER_YEAR";
-    public static final String REMINDER_DAY = "REMINDER_YEAR";
-    public static final String REMINDER_HOUR = "REMINDER_YEAR";
-    public static final String REMINDER_MINUTE = "REMINDER_YEAR";
-    public static final String REMINDER_SECOND = "REMINDER_YEAR";
-
     public static final String MAIN_ACTIVITY_FRAGMENT_DISPLAY = "MAIN_ACTIVITY_FRAGMENT_DISPLAY";
     public static final String DETAILS_ACTIVITY_DISPLAY = "DETAILS_ACTIVITY_DISPLAY";
     public static final String DRAWING_ACTIVITY_DISPLAY = "DRAWING_ACTIVITY_DISPLAY";

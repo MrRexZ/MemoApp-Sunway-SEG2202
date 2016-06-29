@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:background="@drawable/border_drawing_popup"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/select_brush_black"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Black" />
+
+    <TextView
+        android:id="@+id/select_brush_white"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="White" />
+
+    <TextView
+        android:id="@+id/select_brush_blue"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Blue" />
+</LinearLayout>

@@ -25,6 +25,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.sunway.android.memoapp.R;
@@ -96,6 +97,14 @@ public class TextDetailsMemoActivity extends AppCompatActivity implements Toolba
         Toolbar bottom_toolbar = (Toolbar) findViewById(R.id.toolbar_bottom);
         bottom_toolbar.inflateMenu(R.menu.bottom_textdetailsmemo_menu);
         bottom_toolbar.setOnMenuItemClickListener(this);
+
+        TextView backButton = (TextView) findViewById(R.id.action_back_button);
+        backButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onBackPressed();
+            }
+        });
 
 
         if (ACTION_MODE.equals(C.EDIT)) {

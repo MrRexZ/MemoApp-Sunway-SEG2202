@@ -1,5 +1,6 @@
 package com.sunway.android.memoapp.view;
 
+import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.Context;
@@ -8,13 +9,22 @@ import android.content.IntentFilter;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Point;
+import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.PopupWindow;
+import android.widget.TextView;
 
 import com.sunway.android.memoapp.R;
 import com.sunway.android.memoapp.controller.AlarmReceiver;
@@ -41,6 +51,10 @@ public class DrawingMemoActivity extends AppCompatActivity {
     private int adapterPosition;
     private Calendar targetCal;
     private MemoDrawingItem memoDrawingItem;
+
+    private DrawingView drawingView;
+
+    private PopupWindow changeColorBrush;
     private Reminder tempReminder = new Reminder(0, 0, 0, 0, 0, 0);
 
 
@@ -48,14 +62,14 @@ public class DrawingMemoActivity extends AppCompatActivity {
     @Override
     protected void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.drawing_memo);
+        setContentView(R.layout.activity_drawing_memo);
         final int memoID = getIntent().getExtras().getInt(C.MEMO_ID);
 
         Toolbar upper_toolbar = (Toolbar) findViewById(R.id.toolbar_upper_drawingmemo);
         setSupportActionBar(upper_toolbar);
         Toolbar bottom_toolbar = (Toolbar) findViewById(R.id.toolbar_bottom_drawingmemo);
         bottom_toolbar.inflateMenu(R.menu.bottom_drawingmemo_menu);
-        final DrawingView drawingView = (DrawingView) findViewById(R.id.drawing_view_canvas);
+        drawingView = (DrawingView) findViewById(R.id.drawing_view_canvas);
         intent = getIntent();
         ACTION_MODE = intent.getExtras().getString(C.ACTION_MODE);
 
@@ -171,6 +185,22 @@ public class DrawingMemoActivity extends AppCompatActivity {
                 return false;
             }
         });
+
+
+        TextView backButton = (TextView) findViewById(R.id.action_back_button);
+        backButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onBackPressed();
+            }
+        });
+        TextView selectBrushColor = (TextView) findViewById(R.id.action_select_color);
+        selectBrushColor.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showColorPopup(DrawingMemoActivity.this, new Point(300, 2100));
+            }
+        });
     }
 
 
@@ -204,7 +234,6 @@ public class DrawingMemoActivity extends AppCompatActivity {
         int id = item.getItemId();
         if (id == R.id.action_reminder) {
 
-            saveDrawing(getIntent().getExtras().getInt(C.MEMO_ID));
             Intent showReminder = new Intent(this, ReminderActivity.class)
                     .putExtra(C.MEMO_TYPE, C.DRAWING_MEMO);
             startActivityForResult(showReminder, REGISTER_REMINDER);
@@ -236,9 +265,7 @@ public class DrawingMemoActivity extends AppCompatActivity {
         Bitmap returnedBitmap = Bitmap.createBitmap(drawingView.getWidth(), drawingView.getHeight(), Bitmap.Config.ARGB_8888);
         Canvas canvas = new Canvas(returnedBitmap);
         drawingView.draw(canvas);
-
         Bitmap bi = drawingView.getDrawingCache();
-
         String mDrawingName = "u_" + FileOperation.userID + "_drawing_" + memoID + ".jpg";
         File drawFile = new File(FileOperation.mydir, mDrawingName);
         FileOutputStream fos = null;
@@ -248,6 +275,62 @@ public class DrawingMemoActivity extends AppCompatActivity {
             e.printStackTrace();
         }
         bi.compress(Bitmap.CompressFormat.PNG, 90, fos);
+    }
+
+
+    private void showColorPopup(final Activity context, Point p) {
+
+        LayoutInflater layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        View layout = layoutInflater.inflate(R.layout.activity_drawing_popup_select_color, null);
+
+        changeColorBrush = new PopupWindow(context);
+        changeColorBrush.setContentView(layout);
+        changeColorBrush.setWidth(LinearLayout.LayoutParams.WRAP_CONTENT);
+        changeColorBrush.setHeight(LinearLayout.LayoutParams.WRAP_CONTENT);
+        changeColorBrush.setFocusable(true);
+        changeColorBrush.setAnimationStyle(android.R.style.Animation_Dialog);
+
+        int OFFSET_X = 0;
+        int OFFSET_Y = 0;
+
+        changeColorBrush.setBackgroundDrawable(new BitmapDrawable());
+
+        changeColorBrush.showAtLocation(layout, Gravity.NO_GRAVITY, p.x + OFFSET_X, p.y + OFFSET_Y);
+
+
+        TextView black_color_selected = (TextView) layout.findViewById(R.id.select_brush_black);
+        black_color_selected.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+
+
+                drawingView.setColor(Color.BLACK);
+                changeColorBrush.dismiss();
+            }
+        });
+
+        TextView white_color_selected = (TextView) layout.findViewById(R.id.select_brush_white);
+        white_color_selected.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                drawingView.setColor(Color.WHITE);
+                changeColorBrush.dismiss();
+            }
+        });
+
+        TextView blue_color_selected = (TextView) layout.findViewById(R.id.select_brush_blue);
+        blue_color_selected.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                drawingView.setColor(Color.BLUE);
+                changeColorBrush.dismiss();
+            }
+        });
+
+
     }
 
 }

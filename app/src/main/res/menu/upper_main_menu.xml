@@ -4,25 +4,21 @@
 
     <item
         android:id="@+id/memo_search_view"
-        android:icon="@android:drawable/ic_menu_search"
+        android:icon="@drawable/search"
         android:title="@string/search_hint"
         app:actionViewClass="android.support.v7.widget.SearchView"
         app:showAsAction="collapseActionView|ifRoom" />
     <item
-        android:id="@+id/action_delete_temp_file"
-        android:title="Delete TempFile"
+        android:id="@+id/action_delete_all_memo"
+        android:title="Delete All Memo"
         app:showAsAction="never"
         />
-    <item
-        android:id="@+id/action_settings"
-        android:title="Settings"
-        app:showAsAction="never"
-       />
+
     <item
         android:id="@+id/action_view_reminder_list"
+        android:icon="@drawable/clock"
         android:title="View Reminder List"
         app:showAsAction="ifRoom" />
-
     <item
         android:id="@+id/action_set_sort_order"
         android:title="Sort Memo"

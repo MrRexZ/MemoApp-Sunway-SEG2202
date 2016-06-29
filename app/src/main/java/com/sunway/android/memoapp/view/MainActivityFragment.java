@@ -1,13 +1,11 @@
 package com.sunway.android.memoapp.view;
 
-import android.app.Activity;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Point;
-import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -17,17 +15,13 @@ import android.support.v7.widget.SearchView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.support.v7.widget.Toolbar;
 import android.view.ContextMenu;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.EditText;
 import android.widget.FrameLayout;
-import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 
 import com.sunway.android.memoapp.R;
@@ -49,17 +43,15 @@ import java.util.ListIterator;
 /**
  * Created by Mr_RexZ on 5/28/2016.
  */
-public class MainActivityFragment extends Fragment implements SearchView.OnQueryTextListener {
+public class MainActivityFragment extends Fragment implements SearchView.OnQueryTextListener, SortDialogLayout.SortDialogListener {
 
     private StaggeredGridLayoutManager _sGridLayoutManager;
-    private String input_title=null;
-    private String input_details=null;
-    private String mode = "START";
     private View rootView;
     private RecyclerView recyclerView;
     private MemoItemAdapter rcAdapter;
     private PopupWindow changeSortPopUp;
     private FrameLayout layout_MainMenu;
+    private SortDialogLayout sortDialogLayout;
 
     public MainActivityFragment() {
     }
@@ -74,11 +66,7 @@ public class MainActivityFragment extends Fragment implements SearchView.OnQuery
             if (!mydir.exists())
                 mydir.mkdirs();
             FileOperation.readFile("START", "u_" + FileOperation.userID + ".txt");
-
-
         }
-
-
     }
 
     @Override
@@ -98,14 +86,26 @@ public class MainActivityFragment extends Fragment implements SearchView.OnQuery
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
-        if (id == R.id.action_delete_temp_file) {
+        if (id == R.id.action_delete_all_memo) {
             FileOperation.deleteTempFile();
+            ListOperation.getListViewItems().clear();
+            refreshAdapter();
+            File mydir = MyApplication.getAppContext().getDir("memoapp", Context.MODE_PRIVATE);
+            FileOperation.memoCountId = 0;
+            if (!mydir.exists())
+                mydir.mkdirs();
+            FileOperation.readFile("START", "u_" + FileOperation.userID + ".txt");
             return true;
         } else if (id == R.id.action_view_reminder_list) {
             Intent showReminderList = new Intent(getActivity(), ReminderListActivity.class);
             startActivity(showReminderList);
         } else if (id == R.id.action_set_sort_order) {
-            showSortPopup(getActivity(), new Point(250, 250));
+            //showSortPopup(getActivity(), new Point(250, 250));
+            //  dialog = new Dialog(getActivity(),android.R.style.Theme_Translucent_NoTitleBar);
+            //show_dialog();
+            sortDialogLayout = new SortDialogLayout();
+            sortDialogLayout.setTargetFragment(MainActivityFragment.this, 300);
+            sortDialogLayout.show(this.getFragmentManager(), "fragment_edit_name");
             return true;
         }
         return false;
@@ -163,14 +163,8 @@ public class MainActivityFragment extends Fragment implements SearchView.OnQuery
             }
         });
 
+
         return rootView;
-    }
-
-    public void passInformation(String title, String details, String mode, int photosCount) {
-        input_title=title;
-        input_details=details;
-        this.mode=mode;
-
     }
 
     @Override
@@ -237,75 +231,42 @@ public class MainActivityFragment extends Fragment implements SearchView.OnQuery
     }
 
 
-    private void showSortPopup(final Activity context, Point p) {
+    @Override
+    public void onDialogPositiveClick(DialogFragment dialog) {
 
-        layout_MainMenu.getForeground().setAlpha(220);
-        LayoutInflater layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        View layout = layoutInflater.inflate(R.layout.activity_sorting_pop_up_window, null);
-        final EditText text_order_input = (EditText) layout.findViewById(R.id.text_memo_input_order);
-        final EditText drawing_order_input = (EditText) layout.findViewById(R.id.drawing_memo_input_order);
-
-        text_order_input.setText(Integer.toString(ListOperation.TEXT_MEMO_SORT_ORDER));
-        drawing_order_input.setText(Integer.toString(ListOperation.DRAWING_MEMO_SORT_ORDER));
-        changeSortPopUp = new PopupWindow(context);
-        changeSortPopUp.setContentView(layout);
-        changeSortPopUp.setWidth(LinearLayout.LayoutParams.WRAP_CONTENT);
-        changeSortPopUp.setHeight(LinearLayout.LayoutParams.WRAP_CONTENT);
-        changeSortPopUp.setFocusable(true);
-        changeSortPopUp.setAnimationStyle(android.R.style.Animation_Dialog);
-
-        int OFFSET_X = -20;
-        int OFFSET_Y = 95;
-
-        changeSortPopUp.setBackgroundDrawable(new BitmapDrawable());
-
-        changeSortPopUp.showAtLocation(layout, Gravity.NO_GRAVITY, p.x + OFFSET_X, p.y + OFFSET_Y);
+        SortDialogLayout sortDialogLayout = (SortDialogLayout) dialog;
+        ListOperation.TEXT_MEMO_SORT_ORDER = Integer.parseInt(sortDialogLayout.textMemo.getText().toString());
+        ListOperation.DRAWING_MEMO_SORT_ORDER = Integer.parseInt(sortDialogLayout.drawingMemo.getText().toString());
+        ListIterator<MemoItem> listViewItems = ListOperation.getListViewItems().listIterator();
 
 
-        Button close = (Button) layout.findViewById(R.id.close_popup);
-        close.setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-
-                ListOperation.TEXT_MEMO_SORT_ORDER = Integer.parseInt(text_order_input.getText().toString());
-                ListOperation.DRAWING_MEMO_SORT_ORDER = Integer.parseInt(drawing_order_input.getText().toString());
-                ListIterator<MemoItem> listViewItems = ListOperation.getListViewItems().listIterator();
+        while (listViewItems.hasNext()) {
+            MemoItem currentMemo = listViewItems.next();
+            if (currentMemo instanceof MemoTextItem)
+                currentMemo.setSortOrder(ListOperation.TEXT_MEMO_SORT_ORDER);
+            else if (currentMemo instanceof MemoDrawingItem)
+                currentMemo.setSortOrder(ListOperation.DRAWING_MEMO_SORT_ORDER);
+        }
 
 
-                while (listViewItems.hasNext()) {
-                    MemoItem currentMemo = listViewItems.next();
-                    if (currentMemo instanceof MemoTextItem)
-                        currentMemo.setSortOrder(ListOperation.TEXT_MEMO_SORT_ORDER);
-                    else if (currentMemo instanceof MemoDrawingItem)
-                        currentMemo.setSortOrder(ListOperation.DRAWING_MEMO_SORT_ORDER);
-                }
+        Collections.sort(ListOperation.getListViewItems(), new MemoItemComparator());
+        refreshAdapter();
+        layout_MainMenu.getForeground().setAlpha(0);
 
+        GridLayoutManager layoutManagerSorting = new GridLayoutManager(getActivity(), 3);
+        recyclerView.setLayoutManager(layoutManagerSorting);
 
-                Collections.sort(ListOperation.getListViewItems(), new MemoItemComparator());
-                refreshAdapter();
-                layout_MainMenu.getForeground().setAlpha(0);
+    }
 
-                GridLayoutManager layoutManagerSorting = new GridLayoutManager(getActivity(), 3);
-                recyclerView.setLayoutManager(layoutManagerSorting);
-                changeSortPopUp.dismiss();
-            }
-        });
-
-        Button reset = (Button) layout.findViewById(R.id.reset_sorting);
-        reset.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                ListOperation.TEXT_MEMO_SORT_ORDER = 0;
-                ListOperation.DRAWING_MEMO_SORT_ORDER = 0;
-                recyclerView.setLayoutManager(_sGridLayoutManager);
-                Collections.sort(ListOperation.getListViewItems(), new MemoItemComparator());
-                refreshAdapter();
-                layout_MainMenu.getForeground().setAlpha(0);
-                changeSortPopUp.dismiss();
-            }
-        });
+    @Override
+    public void onDialogNegativeClick(DialogFragment dialog) {
+        ListOperation.TEXT_MEMO_SORT_ORDER = 0;
+        ListOperation.DRAWING_MEMO_SORT_ORDER = 0;
+        recyclerView.setLayoutManager(_sGridLayoutManager);
+        Collections.sort(ListOperation.getListViewItems(), new MemoItemComparator());
+        refreshAdapter();
+        layout_MainMenu.getForeground().setAlpha(0);
+        dialog.getDialog().cancel();
 
     }
 

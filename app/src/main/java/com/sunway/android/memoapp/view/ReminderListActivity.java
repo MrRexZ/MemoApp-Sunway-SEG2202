@@ -14,6 +14,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.TextView;
 
 import com.sunway.android.memoapp.R;
 import com.sunway.android.memoapp.controller.AlarmReceiver;
@@ -57,6 +58,14 @@ public class ReminderListActivity extends AppCompatActivity {
         recyclerView.setAdapter(reminderAdapter);
 
         recyclerView.addOnItemTouchListener(new ReminderActivityTouchListener(this, recyclerView, reminderAdapter));
+
+        TextView backButton = (TextView) findViewById(R.id.action_back_button);
+        backButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onBackPressed();
+            }
+        });
     }
 
 

@@ -28,7 +28,6 @@ public class MemoPhotosHolder extends RecyclerView.ViewHolder implements View.On
         this.context = context;
         this.memoItemAdapter = memoItemAdapter;
         this.activity = activity;
-        //linearLayout = (LinearLayout) itemView.findViewById(R.id.linearlayout_list_item_photos_memo);
         imageView = (ImageView) itemView.findViewById(R.id.imageview_list_item_photos_memo);
         this.memoPhotosAdapter = memoPhotosAdapter;
         this.position = position;

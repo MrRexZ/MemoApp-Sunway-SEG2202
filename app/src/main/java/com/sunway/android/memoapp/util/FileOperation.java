@@ -31,7 +31,7 @@ public class FileOperation {
     public static final String LINE_SEPERATOR  = System.getProperty("line.separator");
     public static int userID = 1;
     public static File mydir = MyApplication.getAppContext().getDir("memoapp", Context.MODE_PRIVATE);
-    private static int memoCountId = 0;
+    public static int memoCountId = 0;
 
     public static void replaceSelected(String beforeReplace, String afterReplace) {
         try {

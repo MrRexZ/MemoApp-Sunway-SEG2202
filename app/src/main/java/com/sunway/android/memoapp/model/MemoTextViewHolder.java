@@ -1,7 +1,6 @@
 package com.sunway.android.memoapp.model;
 
 import android.app.Activity;
-import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.view.View;
@@ -25,15 +24,12 @@ public class MemoTextViewHolder extends RecyclerView.ViewHolder implements View.
     public int photosCount;
     public List<String> imageViewList = new ArrayList<>();
     public MemoPhotosAdapter memoPhotosAdapter;
-    private Context context;
     private MemoItemAdapter memoItemAdapter;
     private Activity activity;
-    private View view;
 
 
     public MemoTextViewHolder(View itemView, MemoItemAdapter memoItemAdapter, Activity activity) {
         super(itemView);
-        this.context = activity;
         this.memoItemAdapter = memoItemAdapter;
         this.activity = activity;
         titleName = (TextView) itemView.findViewById(R.id.list_item_title);

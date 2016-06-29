@@ -7,9 +7,5 @@
         app:showAsAction="ifRoom"
        />
 
-    <item
-        android:id="@+id/action_tag"
-        android:title="Tag"
-        app:showAsAction="ifRoom"
-       />
+
 </menu>
