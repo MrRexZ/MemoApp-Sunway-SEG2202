@@ -127,7 +127,7 @@ public class MainActivityFragment extends Fragment implements SearchView.OnQuery
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        this.rootView = inflater.inflate(R.layout.fragment_main, container, false);
+        this.rootView = inflater.inflate(R.layout.fragment_main_screen, container, false);
 
 
         layout_MainMenu = (FrameLayout) rootView.findViewById(R.id.mainmenu);

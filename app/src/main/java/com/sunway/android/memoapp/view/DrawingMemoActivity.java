@@ -305,6 +305,7 @@ public class DrawingMemoActivity extends AppCompatActivity {
             public void onClick(View v) {
 
 
+                drawingView.setBrushesSize(6f);
                 drawingView.setColor(Color.BLACK);
                 changeColorBrush.dismiss();
             }
@@ -315,6 +316,7 @@ public class DrawingMemoActivity extends AppCompatActivity {
 
             @Override
             public void onClick(View v) {
+                drawingView.setBrushesSize(25f);
                 drawingView.setColor(Color.WHITE);
                 changeColorBrush.dismiss();
             }
@@ -325,7 +327,10 @@ public class DrawingMemoActivity extends AppCompatActivity {
 
             @Override
             public void onClick(View v) {
+
+                drawingView.setBrushesSize(6f);
                 drawingView.setColor(Color.BLUE);
+
                 changeColorBrush.dismiss();
             }
         });

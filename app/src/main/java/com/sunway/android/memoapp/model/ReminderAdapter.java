@@ -88,14 +88,22 @@ public class ReminderAdapter extends RecyclerView.Adapter<ReminderViewHolder> {
                 selectedMonth = "December";
                 break;
         }
+
+        String title = selectedMemoItem.getTitle();
+        String content = selectedMemoItem.getContent();
+
+        if (title.length() > 8)
+            title = new StringBuilder(title).substring(0, 8) + "...";
+        if (content.length() > 30)
+            content = new StringBuilder(content).substring(0, 30) + "...";
         holder.year_display.setText(Integer.toString(selectedReminder.getYear()) + ",");
         holder.month_display.setText(selectedMonth + " ");
         holder.day_display.setText(Integer.toString(selectedReminder.getDay()) + " ");
         holder.hour_display.setText(Integer.toString(selectedReminder.getHour()) + " : ");
         holder.minute_display.setText(Integer.toString(selectedReminder.getMinute()) + " : ");
         holder.second_display.setText(Integer.toString(selectedReminder.getSecond()) + "");
-        holder.title_reminder.setText(selectedMemoItem.getTitle());
-        holder.details_reminder.setText(selectedMemoItem.getContent());
+        holder.title_reminder.setText(title);
+        holder.details_reminder.setText(content);
     }
 
     @Override
