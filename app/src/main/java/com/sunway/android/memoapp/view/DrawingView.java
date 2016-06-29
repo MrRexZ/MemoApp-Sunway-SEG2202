@@ -23,7 +23,10 @@ public class DrawingView extends RelativeLayout {
     private Path path = new Path();
     private ArrayList<Path> paths = new ArrayList<Path>();
     private Map<Path, Integer> colorsMap = new HashMap<Path, Integer>();
-    private int newColor = -1;
+    private Map<Path, Float> brushesSizeMap = new HashMap<Path, Float>();
+    private int newColor = Color.BLACK;
+    private float newBrushSize = 6f;
+
 
     public DrawingView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -44,13 +47,13 @@ public class DrawingView extends RelativeLayout {
         super.dispatchDraw(canvas);
         for (Path p : paths) {
             paint.setColor(colorsMap.get(p));
+            paint.setStrokeWidth(brushesSizeMap.get(p));
             canvas.drawPath(p, paint);
         }
 
         paint.setColor(newColor);
+        paint.setStrokeWidth(newBrushSize);
         canvas.drawPath(path, paint);
-        System.out.println("COUNT: " + paths.size());
-
     }
 
 
@@ -63,6 +66,14 @@ public class DrawingView extends RelativeLayout {
         this.newColor = newColor;
         postInvalidate();
     }
+
+    public void setBrushesSize(float newSize) {
+        brushesSizeMap.put(path, paint.getStrokeWidth());
+
+        paint.setStrokeWidth(newSize);
+        this.newBrushSize = newSize;
+    }
+
 
     public Bitmap get() {
         return this.getDrawingCache();

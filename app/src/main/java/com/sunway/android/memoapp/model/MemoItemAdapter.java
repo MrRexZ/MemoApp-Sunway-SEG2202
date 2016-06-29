@@ -212,7 +212,6 @@ public class MemoItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
             nMemoList.clear();
             nMemoList.addAll((List<MemoItem>) results.values);
-            System.out.println("all values are :" + nMemoList.size());
             notifyDataSetChanged();
 
 

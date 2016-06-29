@@ -4,13 +4,13 @@
 
     <item
         android:id="@+id/action_open_create_text_memo"
-        android:icon="@drawable/a1"
+        android:icon="@drawable/create_text_memo_icon"
         android:orderInCategory="100"
         android:title="Text Memo"
         app:showAsAction="ifRoom" />
     <item
         android:id="@+id/action_create_drawing_memo"
-        android:icon="@drawable/a2"
+        android:icon="@drawable/create_drawing_memo_icon"
         android:orderInCategory="100"
         android:title="Draw Memo"
         app:showAsAction="ifRoom" />

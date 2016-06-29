@@ -70,11 +70,10 @@ public class TextDetailsMemoActivity extends AppCompatActivity implements Toolba
     private RecyclerView photosRecyclerView;
     private Calendar targetCal;
     private MemoTextItem memoTextItem;
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.memo_details);
+        setContentView(R.layout.activity_memo_details);
         intent = getIntent();
         ACTION_MODE = intent.getStringExtra(C.ACTION_MODE);
         memoID = intent.getExtras().getInt(C.MEMO_ID);
@@ -90,6 +89,7 @@ public class TextDetailsMemoActivity extends AppCompatActivity implements Toolba
         photosRecyclerView.setAdapter(memoPhotosAdapter);
 
         registerForContextMenu(photosRecyclerView);
+
 
 
         Toolbar upper_toolbar = (Toolbar) findViewById(R.id.toolbar_upper);
@@ -166,6 +166,13 @@ public class TextDetailsMemoActivity extends AppCompatActivity implements Toolba
         getMenuInflater().inflate(R.menu.upper_textdetailsmemo_menu, menu);
         return true;
     }
+
+    @Override
+    protected void onResumeFragments() {
+        super.onResumeFragments();
+
+    }
+
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
