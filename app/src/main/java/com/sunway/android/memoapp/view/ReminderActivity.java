@@ -63,12 +63,6 @@ public class ReminderActivity extends AppCompatActivity {
                         00);
 
 
-                System.out.println("HEY:  " +
-                        cal.get(Calendar.YEAR) + "," +
-                        cal.get(Calendar.MONTH) + "," +
-                        cal.get(Calendar.DAY_OF_MONTH) + "," +
-                        cal.get(Calendar.HOUR) + "           aa     " +
-                        cal.get(Calendar.MINUTE) + ".");
                 if (cal.compareTo(current) <= 0) {
                     //The set Date/Time already passed
                     Toast.makeText(getApplicationContext(),

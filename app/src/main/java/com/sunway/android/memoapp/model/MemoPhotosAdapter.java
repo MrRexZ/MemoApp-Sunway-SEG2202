@@ -86,6 +86,7 @@ public class MemoPhotosAdapter extends RecyclerView.Adapter<MemoPhotosHolder> {
     public void removeImagesList(int index) {
         imageViewList.remove(index);
     }
+
     @Override
     public int getItemCount() {
         return imageViewList.size();

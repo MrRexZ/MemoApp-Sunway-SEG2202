@@ -123,14 +123,15 @@ public class MemoItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         String title = memoTextItem.getTitle();
         String content = memoTextItem.getContent();
 
-        if (title.length() > 8)
-            title = new StringBuilder(title).substring(0, 8) + "...";
-        if (memoTextItem.getContent().length() > 30)
-            content = new StringBuilder(content).substring(0, 30) + "...";
+        if (title.length() > 40)
+            title = new StringBuilder(title).substring(0, 40) + "...";
+        if (memoTextItem.getContent().length() > 100)
+            content = new StringBuilder(content).substring(0, 100) + "...";
         hText.titleName.setText(title);
         hText.contentName.setText(content);
         hText.memoID = memoTextItem.getMemoID();
         hText.photosCount = memoTextItem.getPhotosCount();
+
 
         if (hText.photosRecyclerView.getChildCount() > 0) {
             hText.photosRecyclerView.removeAllViews();

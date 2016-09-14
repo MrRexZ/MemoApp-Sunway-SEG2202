@@ -32,6 +32,8 @@ public class MainActivityFragmentTouchListener implements RecyclerView.OnItemTou
             if (child != null) {
                 int position = viewRecycle.getChildAdapterPosition(child);
 
+
+                RecyclerView.ViewHolder viewRecycleChildViewHolder = viewRecycle.getChildViewHolder(child);
                 MemoItem memoitem = memoItemAdapter.nMemoList.get(position);
                 if (memoitem instanceof MemoTextItem) {
                     MemoTextItem memoTextItem = (MemoTextItem) memoitem;
@@ -49,18 +51,18 @@ public class MainActivityFragmentTouchListener implements RecyclerView.OnItemTou
                     fragment.getActivity().startActivity(showDrawing);
                     return true;
                 }
-
             }
-
-
             return true;
         }
 
         @Override
         public void onLongPress(MotionEvent e) {
+
             if (child != null) {
                 int position = viewRecycle.getChildAdapterPosition(child);
                 memoItemAdapter.setPosition(position);
+
+                System.out.println("HALO : " + viewRecycle.getChildAdapterPosition(child));
                 fragment.registerForContextMenu(viewRecycle);
                 fragment.getActivity().openContextMenu(viewRecycle);
 

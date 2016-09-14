@@ -7,21 +7,20 @@
     card_view:cardUseCompatPadding="true">
 
     <RelativeLayout
-        android:id="@+id/linearlayout_list_item_text_memo"
+        android:id="@+id/relativelayout_list_item_text_memo"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@color/yellow">
 
 
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/recycler_view_photos_memo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:foregroundGravity="center"
 
-            <android.support.v7.widget.RecyclerView
-                android:id="@+id/recycler_view_photos_memo"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:foregroundGravity="center"
-
-                android:orientation="horizontal"
-                android:scrollbars="vertical" />
+            android:orientation="horizontal"
+            android:scrollbars="vertical" />
 
 
         <TextView

@@ -92,10 +92,10 @@ public class ReminderAdapter extends RecyclerView.Adapter<ReminderViewHolder> {
         String title = selectedMemoItem.getTitle();
         String content = selectedMemoItem.getContent();
 
-        if (title.length() > 8)
-            title = new StringBuilder(title).substring(0, 8) + "...";
-        if (content.length() > 30)
-            content = new StringBuilder(content).substring(0, 30) + "...";
+        if (title.length() > 30)
+            title = new StringBuilder(title).substring(0, 30) + "...";
+        if (content.length() > 80)
+            content = new StringBuilder(content).substring(0, 80) + "...";
         holder.year_display.setText(Integer.toString(selectedReminder.getYear()) + ",");
         holder.month_display.setText(selectedMonth + " ");
         holder.day_display.setText(Integer.toString(selectedReminder.getDay()) + " ");

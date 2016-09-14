@@ -4,7 +4,6 @@
     android:id="@+id/mainmenu"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:foreground="@drawable/shape_window_dim"
     android:foregroundGravity="fill">
 
     <RelativeLayout
@@ -23,7 +22,18 @@
             android:background="@color/colorPrimary"
             android:elevation="4dp"
             android:minHeight="?attr/actionBarSize"
-            app:theme="@style/ThemeOverlay.AppCompat.Dark" />
+            app:theme="@style/ThemeOverlay.AppCompat.Dark">
+
+
+            <android.support.v7.widget.SearchView
+                android:id="@+id/memo_search_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:icon="@drawable/search"
+                android:title="@string/search_hint"
+                app:actionViewClass="android.support.v7.widget.SearchView"
+                app:showAsAction="collapseActionView|ifRoom" />
+        </android.support.v7.widget.Toolbar>
 
 
         <android.support.v7.widget.Toolbar xmlns:android="http://schemas.android.com/apk/res/android"

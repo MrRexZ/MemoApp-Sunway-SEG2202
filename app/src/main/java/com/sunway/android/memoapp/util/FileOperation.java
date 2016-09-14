@@ -140,7 +140,6 @@ public class FileOperation {
             outputStreamWriter.append("counter=0");
             outputStreamWriter.append(DELIMITER_LINE);
         }
-
         outputStreamWriter.append(DELIMITER_LINE);
         outputStreamWriter.append(DELIMITER_UNIT);
         outputStreamWriter.append(String.valueOf(memoCountId++));
@@ -163,14 +162,11 @@ public class FileOperation {
 
         FileOutputStream fOut = new FileOutputStream(new File(mydir, "u_" + userID + ".txt"), true);
         OutputStreamWriter outputStreamWriter = new OutputStreamWriter(fOut);
-
-
         if (memoCountId == 0) {
             outputStreamWriter.append(DELIMITER_LINE);
             outputStreamWriter.append("counter=0");
             outputStreamWriter.append(DELIMITER_LINE);
         }
-
         outputStreamWriter.append(DELIMITER_LINE);
         outputStreamWriter.append(DELIMITER_UNIT);
         outputStreamWriter.append(String.valueOf(memoCountId++));
@@ -186,10 +182,15 @@ public class FileOperation {
     }
 
     public static void deleteTextMemo(int memoID, int photosCount, String input_title, String input_details) {
-        replaceSelected(FileOperation.DELIMITER_LINE + FileOperation.DELIMITER_UNIT + memoID + FileOperation.DELIMITER_UNIT + FileOperation.DELIMITER_LINE + "photos=" + photosCount + FileOperation.DELIMITER_LINE + input_title + FileOperation.DELIMITER_LINE + input_details + FileOperation.DELIMITER_LINE,
+        Reminder reminder = ListOperation.getMemoItemFromID(memoID).getReminder();
+        replaceSelected(FileOperation.DELIMITER_LINE + FileOperation.DELIMITER_UNIT + memoID + FileOperation.DELIMITER_UNIT + FileOperation.DELIMITER_LINE + "photos=" + photosCount +
+                        FileOperation.DELIMITER_LINE +
+                        input_title + FileOperation.DELIMITER_LINE +
+                        input_details + FileOperation.DELIMITER_LINE +
+                        "reminder=" + reminder.getYear() + "," + reminder.getMonth() + "," + reminder.getDay() + "," +
+                        reminder.getHour() + "," + reminder.getMinute() + "," + reminder.getSecond()
+                ,
                 "");
-
-
     }
 
     public static void deleteImagesMemo(int memoID, int photosCount) {
@@ -198,14 +199,18 @@ public class FileOperation {
             File f0 = new File(mydir, "u_" + FileOperation.userID + "_img_" + memoID + "_" + (start++) + ".jpg");
             f0.delete();
         }
-
-
     }
 
-    public static void deleteDrawingMemo(int memoid) {
-        replaceSelected(DELIMITER_LINE + DELIMITER_UNIT + (memoid) + DELIMITER_UNIT + DELIMITER_LINE + "Drawing", "");
-        File f0 = new File(mydir, "u_" + userID + "_drawing_" + memoid + ".jpg");
+    public static void deleteDrawingMemo(int memoID) {
+        Reminder reminder = ListOperation.getMemoItemFromID(memoID).getReminder();
+        replaceSelected(DELIMITER_LINE + DELIMITER_UNIT + (memoID) + DELIMITER_UNIT + DELIMITER_LINE + "Drawing" + FileOperation.DELIMITER_LINE +
+                        "reminder=" + reminder.getYear() + "," + reminder.getMonth() + "," + reminder.getDay() + "," +
+                        reminder.getHour() + "," + reminder.getMinute() + "," + reminder.getSecond()
+                ,
+                "");
+        File f0 = new File(mydir, "u_" + userID + "_drawing_" + memoID + ".jpg");
         f0.delete();
+
     }
 
     public static void deleteIndividualPhotosMemo(String filePath) {
@@ -254,6 +259,4 @@ public class FileOperation {
         }
         return null;
     }
-
-
 }

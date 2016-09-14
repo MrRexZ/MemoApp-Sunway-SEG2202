@@ -5,7 +5,6 @@ import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 
 import com.sunway.android.memoapp.R;
 
@@ -15,7 +14,6 @@ import com.sunway.android.memoapp.R;
 public class MemoPhotosHolder extends RecyclerView.ViewHolder implements View.OnLongClickListener {
 
     public MemoItemAdapter memoItemAdapter;
-    public LinearLayout linearLayout;
     public ImageView imageView;
     private MemoPhotosAdapter memoPhotosAdapter;
     private Context context;
@@ -35,8 +33,10 @@ public class MemoPhotosHolder extends RecyclerView.ViewHolder implements View.On
     }
 
 
+
     @Override
     public boolean onLongClick(View v) {
+        System.out.println("WAH");
         memoPhotosAdapter.setPosition(getAdapterPosition());
         return false;
     }

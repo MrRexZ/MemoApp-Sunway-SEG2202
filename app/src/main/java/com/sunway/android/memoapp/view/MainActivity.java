@@ -26,6 +26,4 @@ public class MainActivity extends AppCompatActivity implements Serializable {
             MainActivityFragment mainActivityFragment = (MainActivityFragment) getSupportFragmentManager().findFragmentById(R.id.fragment);
         }
     }
-
-
 }

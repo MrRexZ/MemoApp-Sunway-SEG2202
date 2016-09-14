@@ -7,7 +7,6 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
-import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -21,8 +20,6 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.FrameLayout;
-import android.widget.PopupWindow;
 
 import com.sunway.android.memoapp.R;
 import com.sunway.android.memoapp.controller.MainActivityFragmentTouchListener;
@@ -49,8 +46,6 @@ public class MainActivityFragment extends Fragment implements SearchView.OnQuery
     private View rootView;
     private RecyclerView recyclerView;
     private MemoItemAdapter rcAdapter;
-    private PopupWindow changeSortPopUp;
-    private FrameLayout layout_MainMenu;
     private SortDialogLayout sortDialogLayout;
 
     public MainActivityFragment() {
@@ -73,14 +68,6 @@ public class MainActivityFragment extends Fragment implements SearchView.OnQuery
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
         inflater.inflate(R.menu.upper_main_menu,menu);
-        MenuItem searchItem = menu.findItem(R.id.memo_search_view);
-        SearchManager searchManager = (SearchManager) getActivity().getSystemService(Context.SEARCH_SERVICE);
-
-        SearchView searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
-        searchView.setSearchableInfo(searchManager.getSearchableInfo(getActivity().getComponentName()));
-        searchView.setIconifiedByDefault(false);
-        searchView.setOnQueryTextListener(this);
-
     }
 
     @Override
@@ -100,9 +87,6 @@ public class MainActivityFragment extends Fragment implements SearchView.OnQuery
             Intent showReminderList = new Intent(getActivity(), ReminderListActivity.class);
             startActivity(showReminderList);
         } else if (id == R.id.action_set_sort_order) {
-            //showSortPopup(getActivity(), new Point(250, 250));
-            //  dialog = new Dialog(getActivity(),android.R.style.Theme_Translucent_NoTitleBar);
-            //show_dialog();
             sortDialogLayout = new SortDialogLayout();
             sortDialogLayout.setTargetFragment(MainActivityFragment.this, 300);
             sortDialogLayout.show(this.getFragmentManager(), "fragment_edit_name");
@@ -130,13 +114,18 @@ public class MainActivityFragment extends Fragment implements SearchView.OnQuery
         this.rootView = inflater.inflate(R.layout.fragment_main_screen, container, false);
 
 
-        layout_MainMenu = (FrameLayout) rootView.findViewById(R.id.mainmenu);
-        layout_MainMenu.getForeground().setAlpha(0);
         inflateLayout();
 
         Toolbar upper_toolbar = (Toolbar) rootView.findViewById(R.id.toolbar_upper);
         ((AppCompatActivity)getActivity()).setSupportActionBar(upper_toolbar);
         upper_toolbar.setTitle("Memo App");
+
+
+        SearchManager searchManager = (SearchManager) getActivity().getSystemService(Context.SEARCH_SERVICE);
+
+        SearchView searchView = (SearchView) rootView.findViewById(R.id.memo_search_view);
+        searchView.setSearchableInfo(searchManager.getSearchableInfo(getActivity().getComponentName()));
+        searchView.setOnQueryTextListener(this);
 
         Toolbar bottom_toolbar = (Toolbar) rootView.findViewById(R.id.toolbar_bottom);
         bottom_toolbar.inflateMenu(R.menu.bottom_main_menu);
@@ -208,26 +197,25 @@ public class MainActivityFragment extends Fragment implements SearchView.OnQuery
     @Override
     public boolean onContextItemSelected(MenuItem item) {
 
+        int id = item.getItemId();
+        if (id == R.id.action_delete_memo) {
+            int position = rcAdapter.getPosition();
+            MemoItem memoItem = rcAdapter.nMemoList.get(position);
 
-        int position =rcAdapter.getPosition();
-        MemoItem memoItem = rcAdapter.nMemoList.get(position);
+            if (memoItem instanceof MemoTextItem) {
+                MemoTextItem memoTextItem = (MemoTextItem) memoItem;
+                FileOperation.deleteTextMemo(memoTextItem.getMemoID(), memoTextItem.getPhotosCount(), memoTextItem.getTitle(), memoTextItem.getContent());
+                FileOperation.deleteImagesMemo(memoTextItem.getMemoID(), memoTextItem.getPhotosCount());
+            } else if (memoItem instanceof MemoDrawingItem) {
+                FileOperation.deleteDrawingMemo(memoItem.getMemoID());
+            }
 
-        if (memoItem instanceof MemoTextItem) {
-            MemoTextItem memoTextItem = (MemoTextItem) memoItem;
-            FileOperation.deleteTextMemo(memoTextItem.getMemoID(), memoTextItem.getPhotosCount(), memoTextItem.getTitle(), memoTextItem.getContent());
-            FileOperation.deleteImagesMemo(memoTextItem.getMemoID(), memoTextItem.getPhotosCount());
-
-
-        } else if (memoItem instanceof MemoDrawingItem) {
-            FileOperation.deleteDrawingMemo(memoItem.getMemoID());
+            ListOperation.deleteList(memoItem.getMemoID());
+            refreshAdapter();
+            return super.onContextItemSelected(item);
         }
-
-        ListOperation.deleteList(memoItem.getMemoID());
-
-
-        refreshAdapter();
-
         return super.onContextItemSelected(item);
+
     }
 
 
@@ -251,7 +239,6 @@ public class MainActivityFragment extends Fragment implements SearchView.OnQuery
 
         Collections.sort(ListOperation.getListViewItems(), new MemoItemComparator());
         refreshAdapter();
-        layout_MainMenu.getForeground().setAlpha(0);
 
         GridLayoutManager layoutManagerSorting = new GridLayoutManager(getActivity(), 3);
         recyclerView.setLayoutManager(layoutManagerSorting);
@@ -265,7 +252,6 @@ public class MainActivityFragment extends Fragment implements SearchView.OnQuery
         recyclerView.setLayoutManager(_sGridLayoutManager);
         Collections.sort(ListOperation.getListViewItems(), new MemoItemComparator());
         refreshAdapter();
-        layout_MainMenu.getForeground().setAlpha(0);
         dialog.getDialog().cancel();
 
     }

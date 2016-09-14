@@ -88,10 +88,6 @@ public class TextDetailsMemoActivity extends AppCompatActivity implements Toolba
         memoPhotosAdapter = new MemoPhotosAdapter(this, imageViewArrayListDetails, memoID, C.DETAILS_ACTIVITY_DISPLAY);
         photosRecyclerView.setAdapter(memoPhotosAdapter);
 
-        registerForContextMenu(photosRecyclerView);
-
-
-
         Toolbar upper_toolbar = (Toolbar) findViewById(R.id.toolbar_upper);
         setSupportActionBar(upper_toolbar);
         Toolbar bottom_toolbar = (Toolbar) findViewById(R.id.toolbar_bottom);
@@ -125,6 +121,10 @@ public class TextDetailsMemoActivity extends AppCompatActivity implements Toolba
                 }
             }
         }
+
+
+        registerForContextMenu(photosRecyclerView);
+
 
 
     }
@@ -356,21 +356,15 @@ public class TextDetailsMemoActivity extends AppCompatActivity implements Toolba
     @Override
     public void onCreateContextMenu(ContextMenu menu, View v,
                                     ContextMenu.ContextMenuInfo menuInfo) {
-
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.floating_context_memoitem_long_click, menu);
-
-
     }
 
     @Override
     public boolean onContextItemSelected(MenuItem item) {
-
-
         int position = memoPhotosAdapter.getPosition();
         filePathToBeDeleted.add(imageViewArrayListDetails.remove(position));
         memoPhotosAdapter.notifyDataSetChanged();
-
         return super.onContextItemSelected(item);
     }
 

@@ -1,9 +1,11 @@
 package com.sunway.android.memoapp.model;
 
 import android.app.Activity;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.view.View;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.sunway.android.memoapp.R;
@@ -24,8 +26,10 @@ public class MemoTextViewHolder extends RecyclerView.ViewHolder implements View.
     public int photosCount;
     public List<String> imageViewList = new ArrayList<>();
     public MemoPhotosAdapter memoPhotosAdapter;
+    public CardView cardView;
     private MemoItemAdapter memoItemAdapter;
     private Activity activity;
+    private RelativeLayout relativeLayout;
 
 
     public MemoTextViewHolder(View itemView, MemoItemAdapter memoItemAdapter, Activity activity) {
@@ -34,8 +38,10 @@ public class MemoTextViewHolder extends RecyclerView.ViewHolder implements View.
         this.activity = activity;
         titleName = (TextView) itemView.findViewById(R.id.list_item_title);
         contentName = (TextView) itemView.findViewById(R.id.list_item_content);
-
+        relativeLayout = (RelativeLayout) itemView.findViewById(R.id.relativelayout_list_item_text_memo);
         photosRecyclerView = (RecyclerView) itemView.findViewById(R.id.recycler_view_photos_memo);
+        cardView = (CardView) itemView.findViewById(R.id.card_view_list_text);
+        cardView.setOnLongClickListener(this);
     }
 
 
